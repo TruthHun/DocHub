@@ -1,0 +1,43 @@
+
+<div class="container">
+	<div class="row bg-white">
+		<div class="panel panel-default">
+			<div class="panel-body" style="padding-top: 100px;padding-bottom: 100px;">
+				<div class="text-center">
+					<img src="/static/Home/default/img/{{.status}}.png"/>
+					{{if eq .status "error"}}
+						<h3 class="text-danger">{{.msg}}</h3>
+					{{else}}
+						<h3 class="text-primary">{{.msg}}</h3>
+					{{end}}
+					<div class="help-block">
+						还有 <strong class="text-danger" id="second">{{.timewait}}</strong> 秒 <a class="text-primary" id="redirect" href="{{.redirect}}">跳转</a>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	var second="{{.timewait}}";
+	function change(){  
+		second--;
+		if(second>-1){
+			document.getElementById("second").innerHTML=second;  
+			timer = setTimeout('change()',1000);
+		}else{
+			var redirect_url="{{.redirect}}"
+			//如果重定向页面是首页，则修改为返回上一页
+			if (redirect_url=="/"){
+				var back=location.back();
+				location.href=back;
+				document.getElementById("redirect").setAttribute("href",back);
+			}else{
+				location.href=redirect_url; 
+			}
+			clearTimeout(timer); 
+		}
+	}
+	timer = setTimeout('change()',1000);
+</script>

@@ -1,0 +1,132 @@
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-8 wenku-left">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <div class="strong pull-left">收藏列表</div>
+                    {{if eq $.LoginUid $.Uid}}
+                    <div class="pull-right">
+                        <div class="btn btn-primary btn-xs" data-toggle="modal" data-target="#ModalFolder" ><i class="fa fa-plus"></i> 创建收藏夹</div>
+
+                        {{if $.Edit}}
+                            <a href="/user/{{$.Uid}}/collect" class="btn btn-danger btn-xs wenku-collect-edit"><i class="fa fa-edit"></i> 取消编辑</a>
+                        {{else}}
+                            <a href="/user/{{$.Uid}}/collect?action=edit" class="btn btn-success btn-xs wenku-collect-edit"><i class="fa fa-edit"></i> 编辑模式</a>
+                        {{end}}
+                    </div>
+                    {{end}}
+                </div>
+                <div class="panel-body">
+                    <div class="wenku-list-thumb">
+                        <div class="row">
+                            {{range .Lists}}
+                            <div class="col-xs-3">
+                                {{if and (eq (Interface2Int $.User.Id) $.LoginUid) $.Edit (gt $.LoginUid 0)}}
+                                <!--编辑模式-->
+                                    <div title="{{.Title}}" class="thumbnail wenku-thumbnail-collect-edit">
+                                        <img class="img-responsive" src="{{DefPic .Cover "cover"}}"/>
+                                        <div class="wenku-title">
+                                            <div class="btn-group">
+                                                <a href="javascript:void(0);" class="btn btn-primary btn-xs" id="ModalFolderEditBtn" data-id="{{.Id}}"><i class="fa fa-edit"></i> 编辑</a>
+                                                <a href="/user/{{$.User.Id}}/del/collect/{{.Id}}" class="btn btn-danger btn-xs wenku-ajax-get wenku-confirm"><i class="fa fa-remove"></i> 删除</a>
+                                            </div>
+                                            <h6 class="wenku-collect-title wenku-mgt-15px">{{.Title}}</h6>
+                                            <div class="help-block wenku-mgt-15px text-indent  color-dark-white">{{.Description}}</div>
+                                        </div>
+                                    </div>
+                                {{else}}
+                                    <a href="/user/{{$.User.Id}}/doc/cid/{{.Id}}" title="{{.Title}}" class="thumbnail">
+                                        <img class="img-responsive" src="{{DefPic .Cover "cover"}}"/>
+                                        <div class="wenku-title">
+                                            <div>{{.Title}}</div>
+                                            <div class="help-block text-indent color-dark-white">{{.Description}}</div>
+                                        </div>
+                                    </a>
+                                {{end}}
+                            </div>
+                            {{else}}
+                                {{if eq $.LoginUid $.Uid}}
+                                <div class="help-block text-center">您暂无收藏夹，请点击右上角按钮创建收藏夹</div>
+                                {{else}}
+                                <div class="help-block text-center">暂无收藏夹</div>
+                                {{end}}
+                            {{end}}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {{template "UserRight" .}}
+
+    </div>
+</div>
+
+{{if eq $.LoginUid $.Uid}}
+<div class="modal fade" id="ModalFolder" tabindex="-1" role="dialog" aria-labelledby="ModalFolderLabel" aria-hidden="true">
+    <form role="form" method="post" enctype="multipart/form-data" class="wenku-ajax-form" action="/user/folder/add">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="ModalFolderLabel">创建收藏夹</h4>
+            </div>
+            <div class="modal-body clearfix">
+                    <div class="form-group">
+                        <label>封面 (<span class="color-gray">[可选]请上传一张图片作为收藏夹封面</span>)</label>
+                        <input type="file" accept="image/*"  name="Cover" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>标题 (<span class="color-gray">[<span class="text-danger">必填</span>]请输入收藏夹名称</span>)</label>
+                        <input type="text" name="Title" required="required" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>简介 (<span class="color-gray">[选填]请输入收藏夹简介</span>)</label>
+                        <textarea name="Description" rows="3" class="form-control"></textarea>
+                    </div>
+                {{.xsrfdata}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">取消创建</button>
+                <button type="submit" class="btn btn-primary">确定创建</button>
+            </div>
+        </div>
+    </div>
+    </form>
+</div>
+<div class="modal fade" id="ModalFolderEdit" tabindex="-1" role="dialog" aria-labelledby="ModalFolderEditLabel" aria-hidden="true">
+    <form role="form" method="post" enctype="multipart/form-data" data-url="/user/{{$.LoginUid}}/collect?action=edit" class="wenku-ajax-form" action="/user/folder/add">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ModalFolderEditLabel">编辑收藏夹</h4>
+                </div>
+                <div class="modal-body clearfix">
+                    <input type="hidden" name="Id" value="0">
+                    <div class="form-group">
+                        <label>封面 (<span class="color-gray">[可选]如需更换封面，请上传一张图片作为收藏夹封面</span>)</label>
+                        <input type="file" accept="image/*"  name="Cover" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>标题 (<span class="color-gray">[<span class="text-danger">必填</span>]请输入收藏夹名称</span>)</label>
+                        <input type="text" name="Title" required="required" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>简介 (<span class="color-gray">[选填]请输入收藏夹简介</span>)</label>
+                        <textarea name="Description" rows="3" class="form-control"></textarea>
+                    </div>
+                    {{.xsrfdata}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消编辑</button>
+                    <button type="submit" class="btn btn-primary">提交编辑</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{{end}}
+<iframe frameborder="0" style="display: none;" id="notarget" name="notarget"></iframe>

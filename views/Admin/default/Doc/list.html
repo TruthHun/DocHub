@@ -1,0 +1,91 @@
+        <div class="row">
+            <h1 class="page-header">文档管理</h1>
+            <div class="panel panel-default">
+                <div class="panel-heading wenku-no-pdl">
+                    <div class="col-md-8 wenku-no-pdl">
+                        <div class="btn btn-group">
+                            <a href="#" class="btn btn-default" data-toggle="modal" data-target="#ModalChanel">新增频道</a>
+                            <a href="#" class="btn btn-default" data-toggle="modal" data-target="#ModalCate">新增分类</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <form class="pull-right" method="get" action="/admin/album.html" role="form">
+                            <div class="form-group input-group">
+                                <input type="text" name="wd" required="required" placeholder="Search" value="" class="form-control">
+                                <span class="input-group-btn input-group-lg">
+                                    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="panel-body">
+
+                    {{template "tabs" .}}
+
+                    {{range .Cates}}
+                        {{if eq $.Level 0}}
+                            <a href="/admin/doc/list/chanelid/{{.Id}}" {{if eq .Id $.CurId}}class="text-danger"{{end}}>{{.Title}}（{{.Cnt}}）</a>
+                        {{else if eq $.Level 1}}
+                            <a href="/admin/doc/list/chanelid/{{$.ChanelId}}/pid/{{.Id}}" {{if eq .Id $.CurId}}class="text-danger"{{end}}>{{.Title}}（{{.Cnt}}）</a>
+                        {{else}}
+                            <a href="/admin/doc/list/chanelid/{{$.ChanelId}}/pid/{{$.Pid}}/cid/{{.Id}}" {{if eq .Id $.CurId}}class="text-danger"{{end}}>{{.Title}}（{{.Cnt}}）</a>
+                        {{end}}
+                    {{end}}
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>分类</th>
+                                <th>文档</th>
+                                <th>用户</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{range .Lists}}
+                            <tr>
+                                <td>
+                                    [
+                                    <a href="/admin/doc/list/chanelid/{{.ChanelId}}" class="text-danger">{{CategoryName .ChanelId}}</a> -
+                                    <a href="/admin/doc/list/chanelid/{{.ChanelId}}/pid/{{.Pid}}" class="text-danger">{{CategoryName .Pid}}</a> -
+                                    <a href="/admin/doc/list/chanelid/{{.ChanelId}}/pid/{{.Pid}}/cid/{{.Cid}}" class="text-danger">{{.Category}}</a>
+                                    ]
+                                </td>
+                                <td>
+                                    <a href="/view/{{.Id}}" class="wenku-width-400px wenku-ellipsis" target="_blank"><img src="/static/Home/default/img/{{.ExtCate}}_24.png"> {{.Title}}</a>
+                                </td>
+                                <td><a href="/user/{{.Uid}}" target="_blank">进击的皇虫</a></td>
+                                <td>
+                                    <a href="#" class="wenku-tooltip" title="对文档内容进行简单编辑">编辑</a> |
+                                    <a href="/admin/doc/action?type=remove&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get" title="删除当前文档，将该文档移入回收站">删除</a> |
+                                    <a href="/admin/doc/action?type=illegal&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get" title="将文档标记为非法文档，文档在被移入回收站的同时，并禁止任何用户再上传该文档">非法</a> |
+                                    <a href="javascript:void(0);" class="wenku-tooltip ModalRemark" title="给文档设置备注" data-dsid="{{.DsId}}" >备注 {{if (.DsId|IsRemark)}}(<i class="fa fa-check"></i>){{end}} </a>
+                                </td>
+                            </tr>
+                            {{end}}
+                            </tbody>
+                        </table>
+                        <ul class="pagination">
+                            {{str2html .Page}}
+                        </ul>
+                    </div>
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+        <!--新增频道Modal-->
+        {{template "ModalChanel" .}}
+
+        <!--新增文档分类Modal-->
+        {{template "ModalCate" .}}
+
+        <!--文档备注Modal-->
+        {{template "ModalRemark" .}}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{.Sys.Site}}管理平台 - Powered By DocHub</title>
+	<link rel="stylesheet" type="text/css" href="//cdn.staticfile.org/flat-ui/2.3.0/css/vendor/bootstrap/css/bootstrap.min.css"/>
+    <link href="//cdn.staticfile.org/flat-ui/2.3.0/css/flat-ui.min.css" rel="stylesheet" />
+    <style type="text/css">
+    		body{background-color: #1abc9c;}
+    		h1{margin-top: 0px;}
+    		form{background-color: #eceff1;border-radius: 6px;padding: 24px 23px 20px;position: relative;margin-top: 100px;}
+    		form input[type=text],form input[type=password]{border-color: transparent;font-size: 17px;padding-bottom: 11px;padding-top: 11px;text-indent: 3px;}
+    </style>
+	<link href="{{.TplStatic}}/css/dochub.css?version={{$.Version}}" rel="stylesheet" />
+
+</head>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="hidden-xs" style="height: 50px;"></div>
+			<div class="col-xs-12 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+				<form class="form wenku-ajax-form" method="post" action="" data-url="/admin">
+					<h4 class="text-center" style="margin-top: 10px;padding-bottom: 10px;">DocHub系统管理平台</h4>
+					<div class="form-group">
+						<input type="text" name="Username" class="form-control input-lg" required="required" placeholder="请输入用户名" value="" />
+					</div>
+					<div class="form-group">
+						<input type="password" name="Password" class="form-control input-lg" required="required" placeholder="请输入密码" value="" />
+					</div>
+					<div class="form-group">
+						<input type="text" name="Code" class="form-control input-lg" required="required" placeholder="请输入您心目中的验证码" value="" />
+					</div>
+					<div class="form-group">
+						{{.xsrfdata}}
+						<input type="submit" class="form-control btn-default btn btn-block input-lg" value="Login"/>
+					</div>
+					<div class="help-block text-center">Powered By <a href="https://github.com/TruthHun/DocHub" target="_blank">DocHub</a></div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<script src="{{.TplStatic}}/js/jquery-1.10.2.js"></script>
+	<script src="{{.TplStatic}}/js/bootstrap.min.js"></script>
+	<script src="{{.TplStatic}}/js/dochub.js?version={{$.Version}}" type="text/javascript" charset="utf-8"></script>
+</body>
+</html>

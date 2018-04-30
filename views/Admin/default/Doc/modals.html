@@ -1,0 +1,209 @@
+{{define "ModalRemark"}}
+<div class="modal fade" id="ModalRemark" tabindex="-1" role="dialog" aria-labelledby="ModalShareLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="ModalRemarkLabel">文档备注</h4>
+            </div>
+            <form class="form-horizontal wenku-ajax-form" method="post" action="/admin/doc/remark" role="form">
+            <div class="modal-body clearfix">
+                    <div class="help-block remark-tips text-center">当前文档未添加备注，当前获取的是默认的备注模板，请知悉。</div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label no-padding">DsId</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" value="" name="Id" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-download">
+                        <label class="col-sm-2 control-label no-padding">允许下载</label>
+                        <div class="col-sm-2">
+                            <label><input type="radio" name="AllowDownload" value="true"> 允许</label>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <label><input type="radio" name="AllowDownload" value="false"> 禁止</label>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-status">
+                        <label class="col-sm-2 control-label no-padding">是否显示</label>
+                        <div class="col-sm-2">
+                            <label><input type="radio" name="Status" value="true"> 显示</label>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <label><input type="radio" name="Status" value="false"> 不显示</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label no-padding">内容模板</label>
+                        <div class="col-sm-10">
+                            <textarea name="Content" class="form-control" placeholder="请输入备注的模板内容，支持html" rows="8"></textarea>
+                        </div>
+                    </div>
+                <input type="hidden" name="TimeCreate" value="">
+
+
+                <div class="help-block clearfix">使用说明：
+                    <ol>
+                        <li>{$title}：文档的标题</li>
+                        <li>{$md5}:文档的md5</li>
+                        <li>{$share}:文档的分享时间</li>
+                        <li>{$uid}:文档的上传用户</li>
+                        <li>{$username}:文档分享用户名</li>
+                        <li>{$page}:当前文档允许的预览页数</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" class="btn btn-danger" data-dismiss="modal">取消添加</button>
+                <button type="submit" class="btn btn-success">提交添加</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{end}}
+
+{{define "ModalCate"}}
+<div class="modal fade" id="ModalCate" tabindex="-1" role="dialog" aria-labelledby="ModalCateLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="/admin/doc/addcate" method="post" class="wenku-ajax-form">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ModalCateLabel">新增分类</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group form-chanel">
+                        <label >分类频道(<i class="text-danger">*</i>)</label>
+                        <select name="Cid" class="form-control" required="required" data-url="/admin/doc/getCateByCid">
+                            <option value="">==请选择分类所属频道==</option>
+                            {{range .Chanels}}
+                                {{if eq .Status true}}
+                                {<option value="{{.Id}}"> {{.Title}} </option>
+                                {{end}}
+                            {{end}}
+                        </select>
+                    </div>
+                    <div class="form-group form-cate hidden">
+                        <label >父类选择</label>
+                        <select name="Pid" class="form-control">
+                            <option value="">==请选择上一级分类==</option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label >分类名称(<i class="text-danger">*</i>)</label>
+                        <textarea name="Content" rows="5" required="required" class="form-control" placeholder="请输入分类名称，支持批量添加。多个分类，请换行"></textarea>
+                    </div>
+                    <div class="help-block">
+                        <label >温馨提示:</label>
+                        <div>如果不选择或者没有一级分类，则表示您当前添加的分类为一级分类</div>
+                        <div>有<i class="text-danger">*</i> 为必填项</div>
+                    </div>
+                </div>
+                <input type="hidden" name="_xsrf" value="troi026CYywB8gpxCRBf5RkLTJUAclYF" />
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消新增</button>
+                    <button type="submit" class="btn btn-success">确定新增</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{{end}}
+
+
+{{define "ModalChanel"}}
+<div class="modal fade" id="ModalChanel" tabindex="-1" role="dialog" aria-labelledby="ModalChanelLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form action="/admin/doc/addchanel" method="post" class="wenku-ajax-form" data-url="/admin/doc">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ModalChanelLabel">新增频道</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="text" required="required" name="Title" class="form-control" value="" placeholder="请输入频道名称，限20个字符" />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" required="required" name="Alias" class="form-control" value="" placeholder="请输入频道别名，限30个字符，且为英文或字母" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消新增</button>
+                    <button type="submit" class="btn btn-success">确定新增</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{end}}
+
+<!--改发-->
+{{define "ModalDocEdit"}}
+<div class="modal fade" id="ModalDocEdit" tabindex="-1" role="dialog" aria-labelledby="ModalShareLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="ModalDocEditLabel">文档备注</h4>
+            </div>
+            <form class="form-horizontal wenku-ajax-form" method="post" action="/admin/doc/remark" role="form">
+                <div class="modal-body clearfix">
+                    <div class="help-block text-center">如需修改文档发布人，请把当前文档用户id改成其他用户id</div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label no-padding">DsId</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" value="" name="Id" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-download">
+                        <label class="col-sm-2 control-label no-padding">允许下载</label>
+                        <div class="col-sm-2">
+                            <label><input type="radio" name="AllowDownload" value="true"> 允许</label>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <label><input type="radio" name="AllowDownload" value="false"> 禁止</label>
+                        </div>
+                    </div>
+                    <div class="form-group form-group-status">
+                        <label class="col-sm-2 control-label no-padding">是否显示</label>
+                        <div class="col-sm-2">
+                            <label><input type="radio" name="Status" value="true"> 显示</label>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <label><input type="radio" name="Status" value="false"> 不显示</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label no-padding">内容模板</label>
+                        <div class="col-sm-10">
+                            <textarea name="Content" class="form-control" placeholder="请输入备注的模板内容，支持html" rows="8"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" name="TimeCreate" value="">
+
+
+                    <div class="help-block clearfix">使用说明：
+                        <ol>
+                            <li>{$title}：文档的标题</li>
+                            <li>{$md5}:文档的md5</li>
+                            <li>{$share}:文档的分享时间</li>
+                            <li>{$uid}:文档的上传用户</li>
+                            <li>{$username}:文档分享用户名</li>
+                            <li>{$page}:当前文档允许的预览页数</li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-danger" data-dismiss="modal">取消添加</button>
+                    <button type="submit" class="btn btn-success">提交添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{end}}

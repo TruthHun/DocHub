@@ -1,0 +1,112 @@
+<div class="container wenku-main">
+    <div class="row">
+        <div class="{{if .OnlyCover}}col-xs-8{{else}}col-xs-9{{end}} wenku-left wenku-nopadding">
+
+            <div class="panel panel-default wenku-noborder">
+                <div class="panel-body">
+                    <h1><img alt="{{.Doc.Ext}}文档" src="/static/Home/default/img/{{.Doc.ExtCate}}_24.png"/> {{.Doc.Title}}</h1>
+                    <div class="help-block wenku-doc-info">
+							<span>
+								<a href="/list/{{.CrumbChanel.Alias}}" title="{{.CrumbChanel.Title}}">{{.CrumbChanel.Title}}</a> >
+								<a href="/list/{{.CrumbChanel.Alias}}/pid/{{.CrumbParent.Id}}" title="{{.CrumbParent.Title}}">{{.CrumbParent.Title}}</a> >
+								<a href="/list/{{.CrumbChanel.Alias}}/pid/{{.CrumbParent.Id}}/cid/{{.CrumbChildren.Id}}" title="{{.CrumbChildren.Title}}">{{.CrumbChildren.Title}}</a> >
+								<span class="text-muted">文档预览</span>
+							</span>
+                        <div class="pull-right text-muted">
+                            <span title="页数"><i class="fa fa-file-text-o"></i> {{HandlePageNum .Doc.Page}} 页</span>
+                            <span title="下载"><i class="fa fa-download"></i> {{.Doc.Dcnt}} 下载</span>
+                            <span title="浏览"><i class="fa fa-eye"></i> {{.Doc.Vcnt}} 浏览</span>
+                            <span title="评论"><i class="fa fa-comments-o"></i> {{.Doc.ScorePeople}} 评论</span>
+                            <span title="收藏"><i class="fa fa-heart-o"></i> {{.Doc.Ccnt}} 收藏</span>
+                            <span title="评分"><i class="wenku-star star-{{StarVal (Interface2Int .Doc.Score) false}}"></i> {{StarVal (Interface2Int .Doc.Score) true}}分</span>
+                        </div>
+                    </div>
+
+                    <div class="help-block wenku-preview-tips">
+                        当前文档最多只能预览 <span class="strong text-primary">{{.Doc.PreviewPage}}</span> 页，若文档超出了 <span class="strong text-primary">{{.Doc.PreviewPage}}</span> 页，请下载原文档以浏览全部内容。
+                    </div>
+
+
+                        {{if .OnlyCover}}
+                            <div class="wenku-view">
+                                <img src="{{$.PreviewDomain}}/{{.Doc.Md5}}.jpg" alt="{{.Doc.Title}}">
+                            </div>
+                        {{else}}
+                            <div class="wenku-viewer">
+                                {{if .Exist}}
+                                <iframe src="{{$.PreviewDomain}}/web/viewer.html?file=../{{.Doc.Md5}}.pdf" width="100%" height="1000"></iframe>
+                                {{else}}
+                                <iframe src='https://view.officeapps.live.com/op/embed.aspx?src={{.MsPreview}}&wdStartOn=1' width='100%' height='1000px' frameborder='0'>这是嵌入 <a target='_blank' href='https://office.com'>Microsoft Office</a> 文档，由 <a target='_blank' href='https://office.com/webapps'>Office Online</a> 支持。</iframe>
+                                {{end}}
+                            </div>
+                        {{end}}
+
+                    <div class="help-block">
+                        <span>本文档由 <a href="/user/{{.Doc.Uid}}" target="_blank"title="{{.Doc.Username}}">{{.Doc.Username}}</a> 于 <span class="text-muted">{{TimestampFormat (Interface2Int .Doc.TimeCreate)}}</span>上传分享</span>
+                    </div>
+                    <div class="help-block">
+                        <div class="pull-left">
+                            <a href="javascript:void(0);" data-toggle="modal" data-target="#ModalReport" class="btn btn-primary btn-sm"><i class="fa fa-warning"></i> 举报</a>
+                        </div>
+                        <div class="pull-right wenku-mgl-15px">
+                            <a href="javascript:void(0);" rel="nofollow" data-toggle="modal" data-target="#ModalDownload" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-cloud-download"></i> 下载原文档({{FormatByte (Interface2Int .Doc.Size)}})</a>
+                        </div>
+                        <div class="pull-right">
+                            {{if DoesCollect (Interface2Int .Doc.Id) .LoginUid}}
+                            <a href="javascript:void(0);" rel="nofollow" class="btn btn-primary btn-sm wenku-collect disabled"><i class="fa fa-heart-o"></i> <span>已收藏</span></a>
+                            {{else}}
+                            <a href="javascript:void(0);" rel="nofollow" class="btn btn-primary btn-sm wenku-collect"><i class="fa fa-heart-o"></i>  <span>收藏</span></a>
+                            {{end}}
+                            <a href="javascript:void(0);" data-toggle="modal" data-target="#ModalShare" class="btn btn-primary btn-sm"><i class="fa fa-share-alt"></i> 分享</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{template "Comment" .}}
+
+        </div>
+        <div class="{{if .OnlyCover}}col-xs-4{{else}}col-xs-3{{end}} wenku-right">
+
+            <!--TODO 相关文档 -->
+
+            <div class="panel panel-default wenku-noborder wenku-maylike">
+                <div class="panel-heading">
+                    <div class="strong">热门文档</div>
+                </div>
+                <div class="panel-body">
+
+                    <ul class="wenku-tabs-list">
+                        {{range .Hots}}
+                        <li><img alt="{{.Ext}}文档" src="/static/Home/default/img/{{.ExtCate}}_24.png"/><a href="/view/{{.Id}}" target="_blank" title="{{.Title}}">{{.Title}}</a></li>
+                        {{end}}
+                    </ul>
+                </div>
+            </div>
+
+
+            <div class="panel panel-default wenku-noborder wenku-maylike">
+                <div class="panel-heading">
+                    <div class="strong">最新文档</div>
+                </div>
+                <div class="panel-body">
+
+                    <ul class="wenku-tabs-list">
+                        {{range .News}}
+                        <li><img alt="{{.Ext}}文档" src="/static/Home/default/img/{{.ExtCate}}_24.png"/><a href="/view/{{.Id}}" target="_blank" title="{{.Title}}">{{.Title}}</a></li>
+                        {{end}}
+                    </ul>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+</div>
+{{template "ModalDownload" .}}
+{{template "ModalShare" .}}
+{{template "ModalReport" .}}
+{{template "ModalCollect" .}}

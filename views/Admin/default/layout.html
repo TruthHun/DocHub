@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="{{$.Lang}}">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{.Title}} - {{.Sys.Site}} - Powered By HC-CMS</title>
+    <!-- Bootstrap Styles-->
+    <link href="{{.TplStatic}}/css/bootstrap.css" rel="stylesheet" />
+    <!-- FontAwesome Styles-->
+    <!--<link href="{{.TplStatic}}/css/font-awesome.css" rel="stylesheet" />-->
+    <link href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Morris Chart Styles-->
+    <link href="{{.TplStatic}}/js/morris/morris-0.4.3.min.css" rel="stylesheet" />
+    <!-- Custom Styles-->
+    <link href="{{.TplStatic}}/css/custom-styles.css" rel="stylesheet" />
+      <link href="{{.TplStatic}}/css/wenku.css?version={{$.Version}}" rel="stylesheet" />
+    <!-- Google Fonts-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+</head>
+<body>
+    <div id="wrapper">
+    	
+        <nav class="navbar navbar-default top-navbar" role="navigation">
+            <div class="navbar-header text-center">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand wenku-tooltips" href="/" target="_blank" title="文库首页"><i class="fa fa-book fa-fw"></i> <strong> WENKU.IT </strong></a>
+            </div>
+
+          
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>　　
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="javascript:void(0);" data-toggle="modal" data-target="#ModalUserEdit"><i class="fa fa-gear fa-fw"></i> 修改密码</a></li>
+                        <li class="divider"></li>
+                        <li><a href="/admin/logout"><i class="fa fa-sign-out fa-fw"></i> 退出登录</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <!--/. NAV TOP  -->
+        
+        <nav class="navbar-default navbar-side" role="navigation">
+			<div id="sideNav" href=""><i class="fa fa-caret-right"></i></div>
+            <div class="sidebar-collapse">
+                <ul class="nav" id="main-menu">
+                		<li class="visible-xs"><a href="javascript:void(0);">&nbsp;</a></li>
+                    <li>
+                        <a {{if .IsIndex}}class="active-menu"{{end}} href="/admin"><i class="fa fa-dashboard"></i> 控制面板</a>
+                    </li>
+                    <li>
+                        <a {{if .IsDoc}}class="active-menu"{{end}} href="/admin/doc"><i class="fa fa-book"></i> 文档管理</a>
+                    </li>
+                    <li>
+                        <a {{if .IsUser}}class="active-menu"{{end}} href="/admin/user"><i class="fa fa-users"></i> 用户管理</a>
+                    </li>
+                    <!--<li>-->
+                        <!--<a {{if .IsSign}}class="active-menu"{{end}} href="/admin/sign"><i class="fa fa-calendar-check-o"></i> 积分管理</a>-->
+                    <!--</li>-->
+                    <li>
+                        <a {{if .IsSeo}}class="active-menu"{{end}} href="/admin/seo"><i class="fa fa-globe"></i> SEO管理</a>
+                    </li>
+                    <li>
+                        <a {{if .IsAd}}class="active-menu"{{end}} href="/admin/ad"><i class="fa fa-money"></i> 广告管理</a>
+                    </li>
+                    <li>
+                        <a {{if .IsBanner}}class="active-menu"{{end}} href="/admin/banner"><i class="fa fa-crosshairs"></i> 横幅管理</a>
+                    </li>
+                    <li>
+                        <a {{if .IsSingle}}class="active-menu"{{end}} href="/admin/single"><i class="fa fa-html5"></i> 单页管理</a>
+                    </li>
+                    <li>
+                        <a {{if .IsReport}}class="active-menu"{{end}} href="/admin/report"><i class="fa fa-warning"></i> 举报管理</a>
+                    </li>
+                    <li>
+                        <a {{if .IsFriend}}class="active-menu"{{end}} href="/admin/friend"><i class="fa fa-link"></i> 友链管理</a>
+                    </li>
+                    <li>
+                        <a {{if .IsCrawl}}class="active-menu"{{end}} href="/admin/crawl"><i class="fa fa-gg"></i> 采集管理</a>
+                    </li>
+                    <li>
+                        <a {{if .IsSys}}class="active-menu"{{end}} href="/admin/sys"><i class="fa fa-cogs"></i> 系统设置</a>
+                    </li>
+                </ul>
+
+            </div>
+
+        </nav>
+        <!-- /. NAV SIDE  -->
+       
+       <div id="page-wrapper">
+       		<div id="page-inner">
+       			{{.LayoutContent}}
+                {{template "footer" .}}
+       		</div>
+       </div>
+    </div>
+	<footer>
+		
+    <div class="modal fade" id="ModalUserEdit" tabindex="-1" role="dialog" aria-labelledby="ModalUserEditLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<form action="/admin/updatePwd" method="post" class="wenku-ajax-form">
+				<div class="modal-content">
+                    <input type="hidden" name="uid" value="{{$.Uid}}">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="ModalUserEditLabel">修改密码</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="">原密码</label>
+							<input type="password" class="form-control" name="password_old" value="" />
+						</div>
+						<div class="form-group">
+							<label for="">新密码</label>
+							<input type="password" class="form-control" name="password_new" value="" />
+						</div>
+						<div class="form-group">
+							<label for="">确认密码</label>
+							<input type="password" required="required" class="form-control" name="password_ensure" value="" />
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">取消修改</button>
+						<button type="submit" class="btn btn-success">提交修改</button>
+					</div>
+				</div>
+			</form>
+			
+		</div>
+	</div>
+	</footer>
+    <iframe frameborder="0" style="display: none;" id="notarget" name="notarget"></iframe>
+	<script src="{{.TplStatic}}/js/jquery-1.10.2.js"></script>
+    <script src="{{.TplStatic}}/js/bootstrap.min.js"></script>
+    <script src="{{.TplStatic}}/js/jquery.metisMenu.js"></script>
+    <script src="{{.TplStatic}}/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="{{.TplStatic}}/js/custom-scripts.js?version={{$.Version}}"></script>
+
+
+
+    <script src="{{.TplStatic}}/js/wenku.js?version={{$.Version}}" type="text/javascript" charset="utf-8"></script>
+</body>
+
+</html>

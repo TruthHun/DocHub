@@ -1,0 +1,69 @@
+<div class="row">
+    <h1 class="page-header">单页编辑</h1>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {{with .Data}}
+            <form action="" class="wenku-ajax-form" method="post" data-url="/admin/single">
+                <input type="hidden" name="Id" value="{{.Id}}" />
+                <input type="hidden" name="TimeCreate" value="{{.TimeCreate}}" />
+                <input type="hidden" name="Status" value="{{.Status}}" />
+                <input type="hidden" name="Vcnt" value="{{.Vcnt}}" />
+                <div class="form-group">
+                    <label >标题</label>
+                    <input type="text" class="form-control input-lg" name="Title" value="{{.Title}}" />
+                </div>
+                <div class="form-group">
+                    <label >名称</label>
+                    <input type="text" class="form-control input-lg" name="Name" value="{{.Name}}" />
+                </div>
+                <div class="form-group">
+                    <label >别名</label>
+                    <input type="text" class="form-control input-lg" name="Alias" value="{{.Alias}}" />
+                </div>
+                <div class="form-group">
+                    <label >排序</label>
+                    <input type="number" class="form-control input-lg" name="Sort" value="{{.Sort}}" />
+                </div>
+
+                <div class="form-group">
+                    <label >关键字</label>
+                    <input type="text" class="form-control input-lg" name="Keywords" value="{{.Keywords}}" />
+                </div>
+
+                <div class="form-group">
+                    <label >摘要</label>
+                    <textarea name="Description" rows="5" class="form-control">{{.Description}}</textarea>
+                </div>
+
+
+
+                <div class="form-group">
+                    <label >内容</label>
+                    <textarea name="Content" rows="20" id="kindeditor" class="form-control" placeholder="">{{str2html .Content}}</textarea>
+
+                </div>
+                <a href="/admin/single" class="btn btn-danger btn-lg">返回列表</a>
+                <input type="submit" class="btn btn-success btn-lg" value="提交更改"/>
+            </form>
+            {{end}}
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="/static/Editor/kindeditor/themes/default/default.css" />
+<script charset="utf-8" src="/static/Editor/kindeditor/kindeditor-all-min.js"></script>
+<script charset="utf-8" src="/static/Editor/kindeditor/lang/zh-CN.js"></script>
+<script>
+    KindEditor.ready(function(K) {
+        K.create('#kindeditor', {
+            themeType : 'simple',
+            resizeType:0,
+            uploadJson : '/admin/kindeditor/upload',
+            allowFileManager : false,
+            //注意：以下这一步很重要，用于同步内容
+            afterBlur:function () {
+                this.sync();
+            }
+        });
+    });
+
+</script>

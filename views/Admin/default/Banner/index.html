@@ -1,0 +1,124 @@
+<div class="row">
+    <h1 class="page-header">横幅管理</h1>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+        </div>
+        <div class="panel-body">
+            <div class="table-responsive">
+                <div id="dataTables-example_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                    <div class="row wenku-action-all">
+                        <div class="col-xs-12">
+                            <a href="javascript:void(0);" data-toggle="modal" data-target="#Modalbanner" class="btn btn-success" id="wenk-bannerlink-add">新增横幅</a>
+                            <a href="/admin/update?field=status&value=0&table=banner" class="btn btn-default wenku-confirm btn-for-all"> 关闭横幅 </a>
+                            <a href="/admin/update?field=status&value=1&table=banner" class="btn btn-success wenku-confirm btn-for-all">启用横幅</a>
+                            <a href="/admin/banner/del?table=banner" class="btn btn-danger wenku-confirm btn-for-all">删除横幅</a>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <label><input type="checkbox" class="wenku-select-all" name="id[]"></label>
+                                </th>
+                                <th>#</th>
+                                <th>横幅</th>
+                                <th>数据</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{range .Banners}}
+                            <tr>
+                                <td><input type="checkbox" class="wenku-select-item" name="id[]" value="{{.Id}}"></td>
+                                <td>{{.Id}}</td>
+                                <td>
+                                    <a href="{{.Link}}" target="_blank" class="wenku-tooltips" title="访问图片指向链接">
+                                        <img height="150" src="{{$.PreviewDomain}}/{{.Picture}}/banner" alt="{{.Title}}">
+                                    </a>
+                                </td>
+                                <td>
+                                    <ul>
+                                        <li class="help-block">
+                                            {{if eq .Status true}}
+                                                <strong class="text-success">启用</strong>
+                                            {{else}}
+                                                <strong class="text-danger">关闭</strong>
+                                            {{end}}
+                                             | {{TimestampFormat (.TimeCreate|Interface2Int)}}
+                                        </li>
+                                        <li class="help-block">
+                                            <input type="text" name="Title" value="{{.Title}}" data-url="/admin/update?table=banner&id={{.Id}}" class="form-control wenku-change-update">
+                                        </li>
+                                        <li class="help-block">
+                                            <input type="url" name="Link" value="{{.Link}}" data-url="/admin/update?table=banner&id={{.Id}}" class="form-control wenku-change-update">
+                                        </li>
+                                        <li class="help-block">
+                                            <input type="number" name="Sort" value="{{.Sort}}" data-url="/admin/update?table=banner&id={{.Id}}" class="form-control wenku-change-update">
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    {{if eq .Status true}}
+                                    <a href="/admin/update?table=banner&id={{.Id}}&field=status&value=0" class="wenku-tooltip wenku-conform wenku-ajax-get" title="关闭横幅">关闭</a>
+                                    {{else}}
+                                    <a href="/admin/update?table=banner&id={{.Id}}&field=status&value=1" class="wenku-tooltip wenku-conform wenku-ajax-get" title="启用横幅">启用</a>
+                                    {{end}}
+                                     |
+                                    <a href="/admin/banner/del?table=banner&id={{.Id}}" class="wenku-tooltips wenku-confirm wenku-ajax-get" title="删除横幅，不可恢复">删除</a>
+                                </td>
+                            </tr>
+                            {{end}}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="Modalbanner" tabindex="-1" role="dialog" aria-labelledby="ModalbannerLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/admin/banner/add" enctype="multipart/form-data" class="wenku-ajax-form" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ModalbannerLabel">添加横幅</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>横幅名称 <i class="text-danger">*</i></label>
+                        <div class="form-group">
+                            <input type="text" name="Title" class="form-control input-lg" required="required">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>横幅地址 <i class="text-danger">*</i></label>
+                        <div class="form-group">
+                            <input type="url" name="Link" class="form-control input-lg" required="required">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>横幅排序 <i class="text-danger">*</i></label>
+                        <div class="form-group">
+                            <input type="number" name="Sort" class="form-control input-lg" required="required" value="100">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>横幅图片 <i class="text-danger">*</i></label>
+                        <div class="form-group">
+                            <input type="file" accept="image/*" name="Picture" class="form-control input-lg" required="required">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-danger" data-dismiss="modal">取消添加</button>
+                    <button type="submit" class="btn btn-success">提交添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

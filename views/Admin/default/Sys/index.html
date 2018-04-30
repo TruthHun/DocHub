@@ -1,0 +1,169 @@
+    <div class="row">
+            <h1 class="page-header">系统设置</h1>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    {{with .Sys}}
+                    <form action="" class="wenku-ajax-form" data-redirect="" method="post">
+                        <input type="hidden" name="Id" value="1" />
+                        <div class="form-group">
+                            <label >网站名称</label>
+                            <input type="hidden" name="CntDoc" value="{{.CntDoc}}">
+                            <input type="hidden" name="CntUser" value="{{.CntUser}}">
+                            <input type="text" class="form-control input-lg" name="Site" placeholder="请输入站点名称" value="{{.Site}}" />
+                        </div>
+                        <div class="form-group">
+                            <label >网站备案号</label>
+                            <input type="text" class="form-control input-lg" name="Icp" placeholder="请输入网站备案号，如 桂ICP备 xxxx" value="{{.Icp}}" />
+                        </div>
+
+                        <div class="form-group">
+                            <label >文库动态</label>
+                            <input type="text" class="form-control input-lg" name="Trends" placeholder="请填写5个文档ID，id之间用英文逗号分隔" value="{{.Trends}}" />
+                        </div>
+
+                        <div class="form-group">
+                            <label >首页分类</label>
+                            <input type="text" class="form-control input-lg" name="HomeCates" placeholder="请按照想要的首页显示顺序填写频道ids" value="{{.HomeCates}}" />
+                        </div>
+
+                        <div class="col-xs-6" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >PC端域名</label>
+                                <input type="text" class="form-control input-lg" name="DomainPc" value="{{.DomainPc}}" />
+                            </div>
+                        </div>
+                        <div class="col-xs-6" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >移动端域名</label>
+                                <input type="text" class="form-control input-lg" name="DomainMobile" value="{{.DomainMobile}}" />
+                            </div>
+                        </div>
+
+                        <div class="col-xs-6" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >文档评论验证问题</label>
+                                <input type="text" class="form-control input-lg" name="Question" value="{{.Question}}" />
+                            </div>
+                        </div>
+                        <div class="col-xs-6" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >文档评论验证问题答案</label>
+                                <input type="text" class="form-control input-lg" name="Answer" value="{{.Answer}}" />
+                            </div>
+                        </div>
+
+                        <div class="col-xs-4" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >PC端模板(区分大小写)</label>
+                                <input type="text" class="form-control input-lg" name="TplComputer" value="{{.TplComputer}}" />
+                            </div>
+                        </div>
+                        <div class="col-xs-4" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >移动端模板(区分大小写)</label>
+                                <input type="text" class="form-control input-lg" name="TplMobile" value="{{.TplMobile}}" />
+                            </div>
+                        </div>
+                        <div class="col-xs-4" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >后台模板(区分大小写)</label>
+                                <input type="text" class="form-control input-lg" name="TplAdmin" readonly value="{{.TplAdmin}}" />
+                            </div>
+                        </div>
+
+
+                        <div class="col-xs-4" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >文档上传金币奖励</label>
+                                <input type="number" class="form-control input-lg" name="Reward" value="{{.Reward}}" />
+                            </div>
+                        </div>
+                        <div class="col-xs-4" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >每日签到金币奖励</label>
+                                <input type="number" class="form-control input-lg" name="Sign" value="{{.Sign}}" />
+                            </div>
+                        </div>
+                        <div class="col-xs-4" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >文档下载消费金币</label>
+                                <input type="number" class="form-control input-lg" name="Price" value="{{.Price}}" />
+                            </div>
+                        </div>
+
+                        <div class="col-xs-6" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >文档最大预览页数(此参数不要频繁变更；0表示不限制。)</label>
+                                <input type="number" class="form-control input-lg" name="PreviewPage" value="{{.PreviewPage}}" />
+                            </div>
+                        </div>
+                        <div class="col-xs-6" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >每页显示记录数(仅对前台数据生效)</label>
+                                <input type="number" min="10" max="100" class="form-control input-lg" name="ListRows" value="{{.ListRows}}" />
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="col-xs-6" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >相关文档时间周期</label>
+                                <select name="TimeExpireRelate" class="form-control input-lg">
+                                    <option  value="31536000" {{if eq .TimeExpireRelate 31536000}}selected="selected"{{end}}>一年</option>
+                                    <option  value="15552000" {{if eq .TimeExpireRelate 15552000}}selected="selected"{{end}}>半年</option>
+                                    <option  value="7776000" {{if eq .TimeExpireRelate 7776000}}selected="selected"{{end}}>三月</option>
+                                    <option value="2592000" {{if eq .TimeExpireRelate 2592000}}selected="selected"{{end}}>一月</option>
+                                    <option  value="604800" {{if eq .TimeExpireRelate 604800}}selected="selected"{{end}}>一周</option>
+                                    <option value="86400" {{if eq .TimeExpireRelate 86400}}selected="selected"{{end}}>一天</option>
+                                    <option  value="0" {{if eq .TimeExpireRelate 0}}selected="selected"{{end}}>关闭</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-6" style="padding-left: 0px;">
+                            <div class="form-group">
+                                <label >热门文档时间周期</label>
+                                <select name="TimeExpireHotspot" class="form-control input-lg">
+                                    <option  value="31536000" {{if eq .TimeExpireHotspot 31536000}}selected="selected"{{end}}>一年</option>
+                                    <option  value="15552000" {{if eq .TimeExpireHotspot 15552000}}selected="selected"{{end}}>半年</option>
+                                    <option  value="7776000" {{if eq .TimeExpireHotspot 7776000}}selected="selected"{{end}}>三月</option>
+                                    <option value="2592000" {{if eq .TimeExpireHotspot 2592000}}selected="selected"{{end}}>一月</option>
+                                    <option  value="604800" {{if eq .TimeExpireHotspot 604800}}selected="selected"{{end}}>一周</option>
+                                    <option value="86400" {{if eq .TimeExpireHotspot 86400}}selected="selected"{{end}}>一天</option>
+                                    <option  value="0" {{if eq .TimeExpireHotspot 0}}selected="selected"{{end}}>关闭</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label >注册邮件验证码发送模板(支持html代码,{code}表示邮件验证码)</label>
+                            <textarea name="TplEmailReg" rows="6" class="form-control" placeholder="">{{.TplEmailReg}}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label >找回密码邮件验证码发送模板(支持html代码,{code}表示邮件验证码)</label>
+                            <textarea name="TplEmailFindPwd" rows="6" class="form-control" placeholder="">{{.TplEmailFindPwd}}</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label >不良信息关键字</label>
+                            <textarea name="DirtyWord" rows="6" class="form-control" placeholder="请输入不良信息关键字，资源过滤需要用到，多个关键字请用空格分隔">{{.DirtyWord}}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label >网站声明(支持html代码)</label>
+                            <textarea name="Statement" rows="6" class="form-control" placeholder="请输入网站声明">{{.Statement}}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label >统计代码(支持html代码)</label>
+                            <textarea name="Tongji" rows="6" class="form-control" placeholder="请输入站点的统计代码">{{.Tongji}}</textarea>
+                        </div>
+                        <input type="submit" class="btn btn-success btn-lg" value="提交更改"/>
+                    </form>
+                    {{end}}
+                </div>
+            </div>
+
+    </div>

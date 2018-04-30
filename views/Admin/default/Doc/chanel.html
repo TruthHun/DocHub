@@ -1,0 +1,93 @@
+        <div class="row">
+            <h1 class="page-header">文档管理</h1>
+            <div class="panel panel-default">
+                <div class="panel-heading wenku-no-pdl">
+                    <div class="col-md-8 wenku-no-pdl">
+                        <div class="btn btn-group">
+                            <a href="#" class="btn btn-default" data-toggle="modal" data-target="#ModalChanel">新增频道</a>
+                            <a href="#" class="btn btn-default" data-toggle="modal" data-target="#ModalCate">新增分类</a>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <form class="pull-right" method="get" action="/admin/album.html" role="form">
+                            <div class="form-group input-group">
+                                <input type="text" name="wd" required="required" placeholder="Search" value="" class="form-control">
+                                <span class="input-group-btn input-group-lg">
+		                                    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
+		                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="panel-body">
+
+                    {{template "tabs" .}}
+
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>名称</th>
+                                <th>别名</th>
+                                <th>排序</th>
+                                <th>统计</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{range .Chanels}}
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control wenku-change-update" data-url="/admin/update?table=category&id={{.Id}}" name="title" value="{{.Title}}" />
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control wenku-change-update" data-url="/admin/update?table=category&id={{.Id}}" name="alias" value="{{.Alias}}" />
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control wenku-change-update" data-url="/admin/update?table=category&id={{.Id}}" name="sort" value="{{.Sort}}" />
+                                </td>
+                                <td>{{.Cnt}}</td>
+                                <td>
+                                    {{if eq .Status true}}
+                                    <strong class="text-success">启用</strong>
+                                    {{else}}
+                                    <strong class="text-danger">关闭</strong>
+                                    {{end}}
+                                </td>
+                                <td>
+                                    <a href="/admin/doc/delcate?id={{.Id}}" class="wenku-ajax-get wenku-conform">删除</a>
+                                    {{if eq .Status true}}
+                                        <a href="/admin/update?id={{.Id}}&field=status&value=0&table=category" class="wenku-ajax-get wenku-conform">关闭</a>
+                                    {{else}}
+                                        <a href="/admin/update?id={{.Id}}&field=status&value=1&table=category" class="wenku-ajax-get wenku-conform">启用</a>
+                                    {{end}}
+
+                                </td>
+                            </tr>
+                            {{end}}
+
+                            </tbody>
+                        </table>
+                        <ul class="pagination"></ul>
+                    </div>
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <!--新增频道Modal-->
+        {{template "ModalChanel" .}}
+
+        <!--新增文档分类Modal-->
+        {{template "ModalCate" .}}
+
+        <!--文档备注Modal-->
+        {{template "ModalRemark" .}}

@@ -1,0 +1,29 @@
+
+
+<div class="container">
+    <div class="row">
+        <div class="login">
+            <form action="/user/login" method="post" class="wenku-ajax-form" data-redirect="/user">
+                <div class="login-screen">
+                    <div class="login-form">
+                        <div class="form-group form-group-lg">
+                            <input type="email" name="Email" class="form-control login-field" required="required" value="" placeholder="请输入登录邮箱" id="login-name">
+                            <label class="login-field-icon fui-user" for="login-name"></label>
+                        </div>
+
+                        <div class="form-group form-group-lg">
+                            <input type="password" class="form-control login-field" name="Password" required="required"  value="" placeholder="请输入登录密码" id="login-pass">
+                            <label class="login-field-icon fui-lock" for="login-pass"></label>
+                        </div>
+                        {{.xsrfdata}}
+                        <button type="submit" class="btn btn-primary btn-lg btn-block">马上登录</button>
+                        <div class="help-block">
+                            <a href="/user/findpwd">忘记密码？</a>
+                            <a class="pull-right" href="/user/reg">没有帐号？</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

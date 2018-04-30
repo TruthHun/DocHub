@@ -1,0 +1,88 @@
+
+<div class="container">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="strong">找回密码</div>
+            </div>
+            <div class="panel-body">
+                <div class="col-xs-8">
+                    <form class="form-horizontal" action="/user/findpwd" data-redirect="/user" method="post" role="form">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户名 <i class="text-danger">*</i></label>
+                            <div class="col-sm-10">
+                                <input type="text" name="username" required="required" class="form-control" placeholder="请输入您在IT文库的用户名">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户邮箱 <i class="text-danger">*</i></label>
+                            <div class="col-sm-10">
+                                <input type="email" class="form-control" required="required" name="email" placeholder="请输入您在IT文库的注册邮箱">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">邮箱验证码 <i class="text-danger">*</i></label>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" name="code" required="required" placeholder="请输入您的注册邮箱收到的验证码">
+                            </div>
+                            <div class="col-xs-4">
+                                <a href="javascript:void(0);" data-url="/user/sendmail?type=findpwd" class="btn btn-success btn-block btn-sendmail">获取邮箱验证码</a>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">登录密码 <i class="text-danger">*</i></label>
+                            <div class="col-sm-10">
+                                <input type="password" name="password" required="required" class="form-control" placeholder="请输入您的新密码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">确认密码 <i class="text-danger">*</i></label>
+                            <div class="col-sm-10">
+                                <input type="password" name="repassword" required="required" class="form-control" placeholder="请再次输入您的新密码">
+                            </div>
+                        </div>
+
+                        {{.xsrfdata}}
+                        <button type="button" class="btn btn-block btn-primary btn-lg btn-reg">重置密码</button>
+                        <div class="help-block">
+                            <a href="/user/login">已有账号？去登录</a>
+                            <a href="/user/reg" class="pull-right">没有账号？马上注册</a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-xs-4">
+                    <div class="panel panel-default wenku-mgt-15px">
+                        <div class="panel-body wenku-nopadding">
+                            <div class="strong">温馨提示</div>
+                            <div class="help-block">
+                                1.带有 <i class="text-danger">*</i> 为必填项。
+                            </div>
+                            <div class="help-block">
+                                2.用户注册的邮箱验证码需要通过邮箱获取，请注意发送到您邮箱的验证码。
+                            </div>
+                            <div class="help-block">
+                                3.密码长度不能少于6个字符，同时建议用户密码使用英文大小写、数字和标点符号混合。
+                            </div>
+                            <div class="help-block">
+                                4.用户名长度，限制在2-16个字符。
+                            </div>
+                            <div class="help-block">
+                                5.用户的个性签名限制在255个字符，禁止非法利用个性签名。
+                            </div>
+                            <div class="help-block">
+                                6.用户注册成功之后，可以在会员中心更换自己的头像。
+                            </div>
+                            <div class="help-block">
+                                7.请自觉遵守国家法律法规和道德文明，以及<a class="text-primary" target="_blank" href="#">《文库守则》</a>。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>

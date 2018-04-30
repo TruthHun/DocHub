@@ -1,0 +1,8 @@
+{{define "tabs"}}
+<ul class="nav nav-tabs" style="margin-bottom: 15px;">
+    <li {{if eq .Tab "chanel"}}class="active"{{end}}><a href="/admin/doc">文库频道</a></li>
+    <li {{if eq .Tab "cate"}}class="active"{{end}}><a href="/admin/doc/cate">文档分类</a></li>
+    <li {{if eq .Tab "list"}}class="active"{{end}}><a href="/admin/doc/list">文档管理</a></li>
+    <li {{if eq .Tab "recycle"}}class="active"{{end}}><a href="/admin/doc/recycle">回收站</a></li>
+</ul>
+{{end}}

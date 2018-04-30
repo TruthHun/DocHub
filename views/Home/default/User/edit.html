@@ -1,0 +1,78 @@
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-8 wenku-left">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <div class="strong pull-left">文档编辑</div>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal wenku-form-upload wenku-ajax-form" role="form" method="post" data-url="/user/{{$.LoginUid}}" action="/user/{{$.LoginUid}}/edit/doc/{{.Doc.Id}}">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">文档名称 <i class="text-danger">*</i></label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" data-err="请输入文档名称" value="{{.Doc.Title}}" required="required" name="Title" placeholder="请输入文档名称">
+                            </div>
+                        </div>
+                        <div class="form-group form-chanel">
+                            <label class="col-sm-2 control-label">文库频道 <i class="text-danger">*</i></label>
+                            <div class="col-sm-10">
+                                <select name="Chanel" required="required" data-default="{{.Info.ChanelId}}" data-err="请选择文库频道" class="form-control">
+                                    <option value="">请选择文库频道</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group form-cate">
+                            <label class="col-sm-2 control-label">文档分类 <i class="text-danger">*</i></label>
+                            <div class="col-sm-5 form-level-one">
+                                <select name="Pid" required="required" data-default="{{.Info.Pid}}" data-err="请选择一级文档分类" class="form-control">
+                                    <option value="">请选择一级文档分类</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-5 form-level-two">
+                                <select name="Cid" required="required" data-default="{{.Info.Cid}}" data-err="请选择二级文档分类" class="form-control">
+                                    <option value="">请选择二级文档分类</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">文档售价</label>
+                            <div class="col-sm-5">
+                                <select name="Price" class="form-control">
+                                    <option value="0" {{if eq .Info.Price 0}}selected="selected"{{end}}>免费下载</option>
+                                    <option value="1" {{if eq .Info.Price 1}}selected="selected"{{end}}>1个金币</option>
+                                    <option value="2" {{if eq .Info.Price 2}}selected="selected"{{end}}>2个金币</option>
+                                    <option value="5" {{if eq .Info.Price 5}}selected="selected"{{end}}>5个金币</option>
+                                    <option value="8" {{if eq .Info.Price 8}}selected="selected"{{end}}>8个金币</option>
+                                    <option value="10" {{if eq .Info.Price 10}}selected="selected"{{end}}>10个金币</option>
+                                    <option value="20" {{if eq .Info.Price 20}}selected="selected"{{end}}>20个金币</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">文档标签</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="Tags" class="form-control" placeholder="多个标签，请用逗号分隔" value="{{.Doc.Keywords}}">
+                            </div>
+                        </div>
+                        {{.xsrfdata}}
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">文档简介 </label>
+                            <div class="col-sm-10">
+                                <textarea name="Intro" rows="7" class="form-control" placeholder="请输入文档的相关简介，让大家更容易找到文档">{{.Doc.Description}}</textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-block btn-primary btn-lg">提交编辑</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {{template "UserRight" .}}
+
+    </div>
+</div>
+<script type="text/javascript" id="wenku-cates">
+    {{.json}}
+</script>
+<iframe frameborder="0" style="display: none;" id="notarget" name="notarget"></iframe>

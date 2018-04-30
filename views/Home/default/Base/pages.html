@@ -1,0 +1,45 @@
+<div class="container wenku-main">
+    <div class="row">
+        <div class="col-xs-8 wenku-left wenku-nopadding">
+
+            <div class="panel panel-default wenku-noborder">
+                <div class="panel-body">
+
+
+                    <div class="clearfix wenku-unview">
+                        <h1>{{.Page.Title}}</h1>
+                    </div>
+                    <div class="help-block wenku-doc-info wenku-single-pages-info">
+                        <div class="text-muted">
+                            <span><i class="fa fa-user-o"></i> {{.Sys.Site}}</span>
+                            <span class="pull-right"><i class="fa fa-clock-o"></i> {{TimestampFormat .Page.TimeCreate "2006-01-02 15:04:05"}}</span>
+                            <span><i class="fa fa-eye"></i> {{.Page.Vcnt}} </span>
+                        </div>
+                    </div>
+                    <div class="wenku-single-page help-block">
+                        {{str2html .Page.Content}}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-4 wenku-right">
+            <div class="panel panel-default wenku-noborder wenku-maylike">
+                <div class="panel-heading">
+                    <div class="strong">相关链接</div>
+                </div>
+                <div class="panel-body">
+
+                    <ul class="wenku-tabs-list">
+                        {{range .Lists}}
+                        <li><a href="/pages/{{.Alias}}" title="{{.Title}}">{{.Title}}</a></li>
+                        {{end}}
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>

@@ -1,0 +1,115 @@
+<div class="row">
+    <h1 class="page-header">友链管理</h1>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+        </div>
+        <div class="panel-body">
+            <div class="table-responsive">
+                <div id="dataTables-example_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                    <div class="row wenku-action-all">
+                        <div class="col-xs-12">
+                            <a href="javascript:void(0);" data-toggle="modal" data-target="#ModalFriend" class="btn btn-success" id="wenk-friendlink-add">新增友链</a>
+                            <a href="/admin/update?field=status&value=0&table=friend" class="btn btn-default wenku-confirm btn-for-all"> 关闭友链 </a>
+                            <a href="/admin/update?field=status&value=1&table=friend" class="btn btn-success wenku-confirm btn-for-all">启用友链</a>
+                            <a href="/admin/del?table=friend" class="btn btn-danger wenku-confirm btn-for-all">删除友链</a>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <label><input type="checkbox" class="wenku-select-all" name="id[]"></label>
+                                </th>
+                                <th>#</th>
+                                <th>名称</th>
+                                <th>链接</th>
+                                <th>排序</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                                <th>添加时间</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{range .Friends}}
+                                <tr>
+                                    <td><input type="checkbox" class="wenku-select-item" name="id[]" value="{{.Id}}"></td>
+                                    <td>{{.Id}}</td>
+                                    <td>
+                                        <input type="text" name="Title" value="{{.Title}}" data-url="/admin/update?table=friend&id={{.Id}}" class="form-control input-lg wenku-change-update">
+                                    </td>
+                                    <td>
+                                        <input type="text" name="Link" value="{{.Link}}"  data-url="/admin/update?table=friend&id={{.Id}}" class="form-control input-lg wenku-change-update">
+                                    </td>
+                                    <td>
+                                        <input type="number" name="Sort" value="{{.Sort}}"  data-url="/admin/update?table=friend&id={{.Id}}" class="form-control input-lg wenku-change-update">
+                                    </td>
+                                    <td>
+                                        {{if eq .Status true}}
+                                            <strong class="text-success">启用</strong>
+                                        {{else}}
+                                            <strong class="text-danger">关闭</strong>
+                                        {{end}}
+                                    </td>
+                                    <td>
+                                        {{if eq .Status true}}
+                                            <a href="/admin/update?table=friend&id={{.Id}}&field=status&value=0" class="wenku-tooltip wenku-conform wenku-ajax-get" title="关闭友链">关闭</a>
+                                        {{else}}
+                                            <a href="/admin/update?table=friend&id={{.Id}}&field=status&value=1" class="wenku-tooltip wenku-conform wenku-ajax-get" title="启用友链">启用</a>
+                                        {{end}}
+                                        |
+                                        <a href="/admin/del?table=friend&id={{.Id}}" class="wenku-tooltips wenku-conform wenku-ajax-get" title="删除友链，不可恢复">删除</a>
+
+                                    </td>
+                                    <td>
+                                        {{TimestampFormat .TimeCreate}}
+                                    </td>
+                                </tr>
+                            {{end}}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="ModalFriend" tabindex="-1" role="dialog" aria-labelledby="ModalFriendLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="" method="post" class="wenku-ajax-form">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="ModalFriendLabel">添加友链</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>友链名称 <i class="text-danger">*</i></label>
+                    <div class="form-group">
+                        <input type="text" name="Title" class="form-control input-lg" required="required">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>友链地址 <i class="text-danger">*</i></label>
+                    <div class="form-group">
+                        <input type="url" name="Link" class="form-control input-lg" required="required">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>友链排序 <i class="text-danger">*</i></label>
+                    <div class="form-group">
+                        <input type="number" name="Sort" class="form-control input-lg" required="required" value="100">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" class="btn btn-danger" data-dismiss="modal">取消添加</button>
+                <button type="submit" class="btn btn-success">提交添加</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>

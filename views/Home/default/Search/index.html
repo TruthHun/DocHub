@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    {{template "head" .}}
+</head>
+<body id="wenku-search">
+<div class="container-fluid">
+    <div class="container wenku-top">
+  			<span class="pull-left">
+  				<a href="/" target="_blank" title="文库首页">文库首页</a>
+                {{range .Chanels}}
+				<a href="/list/{{.Alias}}" target="_blank" title="{{.Title}}">{{.Title}}</a>
+				{{end}}
+
+  			</span>
+            <span class="pull-right">
+			 	<a href="/upload" target="_blank" title="上传文档">上传文档</a>
+			 	<a href="/user" target="_blank" title="会员中心">会员中心</a>
+            </span>
+    </div>
+</div>
+<div class="container-fluid wenku-header">
+    <div class="container">
+        <div class="col-xs-2 wenku-left">
+            <a href="/" title="{{.Sys.Site}}" target="_blank">
+                <img alt="{{.Sys.Site}}" class="wenku-logo img-responsive" src="{{.TplStatic}}/img/logo.png"/>
+            </a>
+        </div>
+        <div class="col-xs-7">
+            <form class="pull-right" action="/search" method="get" role="search">
+                <div class="input-group input-group-lg">
+                    <input type="text" required="required" name="wd" value="{{.Params.wd}}" placeholder="请输入搜索关键字" class="form-control">
+                    <span class="input-group-btn"><button type="submit" class="btn btn-default">文库搜索</button></span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container wenku-mgt-15px">
+    <div class="row">
+        <div class="col-xs-2 wenku-left">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="strong">文档类型</div>
+                    <ul>
+                        <li><a href='{{BuildURL "/search/type/all" "wd" .Params.wd}}' {{if eq .Params.type "all"}}class="active"{{end}}>不限</a></li>
+                        <li><a href='{{BuildURL "/search/type/pdf" "wd" .Params.wd}}' {{if eq .Params.type "pdf"}}class="active"{{end}}>PDF</a></li>
+                        <li><a href='{{BuildURL "/search/type/doc" "wd" .Params.wd}}' {{if eq .Params.type "doc"}}class="active"{{end}}>DOC</a></li>
+                        <li><a href='{{BuildURL "/search/type/ppt" "wd" .Params.wd}}' {{if eq .Params.type "ppt"}}class="active"{{end}}>PPT</a></li>
+                        <li><a href='{{BuildURL "/search/type/xls" "wd" .Params.wd}}' {{if eq .Params.type "xls"}}class="active"{{end}}>XLS</a></li>
+                        <li><a href='{{BuildURL "/search/type/txt" "wd" .Params.wd}}' {{if eq .Params.type "txt"}}class="active"{{end}}>TXT</a></li>
+                        <li><a href='{{BuildURL "/search/type/other" "wd" .Params.wd}}' {{if eq .Params.type "other"}}class="active"{{end}}>其它</a></li>
+                    </ul>
+                    <div class="strong">结果排序</div>
+                    <ul>
+                        <li><a href='{{BuildURL "/search/sort/default" "type" .Params.type "wd" .Params.wd}}' {{if eq .Params.sort "default"}}class="active"{{end}}>默认排序</a></li>
+                        <li><a href='{{BuildURL "/search/sort/page" "type" .Params.type "wd" .Params.wd}}' {{if eq .Params.sort "page"}}class="active"{{end}}>页数排序</a></li>
+                        <li><a href='{{BuildURL "/search/sort/score" "type" .Params.type "wd" .Params.wd}}' {{if eq .Params.sort "score"}}class="active"{{end}}>评分排序</a></li>
+                        <li><a href='{{BuildURL "/search/sort/size" "type" .Params.type "wd" .Params.wd}}' {{if eq .Params.sort "size"}}class="active"{{end}}>大小排序</a></li>
+                        <li><a href='{{BuildURL "/search/sort/down" "type" .Params.type "wd" .Params.wd}}' {{if eq .Params.sort "down"}}class="active"{{end}}>下载排序</a></li>
+                        <li><a href='{{BuildURL "/search/sort/view" "type" .Params.type "wd" .Params.wd}}' {{if eq .Params.sort "view"}}class="active"{{end}}>浏览排序</a></li>
+                        <li><a href='{{BuildURL "/search/sort/collect" "type" .Params.type "wd" .Params.wd}}' {{if eq .Params.sort "collect"}}class="active"{{end}}>收藏排序</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-7">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="help-block">
+                        <a href="https://www.baidu.com/s?ie=UTF-8&wd={{.Sys.Site}}" target="_blank" title="{{.Sys.Site}}">{{.Sys.Site}}</a> 本次搜索耗时<span class="text-danger">{{.Result.Time}}</span>秒，在 <span class="text-primary">{{.Sys.CntDoc}}</span> 篇文档中为您找到相关结果约 <span class="text-success">{{.Result.TotalFound}}</span> 个.
+                    </div>
+                    <ul class="wenku-result">
+
+
+                        {{range .Data}}
+
+                        <li class="clearfix">
+                            <div class="wenku-title">
+                                <a href="/view/{{.Id}}" target="_blank" title="{{.Title}}"><img src="/static/Home/default/img/{{.ExtCate}}_24.png"/> {{HeightLight .Title $.Result.Word}}</a>
+                            </div>
+                            <div class="wenku-desc help-block">{{.Description}}</div>
+                            <div class="help-block wenku-info">
+                                <div class="text-muted">
+                                    <i class="wenku-star star-{{StarVal (Interface2Int .Score) false}}"></i>{{StarVal (Interface2Int .Score) true}}分 <span class="pull-right">{{.Price}}金币 | {{.Page}}页 | {{FormatByte (Interface2Int .Size)}} | {{TimestampFormat (Interface2Int .TimeCreate) "2006-01-02 15:04"}}</span>
+                                </div>
+                            </div>
+                        </li>
+                        {{else}}
+                            <li class="clearfix">
+                                {{if gt .WordLen 1}}
+                                    <div class="help-block text-center mgt-15px">亲，很遗憾没能搜到您想要的结果，您可以换以下词重新搜索.</div>
+                                    <div class="help-block text-center wenku-word">
+                                        {{range $.Result.Word}}
+                                        <a href="/search?wd={{.}}">{{.}}</a>
+                                        {{end}}
+                                    </div>
+                                {{else}}
+                                    <div class="help-block text-center mgt-15px">亲，很遗憾没能搜到您想要的结果，建议您更换搜索关键字重试.</div>
+                                {{end}}
+                            </li>
+                        {{end}}
+                    </ul>
+
+                    {{if gt .Result.Total $.ListRows}}
+                        <ul class="pagination">
+                            {{str2html $.Page}}
+                        </ul>
+                    {{end}}
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-3 wenku-nopadding">
+            <div class="panel panel-default wenku-search-words">
+                <div class="panel-heading">
+                    <div class="strong">大家在搜</div>
+                </div>
+                <div class="panel-body">
+                    {{range .SearchLog}}
+                    <a href="/search?wd={{.Wd}}">{{.Wd}}</a>
+                    {{end}}
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="strong text-center">人生苦短，我学Python</div>
+                    <img src="/static/Home/default/img/cover.png"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{{template "footer" .}}

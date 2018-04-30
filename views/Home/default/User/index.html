@@ -1,0 +1,115 @@
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-8 wenku-left">
+            <div class="panel panel-default">
+                {{if gt .Cid 0}}
+                <div class="panel-heading clearfix">
+                    <div class="strong pull-left">{{.Folder.Title}} ( <span class="color-gray">{{.Folder.Cnt}}</span> )</div>
+                    <div class="pull-right wenku-show">
+                        <a href="/user/{{.User.Id}}/doc/cid/{{.Cid}}/style/list" title="列表展示" {{if eq .Style "list"}}class="active"{{end}}><i class="fa fa-list"></i></a>
+                        <a href="/user/{{.User.Id}}/doc/cid/{{.Cid}}/style/th" title="缩略图展示" {{if eq .Style "th"}}class="active"{{end}}><i class="fa fa-th-large"></i></a>
+                    </div>
+                    <div class="pull-right">
+                        <a href="/user/{{$.User.Id}}/collect"><span class="text-danger"><i class="fa fa-mail-reply"></i> 返回</span></a>
+                    </div>
+                </div>
+                {{else}}
+                <div class="panel-heading clearfix">
+                    <div class="strong pull-left">文档列表</div>
+                    <div class="pull-right wenku-show">
+                        <a href="/user/{{.User.Id}}/doc/sort/{{.Sort}}/style/list/p/{{.P}}" title="列表展示" {{if eq .Style "list"}}class="active"{{end}}><i class="fa fa-list"></i></a>
+                        <a href="/user/{{.User.Id}}/doc/sort/{{.Sort}}/style/th/p/{{.P}}" title="缩略图展示" {{if eq .Style "th"}}class="active"{{end}}><i class="fa fa-th-large"></i></a>
+                    </div>
+                    <div class="pull-right">
+                        <a href="/user/{{.User.Id}}/doc/sort/new/style/{{.Style}}" {{if eq .Sort "new"}}class="active"{{end}}>最新<i class="fa fa-long-arrow-down"></i></a>
+                        <a href="/user/{{.User.Id}}/doc/sort/score/style/{{.Style}}"  {{if eq .Sort "score"}}class="active"{{end}}>评分<i class="fa fa-long-arrow-down"></i></a>
+                        <a href="/user/{{.User.Id}}/doc/sort/ccnt/style/{{.Style}}" {{if eq .Sort "ccnt"}}class="active"{{end}} >收藏<i class="fa fa-long-arrow-down"></i></a>
+                        <a href="/user/{{.User.Id}}/doc/sort/vcnt/style/{{.Style}}" {{if eq .Sort "vcnt"}}class="active"{{end}} >浏览<i class="fa fa-long-arrow-down"></i></a>
+                        <a href="/user/{{.User.Id}}/doc/sort/dcnt/style/{{.Style}}"  {{if eq .Sort "dcnt"}}class="active"{{end}}>下载<i class="fa fa-long-arrow-down"></i></a>
+                    </div>
+                </div>
+                {{end}}
+                <div class="panel-body">
+                    {{if eq .Style "th"}}
+                    <div class="wenku-list-thumb">
+                        <div class="row">
+                            {{range .Lists}}
+                            <div class="col-xs-3">
+                                <a href="/view/{{.Id}}" target="_blank" title="{{.Title}}" class="thumbnail">
+                                    <img class="img-responsive" src="{{DefPic .Md5 "cover"}}"/>
+                                    <img class="wenku-icon" alt="{{.ExtCate}}" src="/static/Home/default/img/{{.ExtCate}}_24.png"/>
+                                    <div class="wenku-title">
+                                        {{.Title}}
+                                        <hr>
+                                        <div>
+                                            <small><i class="fa fa-eye"></i> {{.Vcnt}}</small> &nbsp;<small><i class="fa fa-cloud-download"></i> {{.Dcnt}}</small> &nbsp;<small><i class="fa fa-star"></i> {{StarVal (Interface2Int .Score) true}}</small>
+                                        </div>
+                                        <div>
+                                            <small><i class="fa fa-clock-o"></i> {{TimestampFormat (Interface2Int .TimeCreate) "2006-01-02 15:04:05"}}</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            {{end}}
+                        </div>
+                    </div>
+                    {{else}}
+                    <div class="wenku-list-table">
+                        <div class="wenku-list-table-head clearfix">
+                            <div class="col-xs-5">文档</div>
+                            <div class="col-xs-2">评分</div>
+                            <div class="col-xs-1">页数</div>
+                            <div class="col-xs-1">浏览</div>
+                            <div class="col-xs-1">下载</div>
+                            <div class="col-xs-2">上传时间</div>
+                        </div>
+                        <div class="wenku-list-table-body">
+                            <ul>
+                                {{range .Lists}}
+                                <li class="clearfix">
+                                    <div class="col-xs-5 wenku-text-ellipsis">
+                                        <a href="/view/{{.Id}}" title="{{.Title}}" target="_blank"><img src="/static/Home/default/img/{{.ExtCate}}_24.png"/> {{.Title}}</a>
+                                    </div>
+                                    <div class="col-xs-2"><span class="wenku-star star-{{StarVal (Interface2Int .Score) false}}"></span></div>
+                                    <div class="col-xs-1"> {{HandlePageNum .Page}}</div>
+                                    <div class="col-xs-1"> {{.Vcnt}}</div>
+                                    <div class="col-xs-1"> {{.Dcnt}}</div>
+                                    {{if eq $.LoginUid $.Uid}}
+                                    <div class="col-xs-2 wenku-edit">
+                                        <small>
+                                            {{if gt $.Cid 0}}
+                                                <a href="/user/{{$.Uid}}/cancel/collect/{{$.Cid}}/{{.Id}}" class="wenku-ajax-get wenku-confirm"><i class="fa fa-trash-o"></i> 移除收藏</a>
+                                            {{else}}
+                                                <a href="/user/{{$.Uid}}/edit/doc/{{.Id}}"><i class="fa fa-pencil-square-o"></i>编辑</a> | <a href="/user/{{$.Uid}}/del/doc/{{.Id}}" class="wenku-ajax-get wenku-confirm"><i class="fa fa-trash-o"></i>删除</a>
+                                            {{end}}
+                                        </small>
+                                    </div>
+                                    <div class="col-xs-2 wenku-time">{{TimestampFormat (Interface2Int .TimeCreate) "2006-01-02"}}</div>
+                                    {{else}}
+                                    <div class="col-xs-2">{{TimestampFormat (Interface2Int .TimeCreate) "2006-01-02"}}</div>
+                                    {{end}}
+                                </li>
+                                {{end}}
+
+                            </ul>
+                        </div>
+
+                    </div>
+                    {{end}}
+
+                    {{if .Lists}}{{else}}
+                        <div class="help-block text-center">暂无分享文档</div>
+                    {{end}}
+
+                    <ul class="pagination">
+                        {{str2html .Page}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {{template "UserRight" .}}
+
+    </div>
+</div>

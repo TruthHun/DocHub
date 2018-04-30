@@ -1,0 +1,130 @@
+
+<div class="container">
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="strong">文档上传</div>
+            </div>
+            <div class="panel-body">
+                <div class="wenku-tips text-center help-block">
+                    每成功上传一篇未被上传过的文档，可获取财富值 <span class="text-primary">+{{.Sys.Reward}}</span> 奖励。<!-- 若有完善的标签和文档简介，将有机会额外获得 <span class="text-danger">1-20</span> 个财富值奖励。 --> 待积分商城上线，财富值可用于兑换IT实体书！
+                </div>
+                <div class="col-xs-8">
+                    <form class="form-horizontal wenku-form-upload" target="notarget" role="form" method="post" action="/upload" data-login="/user/islogin" data-doccheck="/doc/check" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">文档上传 <i class="text-danger">*</i></label>
+                            <div class="col-sm-10">
+                                <input type="file" required="required" data-err="请上传一篇文档" class="form-control" data-maxsize="{{.MaxSize}}" data-accept="doc,docx,rtf,wps,odt,ppt,pptx,pps,ppsx,dps,odp,pot,xls,xlsx,et,ods,txt,pdf,chm,epub,umd,mobi" name="File" placeholder="请上传一篇文档">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">文档名称 <i class="text-danger">*</i></label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" data-err="请输入文档名称" required="required" name="Title" placeholder="请输入文档名称">
+                                <input type="hidden" name="Filename">
+                            </div>
+                        </div>
+                        <div class="form-group form-chanel">
+                            <label class="col-sm-2 control-label">文库频道 <i class="text-danger">*</i></label>
+                            <div class="col-sm-10">
+                                <select name="Chanel" required="required" data-err="请选择文库频道" class="form-control">
+                                    <option value="">请选择文库频道</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group form-cate">
+                            <label class="col-sm-2 control-label">文档分类 <i class="text-danger">*</i></label>
+                            <div class="col-sm-5 form-level-one">
+                                <select name="Pid" required="required" data-err="请选择一级文档分类" class="form-control">
+                                    <option value="">请先选择文库频道</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-5 form-level-two">
+                                <select name="Cid" required="required" data-err="请选择二级文档分类" class="form-control">
+                                    <option value="">请先选择一级文档分类</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">文档售价</label>
+                            <div class="col-sm-5">
+                                <select name="Price" class="form-control">
+                                    <option value="0">免费下载</option>
+                                    <option value="1">1个金币</option>
+                                    <option value="2">2个金币</option>
+                                    <option value="5">5个金币</option>
+                                    <option value="8">8个金币</option>
+                                    <option value="10">10个金币</option>
+                                    <option value="20">20个金币</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">文档标签</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="Tags" class="form-control" placeholder="多个标签，请用逗号分隔">
+                            </div>
+                        </div>
+                        {{.xsrfdata}}
+                        <input type="hidden" name="Md5" value="">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">文档简介</label>
+                            <div class="col-sm-10">
+                                <textarea name="Intro" rows="7" class="form-control" placeholder="请输入文档的相关简介，让大家更容易找到文档"></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-block btn-primary btn-lg">确定上传文档</button>
+                    </form>
+                </div>
+
+                <div class="col-xs-4">
+                    <div class="panel panel-default">
+                        <div class="panel-body wenku-nopadding">
+                            <div class="strong">温馨提示</div>
+                            <div class="help-block">
+                                1.带有 <i class="text-danger">*</i> 为必填项。同时<span class="text-success strong">建议填写文档标签和文档简介，方便自己和他人更快更准确地找到需求文档</span>。
+                            </div>
+                            <div class="help-block">
+                                2.允许上传的最大文档为：<span class="strong text-primary">{{.MaxSize|FormatByte}}</span>。
+                            </div>
+                            <div class="help-block">
+                                3.分享，让知识传承更久远。IT文库(wenku.it)致力于成为最大的IT互联网行业文库平台，在尊重知识产权的前提下，让更多的人平等地学会和获得知识。
+                            </div>
+                            <!--<div class="help-block">-->
+                            <!--3.分享，让知识传承更久远。文库之家(wenkuzhijia.cn)致力于成为一个纯粹的文档文库分享平台，在尊重知识产权的前提下，让更多的人平等地学会和获得知识。-->
+                            <!--</div>-->
+                            <div class="help-block">
+                                4.目前支持的文档类型：
+                                <p>
+                                    <img src="/static/Home/default/img/word_24.png" alt="Word文档" /> doc，docx，rtf，wps，odt
+                                </p>
+                                <p>
+                                    <img src="/static/Home/default/img/ppt_24.png" alt="PPT文档" /> ppt，pptx，pps，ppsx，dps，odp，pot
+                                </p>
+                                <p>
+                                    <img src="/static/Home/default/img/excel_24.png" alt="XLS文档" /> xls，xlsx，et，ods
+                                </p>
+                                <p>
+                                    <img src="/static/Home/default/img/code_24.png" alt="其他文档"> epub，umd，chm，mobi
+                                </p>
+                                <p>
+                                    <img src="/static/Home/default/img/text_24.png" alt="TXT文档" /> txt
+                                </p>
+                                <p>
+                                    <img src="/static/Home/default/img/pdf_24.png" alt="PDF文档" /> pdf
+                                </p>
+                            </div>
+                            <div class="help-block">5.上传涉嫌侵权或违法的文档将会被移除。</div>
+                            <div class="help-block">6.上传有问题需要帮助？请查看 <a href="/pages/help" target="_blank" title="文库帮助">文库帮助</a> 和 <a href="/pages/feedback" target="_blank" title="意见反馈">意见反馈</a></div>
+                            <div class="help-block">7.为营造绿色网络环境，严禁上传含有淫秽色情及低俗信息等文档，让我们一起携手共同打造健康文库</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" id="wenku-cates">
+            {{.json}}
+        </script>
+        <iframe frameborder="0" style="display: none;" id="notarget" name="notarget"></iframe>
+    </div>
+</div>

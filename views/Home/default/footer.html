@@ -1,0 +1,51 @@
+{{define "footer"}}
+	<div class="container-fluid wenku-footer">
+    	<div class="container">
+    		<div class="row wenku-flink">
+    			<div class="col-xs-12">
+    				<div><strong>友情链接</strong></div>
+    				<div class="help-block">
+						{{range (Friends)}}
+    					<a href="{{.Link}}" target="_blank" title="{{.Title}}">{{.Title}}</a>
+						{{end}}
+    				</div>
+    			</div>
+    		</div>
+    	</div>
+    </div>
+    <div class="container-fluid wenku-footer-dark">
+    	<div class="container">
+    		<div class="row">
+    			<div class="col-xs-12 text-center wenku-help">
+					{{range .Pages}}
+						<a href="/pages/{{.Alias}}" target="_blank" title="{{.Title}}">{{.Name}}</a>
+					{{end}}
+    			</div>
+    			<div class="col-xs-12 text-center">
+					{{.Sys.Site}}&nbsp;&nbsp;&copy;2017
+    			</div>
+    			<div class="col-xs-12 text-center">
+    				Powered By <a href="http://www.hc-cms.com" style="color: #1abc9c;" target="_blank" title="HC-CMS">HC-CMS</a>
+    			</div>
+				<div class="col-xs-12 text-center">{{str2html .Sys.Tongji}}</div>
+			</div>
+    	</div>
+    </div>
+
+
+
+
+    <!--<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>-->
+	<script src="//apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!--<script src="{{.TplStatic}}/js/bootstrap.min.js"></script>-->
+	<script src="//apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+	<script src="/static/Common/js/jquery.toast.min.js"></script>
+	<!--<script src="/static/Common/js/jquery.lazyload.min.js"></script>-->
+	{{if .IsUpload}}
+	<script src="/static/Common/js/spark-md5.min.js"></script>
+	{{end}}
+    <script src="{{.TplStatic}}/js/dochub.js?version={{$.Version}}"></script>
+      
+  </body>
+</html>
+{{end}}

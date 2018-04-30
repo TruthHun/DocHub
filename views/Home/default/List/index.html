@@ -1,0 +1,93 @@
+
+<div class="container wenku-main">
+    <div class="row">
+        <div class="col-xs-8 wenku-left wenku-nopadding">
+
+            {{if gt $.CurPid 0}}
+            <div class="panel panel-default wenku-noradius wenku-noborder">
+                <div class="panel-body">
+                    <a href="/list/{{$.CurChanel.Alias}}/pid/{{$.CurPid}}" {{if eq $.CurCid 0}}class="active"{{end}}>不限分类 ({{$.CurParent.Cnt}})</a>
+                    {{range .Children}}
+                    <a href="/list/{{$.CurChanel.Alias}}/pid/{{$.CurPid}}/cid/{{.Id}}" title="{{.Title}}" {{if eq $.CurCid .Id}}class="active"{{else if eq (Interface2Int .Cnt) 0}}class="color-gray"{{end}}>{{.Title}} ({{.Cnt}})</a>
+                    {{end}}
+                </div>
+            </div>
+            {{end}}
+            <div class="panel panel-default wenku-noborder">
+                <div class="panel-body">
+                    <ul>
+                        {{range .Lists}}
+                        <li class="clearfix">
+                            <a href="/view/{{.Id}}" title="{{.Title}}" class="col-xs-1 wenku-nopadding" target="_blank">
+                                <img src="/static/Home/default/img/{{.ExtCate}}_54.png"/>
+                            </a>
+                            <div class="col-xs-11">
+                                <h3 class="wenku-text-ellipsis"><a href="/view/{{.Id}}" title="{{.Title}}" target="_blank">{{.Title}}</a></h3>
+                                <div class="help-block wenku-text-ellipsis">
+										<span>
+											[<a href="/list/{{$.CurChanel.Alias}}/pid/{{.Pid}}/cid/{{.Cid}}" title="{{.Category}}" class="text-danger">
+												{{.Category}}
+											</a>]
+										</span>
+                                    <span><a href="/user/{{.Uid}}" title="{{.Username}}" target="_blank" class="text-default">{{.Username}}</a></span>
+                                    <span>大小:<span>{{FormatByte (Interface2Int .Size)}}</span></span>
+                                    <span>页数:<span>{{HandlePageNum .Page}}</span></span>
+                                    <span >评分:<i class="wenku-star star-{{StarVal (Interface2Int .Score) false}}"></i>{{StarVal (Interface2Int .Score) true}} 分</span>
+                                    <span>时间:<span>{{TimestampFormat (Interface2Int .TimeCreate) "2006-01-02"}}</span></span>
+                                </div>
+                            </div>
+                        </li>
+                        {{else}}
+                        <li class="clearfix">
+                            <div class="help-block text-center">当前分类暂时没有文档</div>
+                        </li>
+                        {{end}}
+                    </ul>
+
+                    {{if .Page}}
+                    <ul class="pagination">
+                        {{str2html .Page}}
+                    </ul>
+                    {{end}}
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+        <div class="col-xs-4 wenku-right">
+            <div class="panel panel-default wenku-cate wenku-noborder">
+                <div class="panel-heading"><div class="strong">{{.CurChanel.Title}}</div></div>
+                <div class="panel-body">
+                    <a href="/list/{{.CurChanel.Alias}}" {{if Equal $.CurPid 0}}class="active"{{end}} title="不限分类">不限分类 ({{$.CurChanel.Cnt}})</a>
+                    {{range .Parents}}
+                    <a href="/list/{{$.CurChanel.Alias}}/pid/{{.Id}}" {{if Equal $.CurPid .Id}}class="active"{{else if eq (Interface2Int .Cnt) 0}}class="color-gray"{{end}} title="{{.Title}}">{{.Title}} ({{.Cnt}})</a>
+                    {{end}}
+
+                </div>
+            </div>
+
+            {{if .Hots}}
+            <div class="panel panel-default wenku-noborder wenku-hot">
+                <div class="panel-heading"><div class="strong">热门文档</div></div>
+                <div class="panel-body">
+                    <ul>
+                        {{range .Hots}}
+                        <li><img alt="{{.Ext}}文档" src="/static/Home/default/img/{{.ExtCate}}_24.png"/><a href="/view/{{.Id}}" target="_blank" title="{{.Title}}">{{.Title}}</a></li>
+                        {{end}}
+                    </ul>
+                </div>
+            </div>
+            {{end}}
+
+
+        </div>
+
+
+    </div>
+</div>
+
+
+

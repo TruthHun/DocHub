@@ -1,0 +1,136 @@
+{{define "UserRight"}}
+<div class="col-xs-4 wenku-right">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-xs-4 wenku-no-pdr">
+                   {{if eq $.LoginUid (.User.Id|Interface2Int)}}
+                    <a href="javascript:void(0);" title="点击选择图片更换头像" data-placement="bottom" class="thumbnail wenku-circle-avatar wenku-tooltip wenku-update-avatar">
+                        <img class="img-responsive" alt="{{.User.Username}}" src="{{DefPic .User.Avatar "avatar"}}"/>
+                    </a>
+                    <!--更新头像-->
+                    <form action="/user/avatar" method="post" enctype="multipart/form-data" style="display: none;" target="notarget">
+                    <input type="file" accept="image/*" name="Avatar" class="wenku-change-submit">
+                        {{.xsrfdata}}
+                    </form>
+                    <iframe frameborder="0" style="display: none;" id="notarget" name="notarget"></iframe>
+                    {{else}}
+                    <a href="/user/{{.User.Id}}" title="{{.User.Username}}" class="thumbnail wenku-circle-avatar wenku-tooltip wenku-update-avatar">
+                        <img class="img-responsive" alt="{{.User.Username}}" src="{{DefPic .User.Avatar "avatar"}}"/>
+                    </a>
+                    {{end}}
+                </div>
+                <div class="col-xs-8">
+                    <div class="strong">
+                        <a href="/user/{{.User.Id}}" title="{{.User.Username}}">{{.User.Username}} </a>
+                        {{if eq $.LoginUid (.User.Id|Interface2Int)}}
+                        <small class="color-gray wenku-pdl-15px">
+                            [&nbsp;
+                            <a href="javascript:void(0);" class="wenku-tooltip" data-toggle="modal" data-target="#ModalUserEdit" title="会员设置"><i class="fa fa-cog"></i></a>
+                            &nbsp; | &nbsp;
+                            <a href="/user/logout" class="wenku-ajax-get wenku-tooltip" title="退出登录"><i class="fa fa-sign-out"></i> </a>
+                            &nbsp;]
+                        </small>
+                        {{end}}
+                    </div>
+                    <div class="help-block">
+                        <ul>
+                            <li>文档: <a href="/user/{{.User.Id}}/doc" class="text-primary">{{.User.Document}} </a></li>
+                            <li>财富: <a href="/user/{{.User.Id}}/coin" class="text-primary">{{.User.Coin}} </a></li>
+                            <li>收藏: <a href="/user/{{.User.Id}}/collect" class="text-primary">{{.User.Collect}}</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="help-block">
+                <div class="strong">个性签名 </div>
+                <div style="text-indent: 2em;">{{Default .User.Intro "当前用户暂无个性签名"}}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default wenku-rankuser">
+        <div class="panel-heading"><div class="strong">分享达人</div></div>
+        <div class="panel-body">
+            <ul>
+
+                {{range .Ranks}}
+                <li class="clearfix">
+                    <div class="col-xs-2 wenku-nopadding">
+                        <a href="/user/{{.Id}}" title="{{.Username}}" target="_blank" class="thumbnail">
+                            <img class="img-responsive" alt="{{.Username}}" src="{{DefPic .Avatar "avatar"}}"/>
+                        </a>
+                    </div>
+                    <div class="col-xs-10">
+                        <div>
+                            <a href="/user/{{.Id}}" class="wenku-username">{{.Username}}</a>
+                            <div class="help-block pull-right"><span class="text-primary">{{.Document}}</span> 篇文档</div>
+                        </div>
+                        <div class="help-block wenku-text-ellipsis">{{.Intro}}</div>
+                    </div>
+                </li>
+                {{end}}
+
+            </ul>
+        </div>
+    </div>
+
+
+</div>
+
+<div class="modal fade" id="ModalUserEdit" tabindex="-1" role="dialog" aria-labelledby="ModalUserEditLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="form-horizontal wenku-ajax-form" role="form" method="post" action="/user/edit">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="ModalUserEditLabel">会员设置</h4>
+                </div>
+                <div class="modal-body clearfix">
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">原密码 </label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" name="OldPassword" placeholder="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">新密码 </label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" name="NewPassword" placeholder="">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">确认密码 </label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" name="RePassword" placeholder="">
+                            </div>
+                        </div>
+                        {{.xsrfdata}}
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">个性签名</label>
+                            <div class="col-sm-10">
+                                <textarea name="Intro" rows="3" class="form-control" placeholder="请输入您的个性签名">{{.User.Intro}}</textarea>
+                            </div>
+                        </div>
+
+
+                        <div class="help-block">
+                            温馨提示
+                            <ul>
+                                <li>1、如果您要修改密码，则原密码、新密码和确认密码均为必填项</li>
+                                <li>2、如果您要更换头像，请在会员中心点击个人头像进行更换</li>
+                            </ul>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消设置</button>
+                    <button type="submit" class="btn btn-primary">提交设置</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{end}}

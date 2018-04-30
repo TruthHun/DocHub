@@ -1,0 +1,100 @@
+{{define "ModalReport"}}
+<div class="modal fade" id="ModalReport" tabindex="-1" role="dialog" aria-labelledby="ModalShareLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="ModalReportLabel">文档举报</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="help-block clearfix">举报原因：</div>
+                <div class="col-xs-4"><label><input type="radio" checked name="Reason" value="1"> 垃圾广告</label></div>
+                <div class="col-xs-4"><label><input type="radio"  name="Reason" value="2"> 淫秽色情</label></div>
+                <div class="col-xs-4"><label><input type="radio"  name="Reason" value="3"> 虚假中奖</label></div>
+                <div class="col-xs-4"><label><input type="radio"  name="Reason" value="4"> 敏感信息</label></div>
+                <div class="col-xs-4"><label><input type="radio"  name="Reason" value="5"> 人身攻击</label></div>
+                <div class="col-xs-4"><label><input type="radio"  name="Reason" value="6"> 骚扰他人</label></div>
+                <input type="hidden" name="Did" value="{{.Doc.Id}}">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">取消举报</button>
+                <button type="button" class="btn btn-primary btn-submit-report" data-dismiss="modal">提交举报</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}
+{{define "ModalCollect"}}
+<div class="modal fade" id="ModalCollect" tabindex="-1" role="dialog" aria-labelledby="ModalShareLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="ModalCollectLabel">收藏文档</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="help-block wenku-clt-title">收藏文档</div>
+                <div class="form-group">
+                    <input type="text" class="disabled form-control" readonly="readonly" name="Title" value="{{.Doc.Title}}">
+                </div>
+                <div class="help-block">请选择收藏夹</div>
+                <div class="form-group">
+                    <select name="Cid" class="form-control">
+                        <option value="">请选择收藏夹</option>
+                    </select>
+                </div>
+                <input type="hidden" name="Did" value="{{.Doc.Id}}">
+                <div class="help-block text-right wenku-create-folder">没有合适的收藏夹？去 <a href="/user/{{$.LoginUid}}/collect" target="_blank" class="text-primary">创建收藏夹</a></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">取消收藏</button>
+                <button type="button" class="btn btn-primary btn-submit-collect">提交收藏</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}
+{{define "ModalShare"}}
+<div class="modal fade" id="ModalShare" tabindex="-1" role="dialog" aria-labelledby="ModalShareLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="ModalShareLabel">分享，让知识传承更久远</h4>
+            </div>
+            <div class="modal-body">
+                <div class="bdsharebuttonbox"><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a><a href="#" class="bds_bdysc" data-cmd="bdysc" title="分享到百度云收藏"></a><a href="#" class="bds_kaixin001" data-cmd="kaixin001" title="分享到开心网"></a><a href="#" class="bds_bdxc" data-cmd="bdxc" title="分享到百度相册"></a><a href="#" class="bds_tieba" data-cmd="tieba" title="分享到百度贴吧"></a><a href="#" class="bds_douban" data-cmd="douban" title="分享到豆瓣网"></a><a href="#" class="bds_tqf" data-cmd="tqf" title="分享到腾讯朋友"></a><a href="#" class="bds_thx" data-cmd="thx" title="分享到和讯微博"></a><a href="#" class="bds_bdhome" data-cmd="bdhome" title="分享到百度新首页"></a><a href="#" class="bds_meilishuo" data-cmd="meilishuo" title="分享到美丽说"></a><a href="#" class="bds_ibaidu" data-cmd="ibaidu" title="分享到百度中心"></a><a href="#" class="bds_mogujie" data-cmd="mogujie" title="分享到蘑菇街"></a><a href="#" class="bds_diandian" data-cmd="diandian" title="分享到点点网"></a><a href="#" class="bds_huaban" data-cmd="huaban" title="分享到花瓣"></a><a href="#" class="bds_hx" data-cmd="hx" title="分享到和讯"></a><a href="#" class="bds_duitang" data-cmd="duitang" title="分享到堆糖"></a><a href="#" class="bds_fx" data-cmd="fx" title="分享到飞信"></a><a href="#" class="bds_youdao" data-cmd="youdao" title="分享到有道云笔记"></a><a href="#" class="bds_sdo" data-cmd="sdo" title="分享到麦库记事"></a><a href="#" class="bds_qingbiji" data-cmd="qingbiji" title="分享到轻笔记"></a><a href="#" class="bds_people" data-cmd="people" title="分享到人民微博"></a><a href="#" class="bds_xinhua" data-cmd="xinhua" title="分享到新华微博"></a><a href="#" class="bds_mail" data-cmd="mail" title="分享到邮件分享"></a><a href="#" class="bds_isohu" data-cmd="isohu" title="分享到我的搜狐"></a><a href="#" class="bds_yaolan" data-cmd="yaolan" title="分享到摇篮空间"></a><a href="#" class="bds_wealink" data-cmd="wealink" title="分享到若邻网"></a><a href="#" class="bds_iguba" data-cmd="iguba" title="分享到股吧"></a><a href="#" class="bds_ty" data-cmd="ty" title="分享到天涯社区"></a><a href="#" class="bds_fbook" data-cmd="fbook" title="分享到Facebook"></a><a href="#" class="bds_linkedin" data-cmd="linkedin" title="分享到linkedin"></a><a href="#" class="bds_h163" data-cmd="h163" title="分享到网易热"></a><a href="#" class="bds_twi" data-cmd="twi" title="分享到Twitter"></a><a href="#" class="bds_evernotecn" data-cmd="evernotecn" title="分享到印象笔记"></a><a href="#" class="bds_copy" data-cmd="copy" title="分享到复制网址"></a></div>
+                <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"32"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js'];</script>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">取消分享</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}
+{{define "ModalDownload"}}
+<div class="modal fade" id="ModalDownload" tabindex="-1" role="dialog" aria-labelledby="ModalShareLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="ModalDownloadLabel">下载提示</h4>
+            </div>
+            <div class="modal-body clearfix">
+
+
+                <div class="help-block wenku-download-tips">文档下载，需要消耗您 <span class="text-danger">{{.Doc.Price}}</span> 个金币。</div>
+
+
+                <div class="help-block">您确定要下载 <span class="text-danger">{{.Doc.Title}}</span> 文档吗？</div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">取消下载</button>
+                <button type="button" class="btn btn-primary btn-submit-download" data-url="/down/{{.Doc.Id}}" data-id="{{.Doc.Id}}">确定下载</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

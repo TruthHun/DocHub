@@ -1,0 +1,6 @@
+{{define "CrawlTabs"}}
+<ul class="nav nav-tabs" style="margin-bottom: -1px;">
+    <li {{if eq .Type "gitbook"}}class="active"{{end}}><a href="/admin/crawl?type=gitbook">Gitbook</a></li>
+    <li {{if eq .Type "searchEngine"}}class="active"{{end}}><a href="/admin/crawl?type=searchEngine">搜索引擎</a></li>
+</ul>
+{{end}}

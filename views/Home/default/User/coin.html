@@ -1,0 +1,50 @@
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-8 wenku-left">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <div class="strong pull-left">财富记录</div>
+                </div>
+                <div class="panel-body">
+                    <div class="wenku-list-table">
+                        <div class="wenku-list-table-head clearfix">
+                            <div class="col-xs-3">时间</div>
+                            <div class="col-xs-1">变更</div>
+                            <div class="col-xs-8">说明</div>
+                        </div>
+                        <div class="wenku-list-table-body">
+                            <ul>
+                                {{range .Lists}}
+                                <li class="clearfix help-block">
+                                    <div class="col-xs-3">{{TimestampFormat (Interface2Int .TimeCreate) "2006-01-02 15:04:05"}}</div>
+                                    <div class="col-xs-1">
+                                        {{if gt (Interface2Int .Coin) -1}}
+                                        <span class="text-primary"> + {{.Coin}}</span>
+                                        {{else}}
+                                        <span class="text-danger">  {{.Coin}}</span>
+                                        {{end}}
+                                    </div>
+                                    <div class="col-xs-8 wenku-text-ellipsis wenku-tooltip" title="{{.Log}}">{{.Log}}</div>
+                                </li>
+                                {{end}}
+                            </ul>
+                            {{if .Lists}}
+                            <div class="help-block text-center">
+                                <a href="/user/{{.User.Id}}/coin" class="wenku-coin-more">更多>></a>
+                            </div>
+                            {{else}}
+                            <div class="help-block text-center">暂无财富记录</div>
+                            {{end}}
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{template "UserRight" .}}
+
+    </div>
+</div>

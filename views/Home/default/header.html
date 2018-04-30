@@ -1,0 +1,38 @@
+{{define "header"}}<!DOCTYPE html>
+<html lang="zh-CN">
+ <head>
+{{template "head" .}}
+</head>
+  <body id="{{.PageId}}" class="{{if .OnlyCover}}wenku-onlycover{{end}}">
+  	<div class="container-fluid wenku-header">
+  		<div class="container">
+			<div class="col-xs-6">
+				<a href="/" title="{{.Sys.Site}}">
+					<img alt="{{.Sys.Site}}" class="wenku-logo" src="{{.TplStatic}}/img/logo.png"/>
+				</a>
+			</div>
+			<div class="col-xs-6">
+				<form class="pull-right" action="/search" target="_blank" method="get" role="search">
+					<div class="input-group input-group-lg">
+						<input type="text" required="required" name="wd" placeholder="请输入搜索关键字" class="form-control">
+						<span class="input-group-btn"><button type="submit" class="btn btn-default">文库搜索</button></span>
+					</div>
+				</form>
+			</div>
+	  	</div>
+  	</div>
+	<nav class="container-fluid navbar-inverse navbar navbar-default" role="navigation">
+		<div class="container">
+			<ul class="nav navbar-nav">
+				<li {{if .IsHome}}class="active"{{end}}><a href="/">首页</a></li>
+				{{range .Chanels}}
+				<li {{if Equal $.Chanel .Alias}}class="active"{{end}}><a href="/list/{{.Alias}}">{{.Title}}</a></li>
+				{{end}}
+			</ul>
+			 <ul class="nav navbar-nav navbar-right">
+		      <li {{if .IsUpload}}class="active"{{end}}><a href="/upload"><span class="fa fa-upload"></span> 上传文档</a></li>
+		      <li {{if .IsUser}}class="active"{{end}}><a href="/user"><span class="fa fa-user"></span> 会员中心</a></li>
+		    </ul>
+		</div>
+	</nav>
+{{end}}

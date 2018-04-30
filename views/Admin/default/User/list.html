@@ -1,0 +1,118 @@
+    <div class="row">
+        <h1 class="page-header">用户管理</h1>
+        <div class="panel panel-default">
+            <div class="panel-heading wenku-no-pdl clearfix">
+                <form class="form-horizontal" role="form">
+                    <div class="col-xs-5 col-sm-4 com-lg-3">
+                        <div class="input-group">
+                            <span class="input-group-addon">用户ID</span>
+                            <input type="number" class="form-control" name="id" value="{{.Id}}" placeholder="如需搜索某个指定id的用户">
+                        </div>
+                    </div>
+                    <div class="col-xs-5 col-sm-4 com-lg-3">
+                        <div class="input-group">
+                            <span class="input-group-addon">用户昵称</span>
+                            <input type="text" class="form-control" name="username" value="{{.Username}}" placeholder="请输入您要搜索的用户昵称">
+                        </div>
+                    </div>
+                    <div class="col-xs-2 col-sm-4 com-lg-3">
+                        <button type="submit" class="btn btn-default">搜索</button>
+                    </div>
+                </form>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <div id="dataTables-example_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                        <table class="table table-striped table-bordered table-hover dataTable no-footer" id="dataTables-example" aria-describedby="dataTables-example_info">
+                            <thead>
+                            <tr role="row">
+                                <th>#</th>
+                                <th>用户名</th>
+                                <th>邮箱</th>
+                                <th>金币</th>
+                                <th>文档</th>
+                                <th>收藏</th>
+                                <th>状态</th>
+                                <th>注册时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{range .Users}}
+                                <tr>
+                                    <td>{{.Id}}</td>
+                                    <td>{{.Username}}</td>
+                                    <td>{{.Email}}</td>
+                                    <td>
+                                        <a href="/user/{{.Id}}/coin" target="_blank">{{.Coin}}</a>
+                                    </td>
+                                    <td>
+                                        <a href="/user/{{.Id}}" target="_blank">{{.Document}}</a>
+                                    </td>
+                                    <td>
+                                        <a href="/user/{{.Id}}/collect" target="_blank">{{.Collect}}</a>
+                                    </td>
+                                    <td>
+                                        {{if eq (.Status|Interface2String) "1"}}
+                                        <strong class="text-success">正常</strong>
+                                        {{else}}
+                                        <strong class="text-danger">封禁</strong>
+                                        {{end}}
+                                    </td>
+
+                                    <td>{{TimestampFormat (.TimeCreate|Interface2Int)}}</td>
+                                    <td>
+                                        {{if eq (.Status|Interface2String) "1"}}
+                                        <a href="/admin/update?table=user_info&id={{.Id}}&field=status&value=0" class="wenku-ajax-get" title="封禁用户">封禁</a>
+                                        {{else}}
+                                        <a href="/admin/update?table=user_info&id={{.Id}}&field=status&value=1" class="wenku-ajax-get" title="解封用户">解封</a>
+                                        {{end}}
+                                        <a href="/admin/update?table=user&id={{.Id}}&field=Intro&value=" target="_blank" title="重置用户签名" class="wenku-tooltip wenku-ajax-get">重置签名</a>
+                                        <a href="javascript:void(0);" data-id="{{.Id}}" data-username="{{.Username}}" class="ModalScoreBtn">积分管理</a>
+                                    </td>
+                                </tr>
+                            {{end}}
+                            </tbody>
+                        </table>
+                        {{if gt .TotalRows .ListRows}}
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="dataTables_paginate paging_simple_numbers" id="dataTables-example_paginate">
+                                    <ul class="pagination">
+                                        {{str2html .Page}}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ModalScore" tabindex="-1" role="dialog" aria-labelledby="ModalScoreLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="/admin/score" method="get" class="wenku-ajax-form">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="ModalScoreLabel">[ <span class="ModalScoreUser text-success"></span> ] 积分管理</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input type="number" name="score" class="form-control" placeholder="请输入积分变更情况，正为加，负为减">
+                        </div>
+                        <div class="form-group">
+                            <textarea name="log" rows="2" class="form-control" placeholder="请输入积分变更说明"></textarea>
+                        </div>
+                        <input type="hidden" name="uid" value="">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="reset" class="btn btn-danger" data-dismiss="modal">取消更改</button>
+                        <button type="submit" class="btn btn-success">提交更改</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>

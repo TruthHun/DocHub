@@ -1,0 +1,51 @@
+/*全局*/
+ul,li{list-style: none;
+    padding:0px;}
+small{font-weight: normal}
+.navbar-brand small{font-size:12px;}
+.navbar-brand small .active{
+    color: #ffffff;}
+/*#page-wrapper{top: 30px;}*/
+/*#page-inner{min-height: 0px;}*/
+
+.wenku-title{max-width: 400px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;display: block;}
+.wenku-avatar{height: 80px;width: 80px;border: 1px solid #DDDDDD;padding: 2px;border-radius: 50%;}
+textarea{resize: none;}
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{vertical-align:middle;line-height:24px;}
+table .form-group{margin-bottom: 0px;}
+.no-padding{padding: 0px !important;}
+.no-padding-left{padding-left: 0px !important;}
+.wenku-alert{position: fixed;top: 80px;z-index: 99999;right: 30px;margin: 0px auto;font-weight: bold;display: none;min-width: 200px;}
+
+.page-common .panel-heading .col-md-8{padding-left: 0px;}
+.page-common tbody tr td{line-height: 200% !important;}
+.page-common .panel-heading .btn-group{margin-left:-15px;}
+
+
+
+
+.wenku-preview-box{padding: 0px;overflow: scroll;width:420px;height:290px;text-align: center;}
+.wenku-watermark-position span{display: inline-block;width: 20px;height: 20px;border: 1px solid #DDDDDD;text-align: center;
+    cursor: pointer;margin-bottom: 3px;
+}
+.wenku-watermark-position span:hover,.wenku-watermark-position span.active{
+    background-color: #DDDDDD;
+}
+
+.wenku-nopadding{padding: 0px !important;}
+
+.wenku-action-all{margin-bottom: 15px;}
+
+.form-inline .form-control{width: 100%;}
+.wenku-node .form-control{width: auto;display: inline-block;}
+
+.wenku-no-pdl{padding-left: 0px !important;}
+.wenku-level2 td:first-child,.wenku-level3 td:nth-child(2){padding-left: 2em !important;}
+.wenku-level3 td:first-child{padding-left: 4em !important;}
+
+.wenku-ellipsis{white-space: nowrap;overflow: hidden;text-overflow: ellipsis;display: inline-block;}
+.wenku-width-max{width: 100%}
+.wenku-width-100px{width: 100px;}
+.wenku-width-200px{width: 200px;}
+.wenku-width-300px{width: 300px;}
+.wenku-width-400px{width: 400px;}

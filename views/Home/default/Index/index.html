@@ -1,0 +1,175 @@
+<div class="container">
+	<div class="row">
+		<div class="col-xs-9 wenku-nopadding">
+			<div id="wenku-carousel" class="carousel slide">
+				<ol class="carousel-indicators">
+					{{range $index,$banner:=.Banners}}
+					<li data-target="#wenku-carousel" data-slide-to="{{$index}}" {{if eq $index 0}}class="active"{{end}}></li>
+					{{end}}
+				</ol>
+				<div class="carousel-inner">
+					{{range $index,$banner:=.Banners}}
+					<a href="{{.Link}}" target="_blank" title="{{.Title}}" class="item {{if eq $index 0}}active{{end}}">
+						<img src="{{DefPic .Picture "banner"}}" alt="{{.Title}}">
+						<div class="carousel-caption">{{.Title}}</div>
+					</a>
+					{{end}}
+				</div>
+				<a class="carousel-control left" href="#wenku-carousel" data-slide="prev"><span class="fa fa-angle-left"></span></a>
+				<a class="carousel-control right" href="#wenku-carousel" data-slide="next"><span class="fa fa-angle-right"></span></a>
+			</div>
+		</div>
+		<div class="col-xs-3 wenku-nopadding wenku-pdl-15px">
+			<div class="panel panel-default text-center wenku-noradius wenku-noborder wenku-count clearfix">
+				<div class="col-xs-6 wenku-nopadding">
+					<div class="help-block">收录文档</div>
+					<span class="text-primary">{{.Sys.CntDoc}}</span>
+				</div>
+				<div class="col-xs-6 wenku-nopadding">
+					<div class="help-block">注册用户</div>
+					<span class="text-primary">{{.Sys.CntUser}}</span>
+				</div>
+			</div>
+
+			{{if gt .LoginUid 0}}
+
+			<div class="panel panel-default text-center wenku-noradius clearfix wenku-noborder">
+				{{with .User}}
+					<div class="text-center row">
+						<div class="col-xs-5">
+							<a href="/user/{{.Id}}" title="{{.Username}}" class="thumbnail wenku-avatar"><img alt="{{.Username}}" src="{{DefPic .Avatar "avatar"}}"/></a>
+						</div>
+						<div class="col-xs-7 text-left wenku-mgt-15px">
+							<div class="wenku-username"><a href="/user/{{.Id}}" target="_blank" title="{{.Username}}">{{.Username}}</a></div>
+							<div class="help-block"><i class="fa fa-sign-out"></i> <a href="/user/logout" class="text-muted wenku-ajax-get">退出登录</a></div>
+						</div>
+						<div class="col-xs-10 col-lg-offset-1">
+							{{if (DoesSign (Interface2Int $.LoginUid))}}
+							<button class="btn btn-default btn-block disabled"><i class="fa fa-calendar-check-o"></i> 今日已签到</button>
+							{{else}}
+							<a href="/user/sign" class="btn btn-block btn-success wenku-ajax-get"><i class="fa fa-calendar"></i> 今日签到</a>
+							{{end}}
+						</div>
+					</div>
+					<div class="row wenku-userinfo">
+						<div class="col-xs-4 wenku-nopadding">
+							<div class="help-block">财富</div>
+							<a href="/user/{{$.LoginUid}}/coin" target="_blank" class="text-primary">{{.Coin}}</a>
+						</div>
+						<div class="col-xs-4 wenku-nopadding">
+							<div class="help-block">文档</div>
+							<a href="/user/{{$.LoginUid}}/doc" target="_blank" class="text-primary">{{.Document}}</a>
+						</div>
+						<div class="col-xs-4 wenku-nopadding">
+							<div class="help-block">收藏</div>
+							<a href="/user/{{$.LoginUid}}/collect" target="_blank" class="text-primary">{{.Collect}}</a>
+						</div>
+					</div>
+				{{end}}
+			</div>
+
+			{{else}}
+
+			<div class="panel panel-default wenku-loginbox">
+				<div class="panel-body">
+					<form action="/user/login" data-redirect="/" class="wenku-ajax-form" method="post">
+						<div class="form-group">
+							<input type="text" placeholder="请输入登录邮箱" required="required" name="Email" class="form-control" value="">
+						</div>
+						<div class="form-group">
+							<input type="password" placeholder="请输入登录密码" required="required" name="Password" class="form-control" value="">
+						</div>
+						{{.xsrfdata}}
+						<button type="submit" class="btn btn-primary btn-block">登录文库</button>
+						<div class="help-block">
+							<a href="/user/findpwd">忘记密码？</a>
+							<a href="/user/reg" class="pull-right">注册会员</a>
+						</div>
+					</form>
+				</div>
+			</div>
+
+			{{end}}
+
+		</div>
+	</div>
+
+
+</div>
+
+<div class="container-fluid wenku-cate">
+	<div class="container">
+		<div class="row">
+			{{range $index,$val:=.Cates}}
+			{{if lt $index 4}}
+			<div class="col-xs-3">
+				<div class="h5">{{.Title}}</div>
+				<div class="wenku-cate-list">
+					{{range .child}}
+					<a href="/list/{{$val.Alias}}/pid/{{.Id}}">{{.Title}}</a>
+					{{end}}
+				</div>
+			</div>
+			{{end}}
+			{{end}}
+		</div>
+
+	</div>
+</div>
+
+<div class="container">
+
+	<div class="row wenku-item">
+		<div class="col-xs-6">
+			<div class="panel panel-default wenku-noborder">
+				<div class="panel-heading"><strong>热门推荐</strong></div>
+				<div class="panel-body">
+					<a href="javascript:void(0);" class="col-xs-5 wenku-nopadding">
+						<img src="/static/Home/default/img/cover-news.png"/>
+					</a>
+					<div class="col-xs-7 wenku-nopadding">
+						<ul>
+							{{range .Latest}}
+							<li><a href="/view/{{.Id}}" target="_blank" title="{{.Title}}" class="wenku-text-ellipsis">{{.Title}}</a></li>
+							{{end}}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		{{range $index,$val:=.Cates}}
+
+		<div {{if eq (CalcInt $index "%" 2) 0}}class="col-xs-6 wenku-mgl-15px"{{else}}class="col-xs-6"{{end}}>
+			<div class="panel panel-default wenku-noborder">
+				<div class="panel-heading"><strong>{{.Title}}</strong>
+					<a href="/list/{{.Alias}}" target="_blank" title="{{.Title}}" class="pull-right text-muted">更多>></a>
+				</div>
+				<div class="panel-body">
+					<a href="/list/{{.Alias}}" title="{{.Title}}" target="_blank" class="col-xs-5 wenku-nopadding">
+						<img alt="{{.Title}}" style="width: 195px;height: 154px;" src="/static/Home/default/img/cover-{{.Alias}}.png"/>
+					</a>
+					<div class="col-xs-7 wenku-nopadding">
+						<ul>
+							{{range (SimpleList .Id)}}
+							<li><a href="/view/{{.Id}}" target="_blank" title="{{.Title}}" class="wenku-text-ellipsis">{{.Title}}</a></li>
+							{{end}}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	{{if eq (CalcInt $index "%" 2) 0}}
+		</div>
+		<div class="row wenku-item">
+	{{end}}
+
+		{{end}}
+
+
+
+	</div>
+
+</div>
+

@@ -1,0 +1,67 @@
+<div class="row">
+    <h1 class="page-header">单页管理</h1>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="table-responsive">
+                <div id="dataTables-example_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                    <table class="table table-striped table-bordered table-hover dataTable no-footer" id="dataTables-example" aria-describedby="dataTables-example_info">
+                        <thead>
+                        <tr role="row">
+                            <th>#</th>
+                            <th>名称 && 别名</th>
+                            <th>标题 && 关键字</th>
+                            <th>摘要</th>
+                            <th>排序</th>
+                            <th>浏览</th>
+                            <th>状态</th>
+                            <th style="min-width: 50px;">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {{range .Lists}}
+                            <tr>
+                                <td>{{.Id}}</td>
+                                <td>
+                                    <input type="text" class="form-control wenku-change-update" data-url="/admin/update?table=pages&id={{.Id}}" name="Name" value="{{.Name}}"><br>
+                                    <input type="text" class="form-control wenku-change-update" data-url="/admin/update?table=pages&id={{.Id}}" name="Alias" value="{{.Alias}}">
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control wenku-change-update" data-url="/admin/update?table=pages&id={{.Id}}" name="Title" value="{{.Title}}"><br>
+                                    <input type="text" class="form-control wenku-change-update" data-url="/admin/update?table=pages&id={{.Id}}" name="Keywords" value="{{.Keywords}}">
+                                </td>
+                                <td>
+                                    <textarea name="Description wenku-change-update" data-url="/admin/update?table=pages&id={{.Id}}" class="form-control" rows="3">{{.Description}}</textarea>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control wenku-change-update" data-url="/admin/update?table=pages&id={{.Id}}" name="Sort" value="{{.Sort}}">
+                                </td>
+                                <td>{{.Vcnt}}</td>
+                                <td>
+                                    {{if .Status}}
+                                    <span class="text-success">显示</span>
+                                    {{else}}
+                                    <span class="text-danger">隐藏</span>
+                                    {{end}}
+                                </td>
+                                <td>
+                                    {{if .Status}}
+                                    <a href="/admin/update?table=pages&id={{.Id}}&field=Status&value=0" class="wenku-ajax-get">隐藏</a>
+                                    {{else}}
+                                    <a href="/admin/update?table=pages&id={{.Id}}&field=Status&value=1" class="wenku-ajax-get">显示</a>
+                                    {{end}}
+                                    <br>
+                                    <a href="/admin/single/{{.Alias}}">编辑</a>
+                                    <br>
+                                    <a href="/pages/{{.Alias}}" target="_blank">预览</a>
+                                    <br>
+                                    <a href="/admin/singledel?id={{.Id}}" title="删除" class="wenku-ajax-get wenku-confirm">删除</a>
+                                </td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

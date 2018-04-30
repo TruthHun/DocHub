@@ -1,0 +1,53 @@
+<div class="row">
+    <h1 class="page-header">举报管理</h1>
+    <div class="panel panel-default">
+        <div class="panel-heading" style="font-weight: normal">
+            温馨提示：举报记录最多显示1000条，已处理记录建议删除
+        </div>
+        <div class="panel-body">
+            <div class="table-responsive">
+                <div id="dataTables-example_wrapper" class="dataTables_wrapper form-inline" role="grid">
+                    <table class="table table-striped table-bordered table-hover dataTable no-footer" id="dataTables-example" aria-describedby="dataTables-example_info">
+                        <thead>
+                        <tr role="row">
+                            <th>#</th>
+                            <th>文档</th>
+                            <th>举报人</th>
+                            <th>举报原因</th>
+                            <th>举报时间</th>
+                            <th>处理状态</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{range .Data}}
+                        <tr>
+                            <td>{{.Id}}</td>
+                            <td>
+                                <a href="/view/{{.Did}}" target="_blank">{{.Title}}</a>
+                            </td>
+                            <td>
+                                <a href="/user/{{.Uid}}" target="_blank">{{.Username}}</a>
+                            </td>
+                            <td>{{ReportReason .Reason}}</td>
+                            <td>{{TimestampFormat (Interface2Int .TimeCreate) "2006-01-02 15:04:05"}}</td>
+                            <td>
+                                {{if eq .Status "1"}}<span class="text-success">已处理</span>{{else}}<span class="text-danger">待处理</span>{{end}}
+                            </td>
+                            <td>
+                                {{if eq .Status "1"}}
+                                <a href="/admin/update?table=report&id={{.Id}}&field=Status&value=0" class="wenku-ajax-get wenku-confirm" title="将当前记录标记为已处理">标记为待处理</a>
+                                {{else}}
+                                <a href="/admin/update?table=report&id={{.Id}}&field=Status&value=1" class="wenku-ajax-get wenku-confirm" title="将当前记录标记为待处理">标记为已处理</a>
+                                {{end}}
+                                <a href="/admin/update?table=report&id={{.Id}}&field=Status&value=-1" class="wenku-ajax-get wenku-confirm" title="删除当前记录">删除记录</a>
+                            </td>
+                        </tr>
+                        {{end}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
