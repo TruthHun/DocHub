@@ -145,7 +145,7 @@ textarea{resize: none;}
 .wenku-single-page img{ max-width:100%;display: block;}
 .wenku-single-pages-info span{margin-right: 30px;}
 .wenku-single-pages-info span.pull-right{margin-right: 0px;}
-
+.panel{box-shadow: none;-moz-box-shadow: none;-o-box-shadow: none;-webkit-box-shadow: none;}
 /*global css [end]*/
 
 
