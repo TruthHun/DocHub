@@ -39,35 +39,19 @@ import (
 	"github.com/huichen/sego"
 	"lazybug.me/crawl"
 	"rsc.io/pdf"
-	"github.com/TruthHun/DocHub/helper/xmd5"
 )
 
-var Xmd5Obj = xmd5.New()
+var Debug = false
+
+func init() {
+	Debug = beego.AppConfig.String("runmode") == "dev"
+}
 
 //xmd5加密，扩展加密
 //@param            md5str          MD5字符串
 func Xmd5(md5str interface{}) string {
-	return Xmd5Obj.Xmd5(fmt.Sprintf("%v", md5str))
+	return fmt.Sprintf("%v", md5str)
 }
-
-//[TODO]注意：这里的xmd5的字典是下面的字典，不要对
-//var Dict = make(map[int]string)
-//func setDict() {
-//	for i := 0; i < 64; i++ {
-//		switch {
-//		case i <= 9:
-//			Dict[i] = fmt.Sprintf("%v", i)
-//		case i >= 10 && i < 36:
-//			Dict[i] = string(rune(i + 55))
-//		case i >= 36 && i < 62:
-//			Dict[i] = string(rune(97 + i - 36))
-//		case i == 62:
-//			Dict[i] = "."
-//		case i == 63:
-//			Dict[i] = "_"
-//		}
-//	}
-//}
 
 //语言国际化，目前默认为中文
 func I18n(tag string, lang ...string) string {

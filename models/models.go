@@ -444,12 +444,12 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	folder = strings.TrimSuffix(folder, "/")
 	//os.MkdirAll(folder, 0777)//注意：这里不要创建文件夹！！
 	//如果文件夹folder已经存在了，则需要先删除
-	os.RemoveAll(folder)
+	os.MkdirAll(folder, os.ModePerm)
+	defer os.RemoveAll(folder)
 	pdf2svg := beego.AppConfig.String("pdf2svg")                  //pdf转svg命令
 	compress := beego.AppConfig.DefaultBool("compressSvg", false) //是否压缩svg
 	//svgo := beego.AppConfig.String("svgo")                        //svg压缩命令
 	parseNum := totalPage/2 + 1
-	xmd5str := helper.Xmd5(md5str)
 
 	//文本内容摘要
 	var (
@@ -457,12 +457,14 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	)
 
 	//处理pdf转svg
-
 	for i := 0; i < totalPage; i++ {
 		num := i + 1
 		svgfile := fmt.Sprintf("%v/%v.svg", folder, num)
 		//Usage: pdf2svg <in file.pdf> <out file.svg> [<page no>]
 		cmd := exec.Command(pdf2svg, file, svgfile, strconv.Itoa(num))
+		if helper.Debug {
+			beego.Debug("pdf转svg", cmd.Args)
+		}
 		if err := cmd.Run(); err != nil {
 			helper.Logger.Error(err.Error())
 		} else {
@@ -484,7 +486,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 				_, _, content := helper.ParseSvgWidthAndHeight(svgfile)
 				contents = append(contents, content)
 			}
-			ModelOss.MoveToOss(svgfile, svgfile, true, true, compress)
+			ModelOss.MoveToOss(svgfile, md5str+"/"+strconv.Itoa(num)+".svg", true, true, compress)
 		}
 	}
 
@@ -509,7 +511,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 				//svg结尾
 				if strings.HasSuffix(file, ".svg") { //svg结尾的，都是文档页
 					slice := strings.Split(file, "/")
-					ModelOss.MoveToOss(file, fmt.Sprintf("%v/%v", xmd5str, slice[len(slice)-1]), true, true, compress)
+					ModelOss.MoveToOss(file, fmt.Sprintf("%v/%v", md5str, slice[len(slice)-1]), true, true, compress)
 					filenum++ //
 				} else if strings.HasSuffix(file, ".jpg") { //jpg结尾的，基本都是封面图片
 					ModelOss.MoveToOss(file, md5str+".jpg", true, true)
