@@ -343,6 +343,9 @@ func ConvertToJpeg(pdffile string, removeFile bool) (cover string, err error) {
 	convert := beego.AppConfig.DefaultString("imagick", "convert")
 	cover = pdffile + ".jpg"
 	cmd := exec.Command(convert, "-density", "150", "-quality", "100", pdffile, cover)
+	if Debug {
+		beego.Debug("转化封面图片：", cmd.Args)
+	}
 	err = cmd.Run()
 	if err == nil && removeFile {
 		os.Remove(pdffile)

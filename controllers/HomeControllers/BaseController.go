@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 )
 
 type Output struct {
@@ -53,8 +53,8 @@ func (this *BaseController) Prepare() {
 	this.Sys = models.GlobalSys
 	this.Data["Version"] = version
 	this.Data["Sys"] = this.Sys
-	//this.Data["PreviewDomain"] = beego.AppConfig.String("oss::PreviewUrl")
-	this.Data["PreviewDomain"] = models.ModelConfig.GetConfig("oss", "PreviewUrl")
+	this.Data["PreviewDomain"] = beego.AppConfig.String("oss::PreviewUrl")
+	//this.Data["PreviewDomain"] = models.ModelConfig.GetConfig("oss", "PreviewUrl")
 	this.Data["Chanels"] = this.Chanels()
 	//单页
 	ModelPages := models.Pages{}
