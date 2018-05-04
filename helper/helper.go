@@ -363,6 +363,17 @@ func OfficeToPdf(office string) error {
 	return cmd.Run()
 }
 
+//非office文档(.txt,.mobi,.epub)转pdf文档
+func UnofficeToPdf(file string) error {
+	calibre := beego.AppConfig.DefaultString("calibre", "ebook-convert")
+	pdfile := filepath.Dir(file) + "/" + strings.TrimSuffix(filepath.Base(file), filepath.Ext(file)) + ".pdf"
+	cmd := exec.Command(calibre, file, pdfile)
+	if Debug {
+		beego.Debug("非Office文档转成PDF：", cmd.Args)
+	}
+	return cmd.Run()
+}
+
 //解析svg的原始宽高
 //@param            file            svg文件
 func ParseSvgWidthAndHeight(file string) (width, height int, content string) {

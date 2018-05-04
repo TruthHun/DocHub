@@ -51,11 +51,8 @@ imagick=convert
 #pdf2svg命令
 pdf2svg=pdf2svg
 
-#是否开启svg压缩，开启压缩，需要配置svgo
-compressSvg=true
 
-#svg文件压缩【nodejs模块】
-svgo=svgo
+
 
 #举报原因，参考格式：1:垃圾广告;2:淫秽色情;3:虚假中奖;4:敏感信息;5:人身攻击;6:骚扰他人
 ReportReason=1:垃圾广告;2:淫秽色情;3:虚假中奖;4:敏感信息;5:人身攻击;6:骚扰他人

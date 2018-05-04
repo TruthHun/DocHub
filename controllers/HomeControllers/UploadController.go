@@ -12,12 +12,12 @@ import (
 
 	"os"
 
+	"github.com/TruthHun/DocHub/helper"
+	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"lazybug.me/conv"
 	"lazybug.me/util"
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/models"
 )
 
 type UploadController struct {
@@ -145,10 +145,10 @@ func (this *UploadController) Post() {
 				helper.Logger.Error(err.Error())
 			}
 		case "umd", "epub", "chm", "txt", "mobi": //处理无法转码实现在线浏览的文档
+			//TODO:使用calibre转码处理
 			go models.HandleUnOffice(this.IsLogin, tmpfile, form)
 		default: //处理office文档
 			go models.HandleOffice(this.IsLogin, tmpfile, form)
-			//this.ResponseJson(1, "^.^ 恭喜您，成功上传了一篇文档。感谢您为知识的传承献上自己的一份力量。由于Office文档转码需要些时间，转码成功后方可在线预览，请您稍稍等待")
 		}
 	}
 	if err == nil {
