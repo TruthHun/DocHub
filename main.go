@@ -54,8 +54,6 @@ func main() {
 	fmt.Println("Powered By DocHub")
 	fmt.Println("Author:进击的皇虫(TruthHun@QQ.COM)")
 	fmt.Println("")
-
-	fmt.Println(helper.UnofficeToPdf("./cache/3.txt"))
 	//定义错误和异常处理控制器
 	beego.ErrorController(&HomeControllers.BaseController{})
 	beego.Run()

@@ -65,9 +65,6 @@ xsrfkey = gsrtewrt45324joidsffrtqwe
 xsrfexpire = 3600
 
 
-#搜索API[这个应该设置为在后台可配置]
-SearchApi=http://api.wenku.it/index.php
-
 
 ########以下不要改动######
 

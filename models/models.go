@@ -2,11 +2,9 @@
 package models
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/alexcesaro/mail/mailer"
-	"github.com/astaxie/beego/httplib"
 
 	"github.com/TruthHun/DocHub/helper"
 
@@ -21,12 +19,12 @@ import (
 
 	"os"
 
-	"time"
-
 	"net/mail"
 
 	"os/exec"
 	"strconv"
+
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -319,17 +317,41 @@ func ToTree(params []orm.Params, Node string, value interface{}) []orm.Params {
 //@param            listRows    每页显示记录数
 //@param            accuracy    是否精确搜索
 func Search(wd, sourceType, order string, p, listRows, accuracy int) (res Result) {
-	var (
-		json_str string
-		index           = beego.AppConfig.DefaultString("index", "wenku")
-		api      string = beego.AppConfig.String("SearchApi")
-		err      error
-	)
-	api_url := fmt.Sprintf(api+"?type=%v&index=%v&order=%v&p=%v&listRows=%v&accuracy=%v&wd=%v", helper.UrlEscape(sourceType), index, helper.UrlEscape(order), p, listRows, accuracy, helper.UrlEscape(wd))
-	if json_str, err = httplib.Get(api_url).SetTimeout(5*time.Second, 5*time.Second).String(); err != nil {
-		helper.Logger.Error(err.Error())
+	//TODO:文档搜索功能，之前是使用Coreseek来搭建并提供接口进行搜索的，但是现在coreseek用不了了，后期更换为elasticsearch来实现全文搜索。目前暂时用like查询
+
+	//var (
+	//	json_str string
+	//	index           = beego.AppConfig.DefaultString("index", "wenku")
+	//	api      string = beego.AppConfig.String("SearchApi")
+	//	err      error
+	//)
+	//api_url := fmt.Sprintf(api+"?type=%v&index=%v&order=%v&p=%v&listRows=%v&accuracy=%v&wd=%v", helper.UrlEscape(sourceType), index, helper.UrlEscape(order), p, listRows, accuracy, helper.UrlEscape(wd))
+	//if json_str, err = httplib.Get(api_url).SetTimeout(5*time.Second, 5*time.Second).String(); err != nil {
+	//	helper.Logger.Error(err.Error())
+	//}
+	//json.Unmarshal([]byte(json_str), &res)
+
+	//========== like 查询  ==============
+	//TODO:目前的查询没有排序、没有分类等，需要上elasticsearch
+
+	start := time.Now().UnixNano()
+	res.Word = []string{wd}
+	res.Msg = "ok"
+	res.Status = 1
+	qs := O.QueryTable(TableDoc).Filter("Title__icontains", wd)
+	if res.Total, _ = qs.Count(); res.Total > 0 {
+		var (
+			docs []Document
+			ids  []string
+		)
+		qs.Limit(listRows).Offset((p-1)*listRows).All(&docs, "Id")
+		for _, doc := range docs {
+			ids = append(ids, strconv.Itoa(doc.Id))
+		}
+		res.Ids = strings.Join(ids, ",")
 	}
-	json.Unmarshal([]byte(json_str), &res)
+	end := time.Now().UnixNano()
+	res.Time = float64(end-start) / 1000000000
 	return
 }
 
