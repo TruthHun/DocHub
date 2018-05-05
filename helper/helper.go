@@ -376,7 +376,7 @@ func UnofficeToPdf(file string) error {
 
 //解析svg的原始宽高
 //@param            file            svg文件
-func ParseSvgWidthAndHeight(file string) (width, height int, content string) {
+func ParseSvgWidthAndHeight(file string) (width, height int) {
 	if bs, err := ioutil.ReadFile(file); err == nil {
 		if doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(bs))); err == nil {
 			if data, b := doc.Find("svg").Attr("viewBox"); b {
@@ -386,13 +386,60 @@ func ParseSvgWidthAndHeight(file string) (width, height int, content string) {
 					height = Interface2Int(slice[3])
 				}
 			}
-			//content表示文本内容
-			content = strings.Replace(doc.Text(), " ", "", -1) //移除空格
-			content = strings.Replace(content, "\t", "", -1)   //移除tab
-			content = strings.Replace(content, "\n", " ", -1)  //换行变空格
 		}
 	} else {
 		Logger.Error(err.Error())
+	}
+	return
+}
+
+//压缩svg文件
+//@param			file			需要压缩的svg文件
+//@return			err				错误
+func CompressSvg(file string) (err error) {
+	var b []byte
+	if b, err = ioutil.ReadFile(file); err == nil {
+		str := string(b)
+		str = strings.Replace(str, "\t", "", -1)
+		str = strings.Replace(str, "\n", "", -1)
+		str = strings.Replace(str, "\r", "", -1)
+		//去除标签之间的空格，如果是存在代码预览的页面，不要替换空格，否则预览的代码会错乱
+		r, _ := regexp.Compile(">\\s{1,}<")
+		str = r.ReplaceAllString(str, "><")
+		//多个空格替换成一个空格
+		r2, _ := regexp.Compile("\\s{1,}")
+		str = r2.ReplaceAllString(str, " ")
+		err = ioutil.WriteFile(file, []byte(str), os.ModePerm)
+	}
+	return
+}
+
+//解析svg的原始宽高(TODO:水印效果不是很好，待优化)
+//@param            file            svg文件
+//@param			text			水印文字
+//@param			width			svg文件宽
+//@param			height			svg文件高
+//@param			num				水印个数，默认为1
+//@return			err				错误
+func SvgTextWatermark(file, text string, width, height int, num ...int) (err error) {
+	if text != "" {
+		var b []byte
+		n := 1
+		if len(num) > 0 && num[0] > 0 {
+			n = num[0]
+		}
+		x := width / n
+		y := height / n
+		watermark := []string{}
+		for i := 0; i < n; i++ {
+			watermark = append(watermark, fmt.Sprintf(`<text x="%v" y="%v" style="fill:rgba(0,0,0,0.2)" transform="scale(2)">%v</text>`, x*i, y*i, text))
+		}
+
+		if b, err = ioutil.ReadFile(file); err == nil {
+			str := string(b)
+			str = strings.Replace(str, "</svg>", strings.Join(watermark, "")+"</svg>", -1)
+			err = ioutil.WriteFile(file, []byte(str), os.ModePerm)
+		}
 	}
 	return
 }
@@ -693,3 +740,12 @@ func DownFile(fileUrl, savePath string, cookies string) (md5str, localFile, file
 	err = os.Rename(tmpFile, localFile) //重命名文件
 	return
 }
+
+//
+////给SVG加文字水印
+////@param			svgfile			svg文件
+////@param			text			水印文字
+////@return			err				nil时表示添加水印成功
+//func WatermarkByText(svgfile, text string) (err error) {
+//	return
+//}

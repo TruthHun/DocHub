@@ -55,6 +55,8 @@ calibre=ebook-convert
 # 是否压缩svg（建议压缩）
 compressSvg=true
 
+# SVG水印文字【图片水印，后期再实现】
+watermark=DocHub.ME
 
 #举报原因，参考格式：1:垃圾广告;2:淫秽色情;3:虚假中奖;4:敏感信息;5:人身攻击;6:骚扰他人
 #TODO:这个要写在数据库配置表里面，暂时先这样吧
