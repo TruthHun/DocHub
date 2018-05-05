@@ -19,8 +19,6 @@ SessionProviderConfig=cache/session
 SessionName=dochub
 
 
-#爬虫采集下载的文档在本地的存放路径
-
 
 cookieSecret=sfgowtrfgjqwetryfqef8sd
 
@@ -51,10 +49,15 @@ imagick=convert
 #pdf2svg命令
 pdf2svg=pdf2svg
 
+#calibre转化命令[下一版本再加上这个配置项]
+calibre=ebook-convert
 
+# 是否压缩svg（建议压缩）
+compressSvg=true
 
 
 #举报原因，参考格式：1:垃圾广告;2:淫秽色情;3:虚假中奖;4:敏感信息;5:人身攻击;6:骚扰他人
+#TODO:这个要写在数据库配置表里面，暂时先这样吧
 ReportReason=1:垃圾广告;2:淫秽色情;3:虚假中奖;4:敏感信息;5:人身攻击;6:骚扰他人
 
 #本地浏览文件
@@ -63,6 +66,7 @@ ReportReason=1:垃圾广告;2:淫秽色情;3:虚假中奖;4:敏感信息;5:人�
 enablexsrf = true
 xsrfkey = gsrtewrt45324joidsffrtqwe
 xsrfexpire = 3600
+
 
 
 

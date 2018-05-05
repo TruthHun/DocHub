@@ -473,7 +473,6 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	defer os.RemoveAll(folder)
 	pdf2svg := beego.AppConfig.String("pdf2svg")                  //pdf转svg命令
 	compress := beego.AppConfig.DefaultBool("compressSvg", false) //是否压缩svg
-	//svgo := beego.AppConfig.String("svgo")                        //svg压缩命令
 	parseNum := totalPage/2 + 1
 
 	//文本内容摘要
