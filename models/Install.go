@@ -38,7 +38,7 @@ func installAdmin() {
 	}
 	beego.Info("初始化管理员数据")
 	if _, err := O.Insert(&admin); err != nil {
-		helper.Logger.Error("初始化管理员数据失败：", err.Error())
+		helper.Logger.Error("初始化管理员数据失败：" + err.Error())
 	}
 }
 
@@ -68,7 +68,7 @@ func installSys() {
 	}
 	beego.Info("初始化系统数据")
 	if _, err := O.Insert(&sys); err != nil {
-		helper.Logger.Error("初始化系统数据失败：", err.Error())
+		helper.Logger.Error("初始化系统数据失败：" + err.Error())
 	}
 }
 
@@ -110,7 +110,7 @@ func installFriendlinks() {
 		},
 	}
 	if _, err := O.InsertMulti(len(friends), friends); err != nil {
-		helper.Logger.Error("初始化友链数据失败：", err.Error())
+		helper.Logger.Error("初始化友链数据失败：" + err.Error())
 	}
 }
 
@@ -170,7 +170,7 @@ func installPages() {
 		},
 	}
 	if _, err := O.InsertMulti(len(pages), &pages); err != nil {
-		helper.Logger.Error("初始化单页数据失败：%v", err.Error())
+		helper.Logger.Error("初始化单页数据失败：" + err.Error())
 	}
 }
 
@@ -263,20 +263,20 @@ func installSeo() {
 		},
 	}
 	if _, err := O.InsertMulti(len(seos), &seos); err != nil {
-		helper.Logger.Error("初始化SEO数据失败：%v", err.Error())
+		helper.Logger.Error("初始化SEO数据失败：" + err.Error())
 	}
 }
 
 //安装分类初始数据
 func installCategory() {
 	sql := `INSERT INTO hc_category (Id, Pid, Title, Cnt, Sort, Alias, Status) VALUES
-		(1, 0, '教育频道', 1, 0, 'edu', 1),
+		(1, 0, '教育频道', 0, 0, 'edu', 1),
 		(2, 0, '专业资料', 0, 1, 'pro', 1),
 		(3, 0, '实用文档', 0, 2, 'pra', 1),
 		(4, 0, '资格考试', 0, 3, 'exam', 1),
 		(5, 0, '生活休闲', 0, 4, 'life', 1),
 		(7, 1, '幼儿教育', 0, 0, '', 1),
-		(8, 1, '小学教育', 1, 0, '', 1),
+		(8, 1, '小学教育', 0, 0, '', 1),
 		(9, 1, '初中教育', 0, 0, '', 1),
 		(10, 1, '高中教育', 0, 0, '', 1),
 		(11, 1, '职业教育', 0, 0, '', 1),
@@ -302,7 +302,7 @@ func installCategory() {
 		(32, 8, '语文', 0, 0, '', 1),
 		(33, 8, '数学', 0, 0, '', 1),
 		(34, 8, '英语', 0, 0, '', 1),
-		(35, 8, '作文', 1, 0, '', 1),
+		(35, 8, '作文', 0, 0, '', 1),
 		(36, 8, '其它课程', 0, 0, '', 1),
 		(37, 9, '作文库', 0, 0, '', 1),
 		(38, 9, '语文', 0, 0, '', 1),
@@ -602,6 +602,6 @@ func installCategory() {
 		(334, 10, '高考', 0, 0, '', 1);
 `
 	if _, err := O.Raw(sql).Exec(); err != nil {
-		helper.Logger.Error("初始化分类数据失败：%v", err.Error())
+		helper.Logger.Error("初始化分类数据失败：" + err.Error())
 	}
 }
