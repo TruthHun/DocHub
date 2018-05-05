@@ -140,7 +140,7 @@ textarea{resize: none;}
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control, .select2-search input[type=text][disabled], .select2-search input[type=text][readonly], fieldset[disabled] .select2-search input[type=text]{color: #333333}
 .thumbnail-avatar{border-radius: 50% !important;;}
 .thumbnail-avatar img{border-radius: 50% !important;;}
-.wenku-single-page{margin-top:20px;word-break: break-all;line-height: 200%;}
+.wenku-single-page{margin-top:20px;word-break: break-all;line-height: 200%;min-height: 300px;}
 .wenku-single-page p{text-indent:2em;font-size:14px;margin-bottom: 10px;line-height: 200%;margin-top:10px;}
 .wenku-single-page img{ max-width:100%;display: block;}
 .wenku-single-pages-info span{margin-right: 30px;}

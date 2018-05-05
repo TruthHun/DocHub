@@ -18,7 +18,7 @@ type Category struct {
 	Status bool   `orm:"default(true);column(Status)"`     //分类或频道状态，0表示关闭，1表示启用
 }
 
-// 不良信息举报多字段唯一索引
+// 多字段唯一索引
 func (this *Category) TableUnique() [][]string {
 	return [][]string{
 		[]string{"Pid", "Title"},

@@ -127,6 +127,9 @@ func Init() {
 	}
 	O = orm.NewOrm()
 
+	//安装初始数据
+	install()
+
 	//全局变量赋值
 	ModelConfig.UpdateGlobal() //配置文件全局变量更新
 	ModelSys.UpdateGlobal()    //更新系统配置的全局变量

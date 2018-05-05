@@ -56,5 +56,5 @@ uploads/
 /logs/*.log
 /cache/*
 DocHub
-*.sql
 *.conf
+*.lock

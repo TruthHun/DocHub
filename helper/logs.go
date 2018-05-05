@@ -11,7 +11,7 @@ var Logger = logs.NewLogger()
 //日志初始化
 func InitLogs() {
 	//初始化日志各种配置
-	LogsConf := `{"filename":"logs/wenku.it.log","level":7,"maxlines":5000,"maxsize":0,"daily":true,"maxdays":15}`
+	LogsConf := `{"filename":"logs/dochub.log","level":7,"maxlines":5000,"maxsize":0,"daily":true,"maxdays":15}`
 	Logger.SetLogger(logs.AdapterFile, LogsConf)
 	if beego.AppConfig.String("runmode") == "dev" {
 		Logger.SetLogger("console")
