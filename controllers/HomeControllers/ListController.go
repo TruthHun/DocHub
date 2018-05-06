@@ -7,11 +7,11 @@ import (
 
 	"time"
 
+	"github.com/TruthHun/DocHub/helper"
+	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego/orm"
 	"lazybug.me/conv"
 	"lazybug.me/util"
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/models"
 )
 
 type ListController struct {
@@ -26,6 +26,9 @@ func (this *ListController) Get() {
 		totalRows   = 0
 		seostr      []string
 	)
+	if listRows == 0 {
+		listRows = 10
+	}
 	chanel := this.GetString(":chanel")
 	params := conv.Path2Map(this.GetString(":splat"))
 	chanels, rows, err := models.GetList("category", 1, 1, orm.NewCondition().And("Alias", chanel))

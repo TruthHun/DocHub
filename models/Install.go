@@ -67,6 +67,7 @@ func installSys() {
 		Sign:      5,
 		Question:  "DocHub文库的中文名是什么？",
 		Answer:    "多哈",
+		ListRows:  10,
 	}
 	beego.Info("初始化系统数据")
 	if _, err := O.Insert(&sys); err != nil {
