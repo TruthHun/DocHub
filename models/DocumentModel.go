@@ -215,6 +215,7 @@ func HandleExistDoc(uid int, form FormUpload) error {
 //@param            form            表单
 func HandlePdf(uid int, tmpfile string, form FormUpload) error {
 	sys, _ := ModelSys.Get()
+	//TODO:系统后台可以配置，文档只提供多少页给读者阅读
 	if sys.PreviewPage < 10 {
 		sys.PreviewPage = 10
 	}

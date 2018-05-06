@@ -79,7 +79,7 @@ func (this *UploadController) Post() {
 	//允许上传的文档格式
 	allowedExt := ",doc,docx,rtf,wps,odt,ppt,pptx,pps,ppsx,dps,odp,pot,xls,xlsx,et,ods,txt,pdf,chm,epub,umd,mobi,"
 
-	//写死的范围，0-20
+	//写死的范围，0-20，即文档收费范围
 	form.Price = util.NumberRange(form.Price, 0, 20)
 
 	//创建文档模型对象
@@ -137,7 +137,6 @@ func (this *UploadController) Post() {
 		if info, err := os.Stat(tmpfile); err == nil {
 			form.Size = int(info.Size())
 		}
-
 		switch ext {
 		case "pdf": //处理pdf文档
 			err = models.HandlePdf(this.IsLogin, tmpfile, form)
