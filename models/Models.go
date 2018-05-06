@@ -464,6 +464,11 @@ func joinOn(table string, usedTables []string, on []map[string]string) (newon []
 //@return           files           生成的pdf文件
 //@return           err             错误
 func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
+	var (
+		width  int
+		height int
+	)
+
 	//文件夹
 	folder := strings.TrimSuffix(strings.ToLower(file), ".pdf")
 	folder = strings.TrimSuffix(folder, "/")
@@ -473,8 +478,6 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	defer os.RemoveAll(folder)
 	pdf2svg := beego.AppConfig.String("pdf2svg")                  //pdf转svg命令
 	compress := beego.AppConfig.DefaultBool("compressSvg", false) //是否压缩svg
-	parseNum := totalPage/2 + 1
-
 	//处理pdf转svg
 	for i := 0; i < totalPage; i++ {
 		num := i + 1
@@ -487,22 +490,22 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 		if err := cmd.Run(); err != nil {
 			helper.Logger.Error(err.Error())
 		} else {
-			if num == 1 { //封面处理
+			if num == 1 {
+				//封面处理
 				if cover, err := helper.ConvertToJpeg(svgfile, false); err == nil {
 					ModelOss.MoveToOss(cover, md5str+".jpg", true, true)
 				}
-			}
-			//存在svg，则按svg去处理
-			if i == parseNum {
-				width, height := helper.ParseSvgWidthAndHeight(svgfile)
-				if num == parseNum { //宽高处理
-					if _, err := UpdateByField(TableDocStore, map[string]interface{}{"Width": width, "Height": height}, "Md5", md5str); err != nil {
-						helper.Logger.Error(err.Error())
-					}
+				//获取svg的宽高(pt)
+				width, height = helper.ParseSvgWidthAndHeight(svgfile)
+				if _, err := UpdateByField(TableDocStore, map[string]interface{}{"Width": width, "Height": height}, "Md5", md5str); err != nil {
+					helper.Logger.Error(err.Error())
 				}
-				helper.SvgTextWatermark(svgfile, beego.AppConfig.String("watermark"), width, height, 5)
 			}
-			helper.CompressSvg(file)
+			//添加文字水印
+			helper.SvgTextWatermark(svgfile, beego.AppConfig.String("watermark"), width/6, height/4)
+
+			//压缩svg内容
+			helper.CompressSvg(svgfile)
 			ModelOss.MoveToOss(svgfile, md5str+"/"+strconv.Itoa(num)+".svg", true, true, compress)
 		}
 	}

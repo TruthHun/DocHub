@@ -379,11 +379,15 @@ func UnofficeToPdf(file string) error {
 func ParseSvgWidthAndHeight(file string) (width, height int) {
 	if bs, err := ioutil.ReadFile(file); err == nil {
 		if doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(bs))); err == nil {
-			if data, b := doc.Find("svg").Attr("viewBox"); b {
-				slice := strings.Split(data, " ")
-				if len(slice) == 4 {
-					width = Interface2Int(slice[2])
-					height = Interface2Int(slice[3])
+			sel := doc.Find("svg")
+			if w, ok := sel.Attr("width"); ok {
+				if slice := strings.Split(strings.TrimRight(w, "pt"), "."); len(slice) > 0 {
+					width = Interface2Int(slice[0])
+				}
+			}
+			if h, ok := sel.Attr("height"); ok {
+				if slice := strings.Split(strings.TrimRight(h, "pt"), "."); len(slice) > 0 {
+					height = Interface2Int(slice[0])
 				}
 			}
 		}
@@ -417,24 +421,17 @@ func CompressSvg(file string) (err error) {
 //解析svg的原始宽高(TODO:水印效果不是很好，待优化)
 //@param            file            svg文件
 //@param			text			水印文字
-//@param			width			svg文件宽
-//@param			height			svg文件高
-//@param			num				水印个数，默认为1
+//@param			x				x轴线位置
+//@param			y				y轴位置
 //@return			err				错误
-func SvgTextWatermark(file, text string, width, height int, num ...int) (err error) {
+func SvgTextWatermark(file, text string, x, y int) (err error) {
+	if Debug {
+		beego.Debug("svg添加水印", file, text, "位置", x, y)
+	}
 	if text != "" {
 		var b []byte
-		n := 1
-		if len(num) > 0 && num[0] > 0 {
-			n = num[0]
-		}
-		x := width / n
-		y := height / n
 		watermark := []string{}
-		for i := 0; i < n; i++ {
-			watermark = append(watermark, fmt.Sprintf(`<text x="%v" y="%v" style="fill:rgba(0,0,0,0.2)" transform="scale(2)">%v</text>`, x*i, y*i, text))
-		}
-
+		watermark = append(watermark, fmt.Sprintf(`<text x="%v" y="%v" style="fill:rgba(0,0,0,0.2)" transform="scale(2)">%v</text>`, x, y, text))
 		if b, err = ioutil.ReadFile(file); err == nil {
 			str := string(b)
 			str = strings.Replace(str, "</svg>", strings.Join(watermark, "")+"</svg>", -1)

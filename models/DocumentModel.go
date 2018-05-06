@@ -261,7 +261,6 @@ func HandlePdf(uid int, tmpfile string, form FormUpload) error {
 		Status:      1,
 		Price:       form.Price,
 	}
-
 	//docinfo.Id,docinfo.DsId
 	if _, id, err := O.ReadOrCreate(&ds, "Md5"); err == nil {
 
@@ -277,7 +276,7 @@ func HandlePdf(uid int, tmpfile string, form FormUpload) error {
 				//处理pdf文档，转成svg图片，再将svg图片压缩，上传到OSS预览库
 				go func(tmpfile, md5str string, totalPage int) {
 					//把原文档移动到存档库，先暂时不要删除本地的原PDF文件
-					go ModelOss.MoveToOss(tmpfile, md5str+".pdf", false, false)
+					ModelOss.MoveToOss(tmpfile, md5str+".pdf", false, false)
 
 					//将pdf文件转成svg
 					if err := Pdf2Svg(tmpfile, totalPage, md5str); err != nil {
