@@ -3,8 +3,8 @@ package routers
 import (
 	"github.com/TruthHun/DocHub/controllers/AdminControllers"
 
-	"github.com/astaxie/beego"
 	"github.com/TruthHun/DocHub/controllers/HomeControllers"
+	"github.com/astaxie/beego"
 )
 
 func init() {
@@ -51,6 +51,7 @@ func front() {
 	beego.Router("/downfree", &HomeControllers.ViewController{}, "get:DownFree")
 	beego.Router("/doc/check", &HomeControllers.BaseController{}, "get:DocExist")
 	beego.Router("/pages/:page", &HomeControllers.BaseController{}, "get:Pages")
+	beego.Router("/*", &HomeControllers.BaseController{}, "get:StaticFile")
 }
 
 //后台路由

@@ -41,10 +41,17 @@ import (
 	"rsc.io/pdf"
 )
 
-var Debug = false
+var (
+	Debug     = false
+	StaticExt = make(map[string]bool)
+)
 
 func init() {
 	Debug = beego.AppConfig.String("runmode") == "dev"
+	exts := strings.Split(beego.AppConfig.String("StaticExt"), ",")
+	for _, ext := range exts {
+		StaticExt[strings.ToLower(strings.TrimSpace(ext))] = true
+	}
 }
 
 //xmd5加密，扩展加密

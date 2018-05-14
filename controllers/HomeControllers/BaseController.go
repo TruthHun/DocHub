@@ -7,6 +7,10 @@ import (
 	"fmt"
 	"time"
 
+	"path/filepath"
+
+	"io/ioutil"
+
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego"
@@ -204,4 +208,17 @@ func (this *BaseController) Pages() {
 	this.Data["Lists"], _, _ = models.ModelPages.List(20, 1)
 	this.Data["PageId"] = "wenku-content"
 	this.TplName = "pages.html"
+}
+
+//静态文件
+func (this *BaseController) StaticFile() {
+	splat := this.GetString(":splat")
+	ext := strings.ToLower(strings.TrimSpace(filepath.Ext(splat)))
+	if ok, _ := helper.StaticExt[strings.ToLower(ext)]; ok && ext != ".conf" {
+		if b, err := ioutil.ReadFile(splat); err == nil {
+			this.Ctx.ResponseWriter.Write(b)
+			return
+		}
+	}
+	this.Error404()
 }
