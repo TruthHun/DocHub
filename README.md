@@ -266,13 +266,3 @@ https://www.sogou.com/web?query=filetype%3Apdf+%E5%85%A5%E9%97%A8%E6%95%99%E7%A8
 <a name="wxpay"></a>
 ### 微信打赏赞助
 ![微信打赏](static/tutorial/wxpay.jpg)
-
-
-
-
-
-
-
-
-
-
