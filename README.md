@@ -1,5 +1,7 @@
 ![LOGO](static/Home/default/img/logo.png)
 
+------
+
 - [文库简介](#intro)
     - [程序命名](#name)
 - [主要技术栈](#stack)
@@ -230,7 +232,7 @@ https://www.sogou.com/web?query=filetype%3Apdf+%E5%85%A5%E9%97%A8%E6%95%99%E7%A8
 <a name="tpl"></a>
 ## 文库模板
 
-`DocHub`文库的前端模板，包括PC模板和移动端模板，也会放出来。但是，模板可能跟套在程序上的有差距，毕竟再开发的时候有对页面做了一些调整。
+`DocHub`文库的前端模板，包括PC模板和移动端模板，也会放出来。但是，模板可能跟套在程序上的有差距，毕竟在开发的时候有对页面做了一些调整。
 
 <a name="tpl-pc"></a>
 ### PC端模板
