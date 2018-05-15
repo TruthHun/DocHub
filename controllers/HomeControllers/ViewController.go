@@ -7,10 +7,9 @@ import (
 
 	"time"
 
-	"github.com/astaxie/beego/orm"
-	"lazybug.me/conv"
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
+	"github.com/astaxie/beego/orm"
 )
 
 type ViewController struct {
@@ -61,7 +60,7 @@ func (this *ViewController) Get() {
 	models.Regulate(models.TableDocInfo, "Vcnt", 1, "`Id`=?", id)
 	this.Data["PageId"] = "wenku-content"
 	this.Data["Doc"] = doc
-	pages, _ := conv.InterfaceToInt(doc["Page"])
+	pages := helper.Interface2Int(doc["Page"])
 	PageShow := 5 //TODO 刚开始显示供浏览的页数，后面需要设置为后台可控
 	if pages > PageShow {
 		this.Data["PreviewPages"] = make([]string, PageShow)

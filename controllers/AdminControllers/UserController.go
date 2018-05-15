@@ -7,9 +7,7 @@ import (
 
 	"strings"
 
-	"lazybug.me/conv"
-	"lazybug.me/util"
-	helper2 "github.com/TruthHun/DocHub/helper"
+	"github.com/TruthHun/DocHub/helper/conv"
 	"github.com/TruthHun/DocHub/models"
 )
 
@@ -38,15 +36,15 @@ func (this *UserController) List() {
 
 	//页码处理
 	if _, ok := params["p"]; ok {
-		p = helper2.Interface2Int(params["p"])
+		p = helper.Interface2Int(params["p"])
 	} else {
 		p, _ = this.GetInt("p")
 	}
-	p = util.NumberRange(p, 1, 1000000)
+	p = helper.NumberRange(p, 1, 1000000)
 
 	//搜索的用户id处理
 	if _, ok := params["id"]; ok {
-		id = helper2.Interface2Int(params["id"])
+		id = helper.Interface2Int(params["id"])
 	} else {
 		id, _ = this.GetInt("id")
 	}

@@ -8,10 +8,9 @@ import (
 	"time"
 
 	"github.com/TruthHun/DocHub/helper"
+	"github.com/TruthHun/DocHub/helper/conv"
 	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego/orm"
-	"lazybug.me/conv"
-	"lazybug.me/util"
 )
 
 type ListController struct {
@@ -46,7 +45,7 @@ func (this *ListController) Get() {
 	}
 	if v, ok := params["p"]; ok {
 		//页码处理
-		p = util.NumberRange(helper.Interface2Int(v), 1, 100)
+		p = helper.NumberRange(helper.Interface2Int(v), 1, 100)
 	}
 	orderby := []string{"Sort", "Title"} //分类排序
 	totalRows = helper.Interface2Int(chanels[0]["Cnt"])

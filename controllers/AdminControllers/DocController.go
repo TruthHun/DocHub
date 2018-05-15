@@ -7,11 +7,10 @@ import (
 
 	"strings"
 
-	"github.com/astaxie/beego/orm"
-	"lazybug.me/conv"
-	"lazybug.me/util"
 	"github.com/TruthHun/DocHub/helper"
+	"github.com/TruthHun/DocHub/helper/conv"
 	"github.com/TruthHun/DocHub/models"
+	"github.com/astaxie/beego/orm"
 )
 
 type DocController struct {
@@ -59,7 +58,7 @@ func (this *DocController) List() {
 	params := conv.Path2Map(this.GetString(":splat"))
 	if v, ok := params["p"]; ok {
 		//页码处理
-		p = util.NumberRange(helper.Interface2Int(v), 1, 100)
+		p = helper.NumberRange(helper.Interface2Int(v), 1, 100)
 	}
 	if v, ok := params["uid"]; ok {
 		//页码处理
@@ -109,7 +108,7 @@ func (this *DocController) List() {
 func (this *DocController) Recycle() {
 	p, _ := this.GetInt("p", 1)
 	//页码处理
-	p = util.NumberRange(p, 1, 10000)
+	p = helper.NumberRange(p, 1, 10000)
 	listRows := this.Sys.ListRows
 	this.Data["Lists"], _, _ = models.ModelDocRecycle.RecycleList(p, listRows)
 	fmt.Println(this.Data["Lists"])

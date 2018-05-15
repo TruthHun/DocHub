@@ -11,7 +11,6 @@ import (
 	_ "github.com/TruthHun/DocHub/routers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"lazybug.me/util"
 )
 
 //初始化函数
@@ -29,7 +28,7 @@ func init() {
 	beego.AddFuncMap("FormatByte", helper.FormatByte)
 	beego.AddFuncMap("CalcInt", helper.CalcInt)
 	beego.AddFuncMap("StarVal", helper.StarVal)
-	beego.AddFuncMap("Equal", util.Equal)
+	beego.AddFuncMap("Equal", helper.Equal)
 	beego.AddFuncMap("SimpleList", SimlpeList)                          //简易的文档列表
 	beego.AddFuncMap("HandlePageNum", HandlePageNum)                    //处理文档页码为0的显示问题
 	beego.AddFuncMap("DoesCollect", DoesCollect)                        //判断用户是否已收藏了该文档

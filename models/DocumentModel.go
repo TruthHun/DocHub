@@ -11,7 +11,6 @@ import (
 	"errors"
 
 	"github.com/astaxie/beego/orm"
-	"lazybug.me/conv"
 )
 
 //文档表
@@ -144,7 +143,7 @@ func (this *Document) SimpleList(condition string, limit int, orderField ...stri
 		odr := strings.ToLower(orderField[0])
 		switch odr {
 		case "ccnt", "dcnt", "vcnt", "score":
-			order = conv.UpperFirst(odr)
+			order = helper.UpperFirst(odr)
 		default:
 			order = "Id"
 		}

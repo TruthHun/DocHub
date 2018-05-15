@@ -13,11 +13,10 @@ import (
 	"os"
 
 	"github.com/TruthHun/DocHub/helper"
+	"github.com/TruthHun/DocHub/helper/conv"
 	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"lazybug.me/conv"
-	"lazybug.me/util"
 )
 
 type UploadController struct {
@@ -80,7 +79,7 @@ func (this *UploadController) Post() {
 	allowedExt := ",doc,docx,rtf,wps,odt,ppt,pptx,pps,ppsx,dps,odp,pot,xls,xlsx,et,ods,txt,pdf,chm,epub,umd,mobi,"
 
 	//写死的范围，0-20，即文档收费范围
-	form.Price = util.NumberRange(form.Price, 0, 20)
+	form.Price = helper.NumberRange(form.Price, 0, 20)
 
 	//创建文档模型对象
 	//ModelDoc := models.Document{}

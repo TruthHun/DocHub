@@ -3,9 +3,8 @@ package HomeControllers
 import (
 	"strings"
 
-	"lazybug.me/conv"
-	"lazybug.me/util"
 	"github.com/TruthHun/DocHub/helper"
+	"github.com/TruthHun/DocHub/helper/conv"
 	"github.com/TruthHun/DocHub/models"
 )
 
@@ -47,7 +46,7 @@ func (this *SearchController) Get() {
 	}
 
 	//页码处理
-	p = util.NumberRange(p, 1, 100)
+	p = helper.NumberRange(p, 1, 100)
 	res := models.Search(params["wd"], params["type"], params["sort"], p, listRows, 1)
 	if res.Total > 0 && len(res.Ids) > 0 {
 		data := models.ModelDoc.GetDocsByIds(res.Ids)

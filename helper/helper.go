@@ -34,10 +34,10 @@ import (
 	"path/filepath"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/TruthHun/DocHub/helper/crawl"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
 	"github.com/huichen/sego"
-	"lazybug.me/crawl"
 	"rsc.io/pdf"
 )
 
@@ -52,6 +52,11 @@ func init() {
 	for _, ext := range exts {
 		StaticExt[strings.ToLower(strings.TrimSpace(ext))] = true
 	}
+}
+
+//比较两个内容的字符串类型是否相等
+func Equal(itf1, itf2 interface{}) bool {
+	return fmt.Sprintf("%v", itf1) == fmt.Sprintf("%v", itf2)
 }
 
 //xmd5加密，扩展加密
@@ -756,3 +761,26 @@ func DownFile(fileUrl, savePath string, cookies string) (md5str, localFile, file
 //func WatermarkByText(svgfile, text string) (err error) {
 //	return
 //}
+
+//数字变化范围
+//@param            val             int         需要处理的参数数字
+//@param            min             int         最小值
+//@param            max             int         最大值
+//@return                           int         返回最大值与最小值之间的值
+func NumberRange(val, min, max int) int {
+	if val < min {
+		return min
+	}
+	if val > max {
+		return max
+	}
+	return val
+}
+
+//首字母大写
+func UpperFirst(str string) string {
+	if len(str) > 0 {
+		strings.Replace(str, str[0:1], strings.ToUpper(str[0:1]), 1)
+	}
+	return str
+}

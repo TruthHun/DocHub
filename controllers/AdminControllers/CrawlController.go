@@ -3,9 +3,9 @@ package AdminControllers
 import (
 	"strings"
 
-	"github.com/astaxie/beego/orm"
-	"lazybug.me/conv"
+	"github.com/TruthHun/DocHub/helper/conv"
 	"github.com/TruthHun/DocHub/models"
+	"github.com/astaxie/beego/orm"
 )
 
 type CrawlController struct {

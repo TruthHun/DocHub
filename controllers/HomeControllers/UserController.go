@@ -9,13 +9,12 @@ import (
 
 	"os"
 
+	"github.com/TruthHun/DocHub/helper"
+	"github.com/TruthHun/DocHub/helper/conv"
+	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
-	"lazybug.me/conv"
-	"lazybug.me/util"
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/models"
 )
 
 type UserController struct {
@@ -526,7 +525,7 @@ func (this *UserController) FindPwd() {
 			"repassword": {"required", "mincount:6"},
 		}
 
-		params, errs := util.Valid(this.Ctx.Request.Form, rules)
+		params, errs := helper.Valid(this.Ctx.Request.Form, rules)
 		fmt.Println(this.Ctx.Request.Form, params, errs)
 		if len(errs) > 0 {
 			if _, ok := errs["username"]; ok {
@@ -649,7 +648,7 @@ func (this *UserController) DocEdit() {
 							"Intro":  {"required"},
 							"Price":  {"required", "int"},
 						}
-						params, errs := util.Valid(this.Ctx.Request.Form, ruels)
+						params, errs := helper.Valid(this.Ctx.Request.Form, ruels)
 						if len(errs) > 0 {
 							this.ResponseJson(0, "参数错误")
 						}
@@ -788,7 +787,7 @@ func (this *UserController) Edit() {
 			"RePassword":  {"required"},
 			"Intro":       {"required"},
 		}
-		params, errs := util.Valid(this.Ctx.Request.Form, rules)
+		params, errs := helper.Valid(this.Ctx.Request.Form, rules)
 		if len(errs) > 0 {
 			this.ResponseJson(0, "参数不正确")
 		}
