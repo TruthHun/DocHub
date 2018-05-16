@@ -6,6 +6,7 @@
 - [文库简介](#intro)
     - [程序命名](#name)
 - [源码地址](#source)
+- [QQ交流群](#qqgroup)
 - [主要技术栈](#stack)
     - [后端](#be)
     - [前端](#fe)
@@ -63,6 +64,14 @@
 
 - GitHub: https://github.com/truthhun/DocHub
 - Gitee: https://gitee.com/truthhun/DocHub
+
+<a name="qqgroup"></a>
+## QQ交流群
+为方便相互学习和交流，建了个QQ群，加群请备注`来自DocHub`
+
+> QQ交流群：457803862(猿军团)
+
+同时要说明的是，这个是学习交流群，如果是程序相关问题，请提交issue，再把issue链接发群里。
 
 
 <a name="stack"></a>
