@@ -1,0 +1,32 @@
+[db]
+#数据库配置
+
+#内网
+hostInternal=localhost
+
+#外网
+hostOuter=localhost
+
+# 端口
+port=3306
+
+# 数据库用户名
+user=root
+
+# 数据库密码
+password=
+
+# 使用的数据库
+database=dochub
+
+# 表前缀
+prefix=hc_
+
+# 字符类型
+charset=utf8
+
+#设置最大空闲连接
+maxIdle= 50
+
+#设置最大数据库连接
+maxConn= 300
