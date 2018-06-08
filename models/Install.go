@@ -1,30 +1,20 @@
 package models
 
 import (
-	"os"
-
 	"time"
-
-	"io/ioutil"
 
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego"
 )
 
 func install() {
-	//存在安装锁定文件，不安装初始化数据
-	lock := "install.lock"
-	if _, err := os.Stat(lock); err == nil {
-		helper.Logger.Info("存在数据安装锁定文件(%v),不执行初始化数据安装，如需执行初始化安装，请删掉该文件。", lock)
-	} else {
-		installAdmin()
-		installCategory()
-		installFriendlinks()
-		installPages()
-		installSeo()
-		installSys()
-		ioutil.WriteFile("install.lock", []byte(""), os.ModePerm)
-	}
+	//数据初始化，如果数据已经存在，则不会继续写入(因为数据已存在，继续写入会报错，所以没影响)
+	installAdmin()
+	installCategory()
+	installFriendlinks()
+	installPages()
+	installSeo()
+	installSys()
 }
 
 //安装管理员初始数据
@@ -37,7 +27,7 @@ func installAdmin() {
 		Code:     "芝麻开门",
 	}
 	beego.Info("初始化管理员数据")
-	if _, err := O.Insert(&admin); err != nil {
+	if _, _, err := O.ReadOrCreate(&admin, "Id"); err != nil {
 		helper.Logger.Error("初始化管理员数据失败：" + err.Error())
 	}
 }
@@ -70,13 +60,18 @@ func installSys() {
 		ListRows:  10,
 	}
 	beego.Info("初始化系统数据")
-	if _, err := O.Insert(&sys); err != nil {
+	if _, _, err := O.ReadOrCreate(&sys, "Id"); err != nil {
 		helper.Logger.Error("初始化系统数据失败：" + err.Error())
 	}
 }
 
 //安装友链初始数据
 func installFriendlinks() {
+	var friend = new(Friend)
+	if O.QueryTable(friend).Filter("id__gt", 0).One(friend); friend.Id > 0 {
+		return
+	}
+
 	now := int(time.Now().Unix())
 	var friends = []Friend{
 		Friend{
@@ -118,6 +113,7 @@ func installFriendlinks() {
 }
 
 //安装单页初始数据
+//存在唯一索引Alias，已存在的数据不会继续写入
 func installPages() {
 	now := int(time.Now().Unix())
 	var pages = []Pages{
@@ -172,12 +168,11 @@ func installPages() {
 			Status:      true,
 		},
 	}
-	if _, err := O.InsertMulti(len(pages), &pages); err != nil {
-		helper.Logger.Error("初始化单页数据失败：" + err.Error())
-	}
+	O.InsertMulti(len(pages), &pages)
 }
 
 //安装SEO初始数据
+//存在唯一索引Page字段，已存在数据，不会继续写入
 func installSeo() {
 	var seos = []Seo{
 		Seo{
@@ -271,6 +266,7 @@ func installSeo() {
 }
 
 //安装分类初始数据
+//带有主键id数据的初始化，如果已经存在数据，则不会继续写入
 func installCategory() {
 	sql := `INSERT INTO hc_category (Id, Pid, Title, Cnt, Sort, Alias, Status) VALUES
 		(1, 0, '教育频道', 0, 0, 'edu', 1),
@@ -604,7 +600,5 @@ func installCategory() {
 		(333, 332, '其它', 0, 0, '', 1),
 		(334, 10, '高考', 0, 0, '', 1);
 `
-	if _, err := O.Raw(sql).Exec(); err != nil {
-		helper.Logger.Error("初始化分类数据失败：" + err.Error())
-	}
+	O.Raw(sql).Exec()
 }
