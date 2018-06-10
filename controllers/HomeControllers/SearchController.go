@@ -3,6 +3,8 @@ package HomeControllers
 import (
 	"strings"
 
+	"time"
+
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/helper/conv"
 	"github.com/TruthHun/DocHub/models"
@@ -17,6 +19,8 @@ func (this *SearchController) Get() {
 	var (
 		p        int = 1  //默认页码
 		listRows int = 10 //默认每页显示记录数
+		res      models.Result
+		start    = time.Now().UnixNano()
 	)
 	//path中的参数
 	params := conv.Path2Map(this.GetString(":splat"))
@@ -47,32 +51,31 @@ func (this *SearchController) Get() {
 
 	//页码处理
 	p = helper.NumberRange(p, 1, 100)
-	res := models.Search(params["wd"], params["type"], params["sort"], p, listRows, 1)
-	if res.Total > 0 && len(res.Ids) > 0 {
-		data := models.ModelDoc.GetDocsByIds(res.Ids)
-		if len(data) > 0 {
-			for index, val := range data {
-				if len(strings.TrimSpace(val["Description"].(string))) == 0 {
-					if desc := models.ModelDocText.GetDescByMd5(val["Md5"], 120); len(desc) == 0 {
-						data[index]["Description"] = val["Title"]
-					} else {
-						data[index]["Description"] = desc + "..."
-					}
-				}
-			}
-		}
-		this.Data["Data"] = data
+	//res := models.Search(params["wd"], params["type"], params["sort"], p, listRows, 1)
+	this.Data["Data"], res.TotalFound = models.SearchByMysql(params["wd"], params["type"], params["sort"], p, listRows)
+	res.Word = []string{params["wd"]}
+	if res.TotalFound > 1000 {
+		res.Total = 1000
+	} else {
+		res.Total = res.TotalFound
 	}
-
 	if p == 1 {
 		wdSlice := strings.Split(this.Sys.DirtyWord, " ")
+		insert := true
 		for _, wd := range wdSlice {
-			if !strings.Contains(params["wd"], wd) {
-				models.ReplaceInto(models.TableSearchLog, map[string]interface{}{"Wd": params["wd"]})
+			//如果含有非法关键字，则不录入搜索词库
+			if wd != "" && strings.Contains(params["wd"], wd) {
+				insert = false
 				break
 			}
 		}
+		if insert {
+			models.ReplaceInto(models.TableSearchLog, map[string]interface{}{"Wd": params["wd"]})
+		}
 	}
+	end := time.Now().UnixNano()
+	res.Time = float64(end-start) / 1000000000
+
 	this.Data["Seo"] = models.ModelSeo.GetByPage("PC-Search", params["wd"], "文档搜索,"+params["wd"], "文档搜索,"+params["wd"], this.Sys.Site)
 	this.Data["Page"] = helper.Paginations(6, int(res.Total), listRows, p, "/search/", "type", params["type"], "sort", params["sort"], "p", p, "wd", params["wd"])
 	this.Data["Params"] = params
