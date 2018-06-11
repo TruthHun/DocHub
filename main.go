@@ -15,6 +15,11 @@ import (
 
 //初始化函数
 func init() {
+	fmt.Println("")
+	fmt.Println("Powered By DocHub")
+	fmt.Println("Author:进击的皇虫(TruthHun@QQ.COM)")
+	fmt.Println("")
+
 	//数据库初始化
 	models.Init()
 	//初始化日志
@@ -49,10 +54,6 @@ func init() {
 }
 
 func main() {
-	fmt.Println("")
-	fmt.Println("Powered By DocHub")
-	fmt.Println("Author:进击的皇虫(TruthHun@QQ.COM)")
-	fmt.Println("")
 	//定义错误和异常处理控制器
 	beego.ErrorController(&HomeControllers.BaseController{})
 	beego.Run()

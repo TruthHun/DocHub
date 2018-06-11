@@ -53,8 +53,8 @@ func (this *BaseController) Prepare() {
 	if beego.AppConfig.String("runmode") != "prod" {
 		version = fmt.Sprintf("v%v.%v", version, time.Now().Unix())
 	}
-	//this.Sys, _ = models.ModelSys.Get()
-	this.Sys = models.GlobalSys
+	this.Sys, _ = models.ModelSys.Get()
+	//this.Sys = models.GlobalSys//暂时先不用这个，先每次都从数据库查询
 	this.Data["Version"] = version
 	this.Data["Sys"] = this.Sys
 	this.Data["PreviewDomain"] = beego.AppConfig.String("oss::PreviewUrl")

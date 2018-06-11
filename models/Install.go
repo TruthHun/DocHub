@@ -3,18 +3,26 @@ package models
 import (
 	"time"
 
+	"io/ioutil"
+	"os"
+
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego"
 )
 
 func install() {
-	//数据初始化，如果数据已经存在，则不会继续写入(因为数据已存在，继续写入会报错，所以没影响)
-	installAdmin()
-	installCategory()
-	installFriendlinks()
-	installPages()
-	installSeo()
-	installSys()
+	lockfile := "conf/install.lock"
+	if _, err := os.Stat(lockfile); err != nil {
+		//数据初始化，如果数据已经存在，则不会继续写入(因为数据已存在，继续写入会报错，所以没影响)
+		installAdmin()
+		installCategory()
+		installFriendlinks()
+		installPages()
+		installSeo()
+		installSys()
+		ioutil.WriteFile(lockfile, []byte(""), os.ModePerm)
+	}
+
 }
 
 //安装管理员初始数据
@@ -50,14 +58,16 @@ func installSys() {
 			<p>您好，非常感谢您对DocHub文库(<a href="https://github.com/TruthHun/DocHub" target="_blank" title="DocHub文库">DocHub</a>)的关注和热爱</p>
 			<p>您本次申请找回密码的邮箱验证码是: <strong style="font-size: 30px;color: red;">{code}</strong></p>
 			<p>如果非您本人操作，请忽略该邮件。</p>`,
-		HomeCates: "5,2,1,3,4",
-		Trends:    "1,2,3,4,5",
-		Site:      "DocHub(多哈)文库",
-		Reward:    5,
-		Sign:      5,
-		Question:  "DocHub文库的中文名是什么？",
-		Answer:    "多哈",
-		ListRows:  10,
+		HomeCates:         "5,2,1,3,4",
+		Trends:            "1,2,3,4,5",
+		Site:              "DocHub(多哈)文库",
+		Reward:            5,
+		Sign:              5,
+		Question:          "DocHub文库的中文名是什么？",
+		Answer:            "多哈",
+		ListRows:          10,
+		TimeExpireHotspot: 604800,
+		TimeExpireRelate:  604800,
 	}
 	beego.Info("初始化系统数据")
 	if _, _, err := O.ReadOrCreate(&sys, "Id"); err != nil {
@@ -115,6 +125,12 @@ func installFriendlinks() {
 //安装单页初始数据
 //存在唯一索引Alias，已存在的数据不会继续写入
 func installPages() {
+	//存在单页了，则表明已经初始化过数据
+	var page = new(Pages)
+	if O.QueryTable(page).Filter("id__gt", 0).One(page); page.Id > 0 {
+		return
+	}
+
 	now := int(time.Now().Unix())
 	var pages = []Pages{
 		Pages{
@@ -268,6 +284,12 @@ func installSeo() {
 //安装分类初始数据
 //带有主键id数据的初始化，如果已经存在数据，则不会继续写入
 func installCategory() {
+	//存在分类了，则表明已经初始化过数据
+	var cate = new(Category)
+	if O.QueryTable(cate).Filter("id__gt", 0).One(cate); cate.Id > 0 {
+		return
+	}
+
 	sql := `INSERT INTO hc_category (Id, Pid, Title, Cnt, Sort, Alias, Status) VALUES
 		(1, 0, '教育频道', 0, 0, 'edu', 1),
 		(2, 0, '专业资料', 0, 1, 'pro', 1),

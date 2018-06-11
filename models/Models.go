@@ -320,23 +320,12 @@ func ToTree(params []orm.Params, Node string, value interface{}) []orm.Params {
 //@param            listRows    每页显示记录数
 //@param            accuracy    是否精确搜索
 func Search(wd, sourceType, order string, p, listRows, accuracy int) (res Result) {
-	//TODO:文档搜索功能，之前是使用Coreseek来搭建并提供接口进行搜索的，但是现在coreseek用不了了，后期更换为elasticsearch来实现全文搜索。目前暂时用like查询
-
-	//var (
-	//	json_str string
-	//	index           = beego.AppConfig.DefaultString("index", "wenku")
-	//	api      string = beego.AppConfig.String("SearchApi")
-	//	err      error
-	//)
-	//api_url := fmt.Sprintf(api+"?type=%v&index=%v&order=%v&p=%v&listRows=%v&accuracy=%v&wd=%v", helper.UrlEscape(sourceType), index, helper.UrlEscape(order), p, listRows, accuracy, helper.UrlEscape(wd))
-	//if json_str, err = httplib.Get(api_url).SetTimeout(5*time.Second, 5*time.Second).String(); err != nil {
-	//	helper.Logger.Error(err.Error())
-	//}
-	//json.Unmarshal([]byte(json_str), &res)
 
 	//========== like 查询  ==============
 	//TODO:目前的查询没有排序、没有分类等，需要上elasticsearch
 
+	//SELECT * from hc_document d left JOIN hc_document_info i on d.Id=i.Id LEFT JOIN hc_document_store s on i.DsId=s.Id where d.Title LIKE '%js%' GROUP BY s.Id  ORDER by i.Dcnt DESC
+	//fields := "" //查询的字段
 	start := time.Now().UnixNano()
 	res.Word = []string{wd}
 	res.Msg = "ok"
@@ -355,6 +344,89 @@ func Search(wd, sourceType, order string, p, listRows, accuracy int) (res Result
 	}
 	end := time.Now().UnixNano()
 	res.Time = float64(end-start) / 1000000000
+	return
+}
+
+//使用MySQL的like查询
+//@param            wd          搜索关键字
+//@param            sourceType  搜索的资源类型，可选择：doc、ppt、xls、pdf、txt、other、all
+//@param            order       排序，可选值：new(最新)、down(下载)、page(页数)、score(评分)、size(大小)、collect(收藏)、view（浏览）、default(默认)
+//@param            p           页码
+//@param            listRows    每页显示记录数
+func SearchByMysql(wd, sourceType, order string, p, listRows int) (data []orm.Params, total int64) {
+	tables := []string{TableDocInfo + " i", TableDoc + " d", TableDocStore + " ds"}
+	on := []map[string]string{
+		{"i.Id": "d.Id"},
+		{"i.DsId": "ds.Id"},
+	}
+	fields := map[string][]string{
+		"i":  {"Score", "TimeCreate", "Id", "Dcnt", "Vcnt", "Price"},
+		"d":  {"Title", "Description"},
+		"ds": {"Page", "Size", "ExtCate", "Md5"},
+	}
+	//排序
+	orderBy := []string{}
+	switch strings.ToLower(order) {
+	case "new":
+		orderBy = []string{"i.Id desc"}
+	case "down":
+		orderBy = []string{"i.Dcnt desc"}
+	case "page":
+		orderBy = []string{"s.Page desc"}
+	case "score":
+		orderBy = []string{"i.Score desc"}
+	case "size":
+		orderBy = []string{"s.Size desc"}
+	case "collect":
+		orderBy = []string{"i.Ccnt desc"}
+	case "view":
+		orderBy = []string{"i.Vcnt desc"}
+	}
+	cond := " i.Status>=0 and d.Title like ? "
+	//文档类型过滤条件
+	ExtNum := 0 //这些也暂时写死了，后面再优化....
+	switch strings.ToLower(sourceType) {
+	case "doc":
+		ExtNum = 1
+	case "ppt":
+		ExtNum = 2
+	case "xls":
+		ExtNum = 3
+	case "pdf":
+		ExtNum = 4
+	case "txt":
+		ExtNum = 5
+	case "other":
+		ExtNum = 6
+	}
+	if ExtNum > 0 {
+		cond = cond + " and ds.ExtNum=" + strconv.Itoa(ExtNum)
+	}
+
+	//数量统计
+	if sql, err := LeftJoinSqlBuild(tables, on, map[string][]string{"i": []string{"Count"}}, 1, 100000000, nil, []string{"i.DsId"}, cond); err == nil {
+		sql = strings.Replace(sql, "i.Count", "count(d.Id) cnt", -1)
+		var params []orm.Params
+		O.Raw(sql, "%"+wd+"%").Values(&params)
+		if len(params) > 0 {
+			total, _ = strconv.ParseInt(params[0]["cnt"].(string), 10, 64)
+		}
+	} else {
+		helper.Logger.Error(err.Error())
+		helper.Logger.Debug(sql, wd)
+	}
+	if total == 0 {
+		return
+	}
+	//数据查询
+	if sql, err := LeftJoinSqlBuild(tables, on, fields, p, listRows, orderBy, []string{"i.DsId"}, cond); err == nil {
+		helper.Logger.Debug(sql, wd)
+		O.Raw(sql, "%"+wd+"%").Values(&data)
+	} else {
+		helper.Logger.Error(err.Error())
+		helper.Logger.Debug(sql, wd)
+	}
+
 	return
 }
 
@@ -465,8 +537,9 @@ func joinOn(table string, usedTables []string, on []map[string]string) (newon []
 //@return           err             错误
 func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	var (
-		width  int
-		height int
+		width   int
+		height  int
+		content string
 	)
 
 	//文件夹
@@ -478,6 +551,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	defer os.RemoveAll(folder)
 	pdf2svg := beego.AppConfig.String("pdf2svg")                  //pdf转svg命令
 	compress := beego.AppConfig.DefaultBool("compressSvg", false) //是否压缩svg
+	content = helper.ExtractPdfText(file, 1, 5)                   //提取前5页的PDF文本内容
 	//处理pdf转svg
 	for i := 0; i < totalPage; i++ {
 		num := i + 1
@@ -511,15 +585,13 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	}
 
 	//将内容更新到数据库
-	//TODO:获取文档的文本内容，使用calibre实现
-	//content := strings.Join(contents, "")
-	//if len(content) > 5000 {
-	//	content = helper.SubStr(content, 0, 4800)
-	//}
-	//var docText = DocText{Md5: md5str, Content: content}
-	//if _, _, err := O.ReadOrCreate(&docText, "Md5"); err != nil {
-	//	helper.Logger.Error(err.Error())
-	//}
+	if len(content) > 5000 {
+		content = helper.SubStr(content, 0, 4800)
+	}
+	var docText = DocText{Md5: md5str, Content: content}
+	if _, _, err := O.ReadOrCreate(&docText, "Md5"); err != nil {
+		helper.Logger.Error(err.Error())
+	}
 
 	//扫尾工作，如果还存在文件，则继续将文件移到oss
 	filenum := 1 //假设有一个svg或者jpg文件

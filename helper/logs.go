@@ -1,7 +1,10 @@
 package helper
 
 import (
-	"github.com/astaxie/beego"
+	"os"
+
+	"fmt"
+
 	"github.com/astaxie/beego/logs"
 )
 
@@ -10,10 +13,18 @@ var Logger = logs.NewLogger()
 
 //日志初始化
 func InitLogs() {
+	//创建日志目录
+	if _, err := os.Stat("logs"); err != nil {
+		os.Mkdir("logs", os.ModePerm)
+	}
+	var level = 7
+	if !Debug {
+		level = 4
+	}
 	//初始化日志各种配置
-	LogsConf := `{"filename":"logs/dochub.log","level":7,"maxlines":5000,"maxsize":0,"daily":true,"maxdays":15}`
+	LogsConf := fmt.Sprintf(`{"filename":"logs/dochub.log","level":%v,"maxlines":5000,"maxsize":0,"daily":true,"maxdays":7}`, level)
 	Logger.SetLogger(logs.AdapterFile, LogsConf)
-	if beego.AppConfig.String("runmode") == "dev" {
+	if Debug {
 		Logger.SetLogger("console")
 	} else {
 		//是否异步输出日志
