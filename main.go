@@ -5,6 +5,8 @@ import (
 
 	"time"
 
+	"os"
+
 	"github.com/TruthHun/DocHub/controllers/HomeControllers"
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
@@ -15,6 +17,11 @@ import (
 
 //初始化函数
 func init() {
+	fmt.Println("")
+	fmt.Println("Powered By DocHub")
+	fmt.Println("Author:进击的皇虫(TruthHun@QQ.COM)")
+	fmt.Println("")
+
 	//数据库初始化
 	models.Init()
 	//初始化日志
@@ -45,14 +52,13 @@ func init() {
 	beego.AddFuncMap("GetDescByMd5", models.ModelDocText.GetDescByMd5)
 	beego.AddFuncMap("GetDescByDsId", models.ModelDocText.GetDescByDsId)
 	beego.AddFuncMap("GetDescByDid", models.ModelDocText.GetDescByDid)
-
+	//创建日志目录
+	if _, err := os.Stat("logs"); err != nil {
+		os.Mkdir("logs", os.ModePerm)
+	}
 }
 
 func main() {
-	fmt.Println("")
-	fmt.Println("Powered By DocHub")
-	fmt.Println("Author:进击的皇虫(TruthHun@QQ.COM)")
-	fmt.Println("")
 	//定义错误和异常处理控制器
 	beego.ErrorController(&HomeControllers.BaseController{})
 	beego.Run()
