@@ -179,7 +179,7 @@ textarea{resize: none;}
 
 /*wenku page list [star]*/
 /*#wenku-list .wenku-main{margin-bottom: 15px;}*/
-#wenku-list h3{font-size: 20px;}
+#wenku-list h3{font-size: 20px;display: block;}
 #wenku-list .wenku-left .panel-body>a{display: inline-block;margin-right: 10px;}
 #wenku-list .wenku-left .panel-body>a.active{color: #1abc9c;font-weight: bold;}
 #wenku-list .wenku-left .panel-body li.clearfix .help-block>span{margin-right: 5px;}
