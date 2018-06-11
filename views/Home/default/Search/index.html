@@ -81,7 +81,7 @@
                             <div class="wenku-title">
                                 <a href="/view/{{.Id}}" target="_blank" title="{{.Title}}"><img src="/static/Home/default/img/{{.ExtCate}}_24.png"/> {{HeightLight .Title $.Result.Word}}</a>
                             </div>
-                            <div class="wenku-desc help-block">{{.Description}}</div>
+                            <div class="wenku-desc help-block">{{GetDescByDid .Id 120}}</div>
                             <div class="help-block wenku-info">
                                 <div class="text-muted">
                                     <i class="wenku-star star-{{StarVal (Interface2Int .Score) false}}"></i>{{StarVal (Interface2Int .Score) true}}分 <span class="pull-right">{{.Price}}金币 | {{.Page}}页 | {{FormatByte (Interface2Int .Size)}} | {{TimestampFormat (Interface2Int .TimeCreate) "2006-01-02 15:04"}}</span>
