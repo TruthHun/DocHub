@@ -21,6 +21,8 @@ SessionName=dochub
 # 静态文件扩展名【注意：不要把.conf设置为扩展名，以避免泄露数据库账号密码】
 StaticExt=.txt,.html,.ico,.jpeg,.png,.gif
 
+
+
 cookieSecret=sfgowtrfgjqwetryfqef8sd
 
 #允许上传的文件大小(单位：字节)，默认50MB=52428800
@@ -41,8 +43,8 @@ UrlExpire=60
 #libreoffice的可执行文件路径(注意，windows下要用\\代替原路径的\)
 #如：“C:\Program Files (x86)\LibreOffice 4\program\soffice”要换成“C:\\Program Files (x86)\\LibreOffice 4\\program\\soffice”
 #soffice=C:\\Program Files (x86)\\LibreOffice 5\\program\\soffice
-soffice=/Applications/LibreOffice.app/Contents/MacOS/soffice
-#soffice=soffice
+#soffice=/Applications/LibreOffice.app/Contents/MacOS/soffice
+soffice=soffice
 
 #imagick命令行
 imagick=convert
@@ -52,6 +54,9 @@ pdf2svg=pdf2svg
 
 #calibre转化命令[下一版本再加上这个配置项]
 calibre=ebook-convert
+
+#提取PDF文本内容:`apt install poppler-utils`
+pdftotext=pdftotext
 
 # 是否压缩svg（建议压缩）
 compressSvg=true

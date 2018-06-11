@@ -784,3 +784,24 @@ func UpperFirst(str string) string {
 	}
 	return str
 }
+
+//获取PDF中指定页面的文本内容
+//@param			file		PDF文件
+//@param			from		起始页
+//@param			to			截止页
+func ExtractPdfText(file string, from, to int) (content string) {
+	pdftotext := beego.AppConfig.DefaultString("pdftotext", "pdftotext")
+	textfile := file + ".txt"
+	defer os.Remove(textfile)
+	args := []string{"-f", strconv.Itoa(from), "-l", strconv.Itoa(to), file, textfile}
+	if err := exec.Command(pdftotext, args...).Run(); err != nil {
+		Logger.Error(err.Error())
+	} else {
+		if b, err := ioutil.ReadFile(textfile); err == nil {
+			content = string(b)
+		} else {
+			Logger.Error(err.Error())
+		}
+	}
+	return
+}

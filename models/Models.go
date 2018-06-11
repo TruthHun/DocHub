@@ -537,8 +537,9 @@ func joinOn(table string, usedTables []string, on []map[string]string) (newon []
 //@return           err             错误
 func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	var (
-		width  int
-		height int
+		width   int
+		height  int
+		content string
 	)
 
 	//文件夹
@@ -550,6 +551,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	defer os.RemoveAll(folder)
 	pdf2svg := beego.AppConfig.String("pdf2svg")                  //pdf转svg命令
 	compress := beego.AppConfig.DefaultBool("compressSvg", false) //是否压缩svg
+	content = helper.ExtractPdfText(file, 1, 5)                   //提取前5页的PDF文本内容
 	//处理pdf转svg
 	for i := 0; i < totalPage; i++ {
 		num := i + 1
@@ -583,15 +585,13 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	}
 
 	//将内容更新到数据库
-	//TODO:获取文档的文本内容，使用calibre实现
-	//content := strings.Join(contents, "")
-	//if len(content) > 5000 {
-	//	content = helper.SubStr(content, 0, 4800)
-	//}
-	//var docText = DocText{Md5: md5str, Content: content}
-	//if _, _, err := O.ReadOrCreate(&docText, "Md5"); err != nil {
-	//	helper.Logger.Error(err.Error())
-	//}
+	if len(content) > 5000 {
+		content = helper.SubStr(content, 0, 4800)
+	}
+	var docText = DocText{Md5: md5str, Content: content}
+	if _, _, err := O.ReadOrCreate(&docText, "Md5"); err != nil {
+		helper.Logger.Error(err.Error())
+	}
 
 	//扫尾工作，如果还存在文件，则继续将文件移到oss
 	filenum := 1 //假设有一个svg或者jpg文件
