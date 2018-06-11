@@ -5,8 +5,6 @@ import (
 
 	"time"
 
-	"os"
-
 	"github.com/TruthHun/DocHub/controllers/HomeControllers"
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
@@ -52,10 +50,7 @@ func init() {
 	beego.AddFuncMap("GetDescByMd5", models.ModelDocText.GetDescByMd5)
 	beego.AddFuncMap("GetDescByDsId", models.ModelDocText.GetDescByDsId)
 	beego.AddFuncMap("GetDescByDid", models.ModelDocText.GetDescByDid)
-	//创建日志目录
-	if _, err := os.Stat("logs"); err != nil {
-		os.Mkdir("logs", os.ModePerm)
-	}
+
 }
 
 func main() {
