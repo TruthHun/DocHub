@@ -3,18 +3,26 @@ package models
 import (
 	"time"
 
+	"io/ioutil"
+	"os"
+
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego"
 )
 
 func install() {
-	//数据初始化，如果数据已经存在，则不会继续写入(因为数据已存在，继续写入会报错，所以没影响)
-	installAdmin()
-	installCategory()
-	installFriendlinks()
-	installPages()
-	installSeo()
-	installSys()
+	lockfile := "conf/install.lock"
+	if _, err := os.Stat(lockfile); err != nil {
+		//数据初始化，如果数据已经存在，则不会继续写入(因为数据已存在，继续写入会报错，所以没影响)
+		installAdmin()
+		installCategory()
+		installFriendlinks()
+		installPages()
+		installSeo()
+		installSys()
+		ioutil.WriteFile(lockfile, []byte(""), os.ModePerm)
+	}
+
 }
 
 //安装管理员初始数据
