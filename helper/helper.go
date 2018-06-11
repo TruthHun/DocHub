@@ -798,6 +798,9 @@ func ExtractPdfText(file string, from, to int) (content string) {
 	} else {
 		if b, err := ioutil.ReadFile(textfile); err == nil {
 			content = string(b)
+			content = strings.Replace(content, "\t", " ", -1)
+			content = strings.Replace(content, "\n", " ", -1)
+			content = strings.Replace(content, "\r", " ", -1)
 		} else {
 			Logger.Error(err.Error())
 		}
