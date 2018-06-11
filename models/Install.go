@@ -115,6 +115,12 @@ func installFriendlinks() {
 //安装单页初始数据
 //存在唯一索引Alias，已存在的数据不会继续写入
 func installPages() {
+	//存在单页了，则表明已经初始化过数据
+	var page = new(Pages)
+	if O.QueryTable(page).Filter("id__gt", 0).One(page); page.Id > 0 {
+		return
+	}
+
 	now := int(time.Now().Unix())
 	var pages = []Pages{
 		Pages{
@@ -268,6 +274,12 @@ func installSeo() {
 //安装分类初始数据
 //带有主键id数据的初始化，如果已经存在数据，则不会继续写入
 func installCategory() {
+	//存在分类了，则表明已经初始化过数据
+	var cate = new(Category)
+	if O.QueryTable(cate).Filter("id__gt", 0).One(cate); cate.Id > 0 {
+		return
+	}
+
 	sql := `INSERT INTO hc_category (Id, Pid, Title, Cnt, Sort, Alias, Status) VALUES
 		(1, 0, '教育频道', 0, 0, 'edu', 1),
 		(2, 0, '专业资料', 0, 1, 'pro', 1),
