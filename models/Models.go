@@ -177,13 +177,25 @@ func RegisterDB() {
 	orm.RegisterModelWithPrefix(beego.AppConfig.String("db::prefix"), models...)
 	db_user := beego.AppConfig.String("db::user")
 	db_password := beego.AppConfig.String("db::password")
+	if envpass := os.Getenv("MYSQL_PASSWORD"); envpass != "" {
+		db_password = envpass
+	}
 	db_database := beego.AppConfig.String("db::database")
+	if envdatabase := os.Getenv("MYSQL_DATABASE"); envdatabase != "" {
+		db_database = envdatabase
+	}
 	db_charset := beego.AppConfig.String("db::charset")
 	db_host := beego.AppConfig.String("db::hostInternal")
 	if beego.AppConfig.String("runmode") == "dev" {
 		db_host = beego.AppConfig.String("db::hostOuter")
 	}
+	if envhost := os.Getenv("MYSQL_HOST"); envhost != "" {
+		db_host = envhost
+	}
 	db_port := beego.AppConfig.String("db::port")
+	if envport := os.Getenv("MYSQL_PORT"); envport != "" {
+		db_port = envport
+	}
 	dblink := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s", db_user, db_password, db_host, db_port, db_database, db_charset)
 	//下面两个参数后面要放到app.conf提供用户配置使用
 	// (可选)设置最大空闲连接
