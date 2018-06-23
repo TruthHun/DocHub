@@ -102,7 +102,6 @@ func (this *Oss) IsObjectExist(object string, isBucketPreview bool) (err error) 
 //@param                ext                 图片扩展名，如果图片文件参数(picture)的值为md5时，需要加上后缀扩展名
 //@return               url                 图片url链接
 func (this *Oss) DefaultPicture(picture, style string, ext ...string) (url string) {
-	beego.Error(picture)
 	if len(ext) > 0 {
 		picture = picture + "." + ext[0]
 	} else if !strings.Contains(picture, ".") && len(picture) > 0 {
