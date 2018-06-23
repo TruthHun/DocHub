@@ -43,7 +43,7 @@ func (this *KindEditorController) Upload() {
 		//将文件上传到OSS
 		err = models.ModelOss.MoveToOss(savefile, ossfile, true, true)
 		if err == nil {
-			this.Response(map[string]interface{}{"url": models.ModelOss.Config().PreviewUrl + ossfile, "error": 0})
+			this.Response(map[string]interface{}{"url": models.ModelOss.PreviewUrl + ossfile, "error": 0})
 		} else {
 			this.Response(map[string]interface{}{"message": err.Error(), "error": 1})
 		}

@@ -61,7 +61,7 @@ var (
 	ModelSys           = new(Sys)             //系统
 	ModelUser          = new(User)            //用户
 	ModelUserInfo      = new(UserInfo)        //用户信息
-	ModelOss           = new(Oss)             //OSS
+	ModelOss           = NewOss()             //OSS
 	ModelWord          = new(Word)            //关键字
 	ModelFreeDown      = new(FreeDown)        //免费下载，如果文档时收费下载，则用户下载第一次之后，在一定的时间范围内，再次下载则免费
 	ModelSearchLog     = new(SearchLog)       //搜索日志
