@@ -312,7 +312,13 @@ textarea{resize: none;}
 
 /*wenku page reg [start]*/
 #wenku-reg .col-xs-8{border-right: 1px solid #DDDDDD;}
-#wenku-reg .login{background-size: 1100px 778px;margin-top: 30px;margin-bottom: 50px;}
-#wenku-reg .login-form{width: 450px;}
+#wenku-reg .login{background: unset;padding-bottom: 0px;}
+#wenku-reg .login-screen{background-color:unset;padding: 0px;min-height: 0px;}
+#wenku-reg .login-form{width: 500px;margin: 10px auto;padding: 0px;background-color: #ffffff;}
+#wenku-reg .login-form .form-box{padding: 25px;}
+#wenku-reg .login-form .form-group{margin-bottom: 25px; }
+.login-form .login-field{border-color: #bdc3c7;}
+#wenku-reg .form-header{color: #34495e;padding: 10px 25px;border-bottom: 1px solid #F6F6F6;font-weight: bold;}
+#wenku-reg .form-footer{padding: 5px 25px;border-top: 1px solid #F6F6F6;}
 
 /*wenku page reg [end]*/
