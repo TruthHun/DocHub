@@ -43,7 +43,7 @@
             <li class="clearfix">
                 <div class="col-xs-1 wenku-nopadding">
                     <a href="/user/{{.Uid}}" target="_blank" class="thumbnail thumbnail-avatar" title="{{.Username}}">
-                        <img src="{{DefPic .Avatar "avatar"}}" class="img-responsive " alt="{{.Username}}">
+                        <img onerror="this.src='/static/Common/img/avatar.png'" src="{{DefPic .Avatar "avatar"}}" class="img-responsive " alt="{{.Username}}">
                     </a>
                 </div>
                 <div class="col-xs-11 wenku-no-pdr">

@@ -16,7 +16,7 @@
                     <iframe frameborder="0" style="display: none;" id="notarget" name="notarget"></iframe>
                     {{else}}
                     <a href="/user/{{.User.Id}}" title="{{.User.Username}}" class="thumbnail wenku-circle-avatar wenku-tooltip wenku-update-avatar">
-                        <img class="img-responsive" alt="{{.User.Username}}" src="{{DefPic .User.Avatar "avatar"}}"/>
+                        <img class="img-responsive" alt="{{.User.Username}}" onerror="this.src='/static/Common/img/avatar.png'" src="{{DefPic .User.Avatar "avatar"}}"/>
                     </a>
                     {{end}}
                 </div>
@@ -58,7 +58,7 @@
                 <li class="clearfix">
                     <div class="col-xs-2 wenku-nopadding">
                         <a href="/user/{{.Id}}" title="{{.Username}}" target="_blank" class="thumbnail">
-                            <img class="img-responsive" alt="{{.Username}}" src="{{DefPic .Avatar "avatar"}}"/>
+                            <img class="img-responsive" onerror="this.src='/static/Common/img/avatar.png'" alt="{{.Username}}" src="{{DefPic .Avatar "avatar"}}"/>
                         </a>
                     </div>
                     <div class="col-xs-10">

@@ -108,6 +108,7 @@ func (this *Oss) IsObjectExist(object string, isBucketPreview bool) (err error) 
 //@param                ext                 图片扩展名，如果图片文件参数(picture)的值为md5时，需要加上后缀扩展名
 //@return               url                 图片url链接
 func (this *Oss) DefaultPicture(picture, style string, ext ...string) (url string) {
+	beego.Error(picture)
 	config := this.Config()
 	if len(ext) > 0 {
 		picture = picture + "." + ext[0]
@@ -115,24 +116,10 @@ func (this *Oss) DefaultPicture(picture, style string, ext ...string) (url strin
 		picture = picture + ".jpg"
 	}
 	picture = strings.Trim(picture, "/")
-	if err := this.IsObjectExist(picture, true); err == nil {
-		style = strings.ToLower(style)
-		switch style {
-		case "avatar", "cover", "banner":
-			return config.PreviewUrl + picture + "/" + style
-		}
-		//} else {
-		//	helper.Logger.Error("获取默认图片出错：%v", err.Error())
-	}
+	style = strings.ToLower(style)
 	switch style {
-	case "avatar":
-		picture = config.DefaultAvatar
-	case "cover":
-		picture = config.DefaultCover
-	case "banner":
-		picture = config.DefaultBanner
-	default:
-		picture = config.DefaultPic
+	case "avatar", "cover", "banner":
+		return config.PreviewUrl + picture + "/" + style
 	}
 	return config.PreviewUrl + picture //返回默认图片
 }

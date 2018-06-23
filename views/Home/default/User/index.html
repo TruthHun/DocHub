@@ -37,7 +37,7 @@
                             {{range .Lists}}
                             <div class="col-xs-3">
                                 <a href="/view/{{.Id}}" target="_blank" title="{{.Title}}" class="thumbnail">
-                                    <img class="img-responsive" src="{{DefPic .Md5 "cover"}}"/>
+                                    <img class="img-responsive" onerror="this.src='/static/Common/img/cover.jpg'" src="{{DefPic .Md5 "cover"}}"/>
                                     <img class="wenku-icon" alt="{{.ExtCate}}" src="/static/Home/default/img/{{.ExtCate}}_24.png"/>
                                     <div class="wenku-title">
                                         {{.Title}}
