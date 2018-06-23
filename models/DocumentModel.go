@@ -210,7 +210,7 @@ func HandleExistDoc(uid int, form FormUpload) error {
 
 //处理上传的PDF文档
 //@param            uid             上传文档的用户ID
-//@param            tmpfile         临时存储的文档
+//@param            tmpfile         临时存储的pdf文档
 //@param            form            表单
 func HandlePdf(uid int, tmpfile string, form FormUpload) error {
 	sys, _ := ModelSys.Get()
@@ -325,6 +325,16 @@ func HandleOffice(uid int, tmpfile string, form FormUpload) (err error) {
 //@param        tmpfile     临时文件
 //@param        form        上传表单
 func HandleUnOffice(uid int, tmpfile string, form FormUpload) error {
+	if form.Ext != ".umd" { //calibre暂时无法转换umd文档
+		if pdfFile, err := helper.UnofficeToPdf(tmpfile); err == nil {
+			//如果转成pdf文档成功，则把原文档移动到OSS存储服务器
+			defer ModelOss.MoveToOss(tmpfile, form.Md5+"."+form.Ext, false, true)
+			return HandlePdf(uid, pdfFile, form)
+		} else {
+			helper.Logger.Error(err.Error())
+		}
+	}
+
 	info, err := os.Stat(tmpfile)
 	if err != nil {
 		return err
@@ -412,7 +422,7 @@ func DocList(uid, chanelid, pid, cid, p, listRows int, order string, status ...i
 	case "ccnt":
 		order = "di.Ccnt desc"
 	case "score":
-		order = "di.score desc"
+		order = "di.Score desc"
 	default:
 		order = "di.Id desc"
 	}

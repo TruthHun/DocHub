@@ -143,7 +143,6 @@ func (this *UploadController) Post() {
 				helper.Logger.Error(err.Error())
 			}
 		case "umd", "epub", "chm", "txt", "mobi": //处理无法转码实现在线浏览的文档
-			//TODO:使用calibre转码处理
 			go models.HandleUnOffice(this.IsLogin, tmpfile, form)
 		default: //处理office文档
 			go models.HandleOffice(this.IsLogin, tmpfile, form)

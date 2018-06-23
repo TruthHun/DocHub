@@ -79,26 +79,12 @@ func (this *ViewController) Get() {
 	this.Xsrf()
 	ext := fmt.Sprintf("%v", doc["Ext"])
 
-	if ext == "txt" || ext == "chm" || ext == "umd" || ext == "epub" || ext == "mobi" {
+	if pages == 0 && (ext == "txt" || ext == "chm" || ext == "umd" || ext == "epub" || ext == "mobi") {
 		this.Data["OnlyCover"] = true
 		//不能预览的文档
 		this.TplName = "disabled.html"
 	} else {
 		this.TplName = "svg.html"
-
-		//
-		//this.Data["Exist"] = true
-		////pdf预览文档不存在
-		//if err = models.ModelOss.IsObjectExist(fmt.Sprintf("%v.pdf", doc["Md5"]), true); err != nil {
-		//	this.Data["Exist"] = false
-		//	this.Data["MsPreview"] = models.ModelOss.BuildSignDaily(fmt.Sprintf("%v.%v", doc["Md5"], doc["Ext"]))
-		//}
-		//ua := this.Ctx.Request.Header["User-Agent"][0]
-		////如果是爬虫，则不显示iframe，而是显示封面图片
-		//if strings.Contains(ua, "spider") || strings.Contains(ua, "crawl") || strings.Contains(ua, "msnbot") {
-		//	this.Data["OnlyCover"] = true
-		//}
-		//this.TplName = "index.html"
 	}
 
 }
