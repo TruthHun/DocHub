@@ -312,7 +312,7 @@ textarea{resize: none;}
 
 /*wenku page reg [start]*/
 #wenku-reg .col-xs-8{border-right: 1px solid #DDDDDD;}
-#wenku-reg .login{background: unset;padding-bottom: 0px;}
+#wenku-reg .login{background: unset;padding-bottom: 0px;margin:100px auto;padding:0px;}
 #wenku-reg .login-screen{background-color:unset;padding: 0px;min-height: 0px;}
 #wenku-reg .login-form{width: 500px;margin: 10px auto;padding: 0px;background-color: #ffffff;}
 #wenku-reg .login-form .form-box{padding: 25px;}
