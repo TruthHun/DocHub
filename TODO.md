@@ -4,3 +4,5 @@
 - [ ] 所有相关配置项，都统一放到app.conf文件。配置文件中的每一项，都有详尽的配置说明
 - [ ] mobi、epub、chm、txt等格式文档在线浏览的实现支持。
 - [ ] 文档阅读页面性能优化
+
+邮件发送，使用该库：https://github.com/go-gomail/gomail

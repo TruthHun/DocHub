@@ -4,8 +4,7 @@ package models
 import (
 	"fmt"
 
-	"github.com/alexcesaro/mail/mailer"
-	"github.com/jordan-wright/email"
+	gomail "gopkg.in/gomail.v2"
 
 	"github.com/TruthHun/DocHub/helper"
 
@@ -20,13 +19,12 @@ import (
 
 	"os"
 
-	"net/mail"
-	"net/smtp"
-
 	"os/exec"
 	"strconv"
 
 	"time"
+
+	"crypto/tls"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -672,36 +670,50 @@ func Count(table string, cond *orm.Condition) (cnt int64) {
 //@param            subject     string          邮件主题
 //@param            content     string          邮件内容
 //@return           error                       发送错误
-func SendMailOld(to, subject, content string) error {
-	port := beego.AppConfig.DefaultInt("email::port", 80)
-	host := beego.AppConfig.String("email::host")
-	username := beego.AppConfig.String("email::username")
-	password := beego.AppConfig.String("email::password")
-	msg := &mail.Message{
-		mail.Header{
-			"From":         {username},
-			"To":           {to},
-			"Reply-To":     {beego.AppConfig.DefaultString("mail::replyto", username)},
-			"Subject":      {subject},
-			"Content-Type": {"text/html"},
-		},
-		strings.NewReader(content),
-	}
-	m := mailer.NewMailer(host, username, password, port)
-	err := m.Send(msg)
-	return err
-}
+//func SendMail(to, subject, content string) error {
+//	port := beego.AppConfig.DefaultInt("email::port", 80)
+//	host := beego.AppConfig.String("email::host")
+//	username := beego.AppConfig.String("email::username")
+//	password := beego.AppConfig.String("email::password")
+//	msg := &mail.Message{
+//		mail.Header{
+//			"From":         {username},
+//			"To":           {to},
+//			"Reply-To":     {beego.AppConfig.DefaultString("mail::replyto", username)},
+//			"Subject":      {subject},
+//			"Content-Type": {"text/html"},
+//		},
+//		strings.NewReader(content),
+//	}
+//	m := mailer.NewMailer(host, username, password, port)
+//	err := m.Send(msg)
+//	return err
+//}
 
 //发送邮件
-func SendMail(to, subject, content string) error {
+//@param            to          string          收件人
+//@param            subject     string          邮件主题
+//@param            content     string          邮件内容
+//@return           error                       发送错误
+func SendMail(to, subject, content string) (err error) {
 	port := beego.AppConfig.DefaultInt("email::port", 80)
 	host := beego.AppConfig.String("email::host")
 	username := beego.AppConfig.String("email::username")
 	password := beego.AppConfig.String("email::password")
-	e := email.NewEmail()
-	e.From = username
-	e.To = []string{to}
-	e.Subject = subject
-	e.HTML = []byte(content)
-	return e.Send(fmt.Sprintf("%v:%v", host, port), smtp.PlainAuth("", username, password, host))
+	replyto := beego.AppConfig.DefaultString("mail::replyto", username)
+
+	m := gomail.NewMessage()
+	m.SetHeader("From", username)
+	m.SetHeader("To", to)
+	m.SetHeader("Reply-To", replyto)
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/html", content)
+
+	d := gomail.NewDialer(host, port, username, password)
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+
+	// Send the email to Bob, Cora and Dan.
+	err = d.DialAndSend(m)
+
+	return
 }

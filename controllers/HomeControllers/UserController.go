@@ -376,6 +376,7 @@ func (this *UserController) SendMail() {
 						this.SetSession("RegMail", mail)
 						this.SetSession("RegCode", code)
 					} else {
+						helper.Logger.Error("邮件发送失败：%v", err.Error())
 						ret["msg"] = "邮件发送失败，请联系管理员检查邮箱配置是否正确"
 					}
 				}
@@ -390,6 +391,7 @@ func (this *UserController) SendMail() {
 						this.SetSession("FindPwdMail", mail)
 						this.SetSession("FindPwdCode", code)
 					} else {
+						helper.Logger.Error("邮件发送失败：%v", err.Error())
 						ret["msg"] = "邮件发送失败，请联系管理员检查邮箱配置是否正确"
 					}
 				} else {

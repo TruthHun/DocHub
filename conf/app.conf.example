@@ -117,7 +117,7 @@ maxConn= 300
 
 ############ 邮箱配置 start ############
 
-#邮箱配置
+#邮箱（SMTP）配置
 [email]
 
 # 邮箱服务的host
@@ -143,7 +143,7 @@ replyto=
 # oss配置
 [oss]
 
-# 当前环境是否内网，内网则使用内网endpoint，否则使用外网endpoint
+#当前环境是否内网，内网则使用内网endpoint，否则使用外网endpoint
 IsInternal=false
 
 # 内网的endpoint
