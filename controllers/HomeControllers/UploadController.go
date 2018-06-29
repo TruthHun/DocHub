@@ -12,6 +12,8 @@ import (
 
 	"os"
 
+	"path/filepath"
+
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/helper/conv"
 	"github.com/TruthHun/DocHub/models"
@@ -36,14 +38,13 @@ func (this *UploadController) SegWord() {
 func (this *UploadController) Get() {
 	cond := orm.NewCondition().And("status", 1)
 	data, _, _ := models.GetList("category", 1, 2000, cond, "Sort", "Title")
-	//cates := models.ToTree(data, "Pid", 0)
 	this.Xsrf()
 	this.Data["Seo"] = models.ModelSeo.GetByPage("PC-Upload", "文档上传-文档分享", "文档上传,文档分享", "文档上传-文档分享", this.Sys.Site)
 	this.Data["Cates"], _ = conv.InterfaceToJson(data)
 	this.Data["json"] = data
 	this.Data["IsUpload"] = true
 	this.Data["PageId"] = "wenku-upload"
-	this.Data["MaxSize"] = beego.AppConfig.DefaultInt("max_upload_size", 52428800)
+	this.Data["MaxSize"] = beego.AppConfig.DefaultInt("MaxMemory", 52428800)
 	this.TplName = "index.html"
 }
 
@@ -101,7 +102,7 @@ func (this *UploadController) Post() {
 		defer f.Close()
 		//判断文档格式是否被允许
 
-		ext = strings.ToLower(helper.GetSuffix(fh.Filename, "."))
+		ext = strings.TrimLeft(strings.ToLower(filepath.Ext(fh.Filename)), ".")
 		if !strings.Contains(allowedExt, fmt.Sprintf(",%v,", ext)) {
 			this.ResponseJson(0, "您上传的文档格式不正确，请上传正确格式的文档")
 		}
@@ -164,9 +165,9 @@ func (this *UploadController) Post() {
 			helper.Logger.Error(err.Error())
 		}
 		models.Regulate(models.TableUserInfo, "Coin", price, "Id=?", this.IsLogin)
-		this.ResponseJson(1, "^.^ 恭喜您，成功上传了一篇文档。感谢您为知识的传承献上自己的一份力量。由于文档转码处理需要些时间，转码成功后方可在线预览，请您稍稍等待")
+		this.ResponseJson(1, "^.^ 恭喜您，成功分享了一篇文档。")
 	} else {
-		this.ResponseJson(0, "啊哦，文档上传失败...再重试一下吧。")
+		this.ResponseJson(0, "啊哦，文档上传失败...重试一下吧。")
 	}
 
 }

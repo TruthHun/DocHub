@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/alexcesaro/mail/mailer"
+	"github.com/jordan-wright/email"
 
 	"github.com/TruthHun/DocHub/helper"
 
@@ -20,6 +21,7 @@ import (
 	"os"
 
 	"net/mail"
+	"net/smtp"
 
 	"os/exec"
 	"strconv"
@@ -185,10 +187,7 @@ func RegisterDB() {
 		db_database = envdatabase
 	}
 	db_charset := beego.AppConfig.String("db::charset")
-	db_host := beego.AppConfig.String("db::hostInternal")
-	if beego.AppConfig.String("runmode") == "dev" {
-		db_host = beego.AppConfig.String("db::hostOuter")
-	}
+	db_host := beego.AppConfig.String("db::host")
 	if envhost := os.Getenv("MYSQL_HOST"); envhost != "" {
 		db_host = envhost
 	}
@@ -196,7 +195,7 @@ func RegisterDB() {
 	if envport := os.Getenv("MYSQL_PORT"); envport != "" {
 		db_port = envport
 	}
-	dblink := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s", db_user, db_password, db_host, db_port, db_database, db_charset)
+	dblink := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=%v", db_user, db_password, db_host, db_port, db_database, db_charset, "Asia%2FShanghai")
 	//下面两个参数后面要放到app.conf提供用户配置使用
 	// (可选)设置最大空闲连接
 	maxIdle := beego.AppConfig.DefaultInt("db::maxIdle", 50)
@@ -673,7 +672,7 @@ func Count(table string, cond *orm.Condition) (cnt int64) {
 //@param            subject     string          邮件主题
 //@param            content     string          邮件内容
 //@return           error                       发送错误
-func SendMail(to, subject, content string) error {
+func SendMailOld(to, subject, content string) error {
 	port := beego.AppConfig.DefaultInt("email::port", 80)
 	host := beego.AppConfig.String("email::host")
 	username := beego.AppConfig.String("email::username")
@@ -691,4 +690,18 @@ func SendMail(to, subject, content string) error {
 	m := mailer.NewMailer(host, username, password, port)
 	err := m.Send(msg)
 	return err
+}
+
+//发送邮件
+func SendMail(to, subject, content string) error {
+	port := beego.AppConfig.DefaultInt("email::port", 80)
+	host := beego.AppConfig.String("email::host")
+	username := beego.AppConfig.String("email::username")
+	password := beego.AppConfig.String("email::password")
+	e := email.NewEmail()
+	e.From = username
+	e.To = []string{to}
+	e.Subject = subject
+	e.HTML = []byte(content)
+	return e.Send(fmt.Sprintf("%v:%v", host, port), smtp.PlainAuth("", username, password, host))
 }
