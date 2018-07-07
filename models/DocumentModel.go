@@ -214,10 +214,9 @@ func HandleExistDoc(uid int, form FormUpload) error {
 //@param            form            表单
 func HandlePdf(uid int, tmpfile string, form FormUpload) error {
 	sys, _ := ModelSys.Get()
-	//TODO:系统后台可以配置，文档只提供多少页给读者阅读
-	if sys.PreviewPage < 10 {
-		sys.PreviewPage = 10
-	}
+	//if sys.PreviewPage < 10 {
+	//	sys.PreviewPage = 10
+	//}
 	pageNum, err := helper.GetPdfPagesNum(tmpfile) //先用第三方包统计页码，如果不兼容，则在使用自己简单封装的函数获取pdf文档页码。但是好像也有些不兼容
 	if err != nil || pageNum == 0 {
 		if pageNum, err = helper.CountPdfPages(tmpfile); err != nil {
@@ -278,6 +277,9 @@ func HandlePdf(uid int, tmpfile string, form FormUpload) error {
 					//把原文档移动到存档库，先暂时不要删除本地的原PDF文件
 					ModelOss.MoveToOss(tmpfile, md5str+".pdf", false, false)
 
+					if sys.PreviewPage > 0 {
+						totalPage = sys.PreviewPage //转化供预览的总页数
+					}
 					//将pdf文件转成svg
 					if err := Pdf2Svg(tmpfile, totalPage, md5str); err != nil {
 						helper.Logger.Error(err.Error())
