@@ -20,7 +20,7 @@
     - [文档在线阅读](#read-svg)
     - [office文档在线阅读](#read-office)
     - [PDF文档在线阅读](#read-pdf)
-    - [mobi、epub、chm文档在线阅读【TODO】](#read-other)
+    - [mobi、epub、chm文档在线阅读](#read-other)
     - [全文搜索【TODO】](#es)
     - [文档采集功能【TODO】](#crawl)
     - [积分功能](#score)
@@ -172,7 +172,7 @@ office --> pdf --> svg
 > 没有使用mozila的`pdf.js`作为PDF文档阅读的实现方案，主要是我没有解决`pdf.js`分片分页加载的问题，每次都需要将整个PDF文档下载下来才能提供阅读。如果文档大的话，用户需要等待好长时间，而且也比较耗费服务器带宽资源。
 
 <a name="read-other"></a>
-#### mobi、epub、chm文档在线阅读【TODO】
+#### mobi、epub、chm文档在线阅读
 使用`calibre`将文档转成PDF，然后pdf再转svg。
 
 > 目前该功能还没实现，epub、mobi等文档，现在还是暂时不能在线阅读
@@ -252,8 +252,6 @@ https://www.sogou.com/web?query=filetype%3Apdf+%E5%85%A5%E9%97%A8%E6%95%99%E7%A8
 当运行程序的时候，程序会自动初始化数据，默认的初始管理员账号密码均是`admin`
 
 但是由于环境依赖安装问题，所以有必要整理一个使用教程处理，使用教程放在[书栈网(BookStack)](https://www.bookstack.cn)上，教程地址：[https://www.bookstack.cn/books/dochub](https://www.bookstack.cn/books/dochub)
-
-> 注意：目前暂时还没时间撰写，会尽快把部署教程写出来的
 
 <a name="demo"></a>
 ## 演示站点
