@@ -278,7 +278,7 @@ $(function(){
 
 	    //监听下载
         $('#ModalDownload').on('show.bs.modal', function () {
-            // 执行一些动作...
+            // 请求链接其实不应该写死在这里的...
             $.get("/downfree",{id:$("#ModalDownload .btn-submit-download").attr("data-id")},function(ret){
                 if(ret.status==1){
                     $('#ModalDownload .wenku-download-tips').text(ret.msg);
@@ -293,6 +293,7 @@ $(function(){
                 if(hScrollTop-$(this).offset().top+hWinow>0){
                     if($(this).attr("src")!=$(this).attr("data-original")){
                         $(this).attr("src",$(this).attr("data-original")).fadeIn(100);
+                        $(this).removeClass("wenku-lazy");
                     }
                     $(".wenku-current-page").text($(this).attr("data-page"));
                 }
@@ -323,13 +324,16 @@ $(function(){
 
         //滚动到指定页
         function ScrollToPage(page) {
-            $('html,body').animate({scrollTop:$(".wenku-page"+page).offset().top}, 200);
+            // $('html,body').animate({scrollTop:$(".wenku-page"+page).offset().top}, 200);
+            $('html,body').animate({scrollTop:top+height*(page-1)}, 200);
         }
 
         //调整当前页，用于文档预览放大或缩小时
         function AdjustViewer() {
             ScrollToPage(GetCurrentPage());
         }
+
+
 
         //获取当前页
         function GetCurrentPage() {
