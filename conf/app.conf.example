@@ -46,15 +46,19 @@ EnableGzip=true
 #如：“C:\Program Files (x86)\LibreOffice 4\program\soffice”要换成“C:\\Program Files (x86)\\LibreOffice 4\\program\\soffice”
 #soffice=C:\\Program Files (x86)\\LibreOffice 5\\program\\soffice
 #soffice=/Applications/LibreOffice.app/Contents/MacOS/soffice
+# 安装命令：`apt install libreoffice`
 soffice=soffice
 
 #imagick命令行。用于转换封面。
+# 安装命令：`apt install imagemagick`
 imagick=convert
 
 #pdf2svg命令。用于将PDF转成svg
+# 安装命令：`apt install pdf2svg`
 pdf2svg=pdf2svg
 
 #calibre转化命令，用于将epub、mobi等格式电子书转成PDF
+# calibre下载安装地址：https://calibre-ebook.com/download
 calibre=ebook-convert
 
 #提取PDF文本内容:`apt install poppler-utils`，用于提取PDF中的文本
@@ -63,8 +67,8 @@ pdftotext=pdftotext
 # 是否压缩svg（建议压缩），即对svg进行gzip压缩
 compressSvg=true
 
-# SVG水印文字【图片水印，后期再实现】
-watermark=DocHub.ME
+# SVG水印文字【现在是文本水印，图片水印，后期再实现】
+watermark=DocHub
 
 #举报原因，参考格式：1:垃圾广告;2:淫秽色情;3:虚假中奖;4:敏感信息;5:人身攻击;6:骚扰他人
 #TODO:这个要写在数据库配置表里面，暂时先这样吧
@@ -84,22 +88,22 @@ xsrfexpire = 3600
 [db]
 
 # 数据库host（之前分内网host和外网host，当初只是为了开发方便。但是后来发现，用户在使用的时候会感觉很不方便，所以移除了内网和外网的区分）
-host=rm-j6c1p195121oz402do.mysql.rds.aliyuncs.com
+host=
 
 #数据库端口
 port=3306
 
 # 数据库用户名
-user=huangchong
+user=
 
 # 数据库密码
-password=weiyoou2OO8O8O82oo8o8o8
+password=
 
 # 使用的数据库的名称
-database=demodochub
+database=
 
 # 表前缀
-prefix=dochub_
+prefix=hc_
 
 # 字符串类型【不要修改，整个程序都是utf-8的】。
 charset=utf8
@@ -117,20 +121,19 @@ maxConn= 300
 
 ############ 邮箱配置 start ############
 
-#邮箱（SMTP）配置
+#邮箱配置，当前仅支持SMTP
 [email]
-
 # 邮箱服务的host
-host=smtpdm.aliyun.com
+host=
 
 # 端口
-port=465
+port=
 
 # 您用来发送邮件的邮箱地址
-username=admin@wenkuzhijia.cn
+username=
 
 # 密码
-password=HCF1990wenkuzhijia
+password=
 
 # 接口回件的邮箱。如果使用发件邮箱接收回件，可以留空
 replyto=
@@ -141,38 +144,36 @@ replyto=
 ############ 阿里云OSS配置 start ############
 
 # oss配置
-[oss]
 
+[oss]
 #当前环境是否内网，内网则使用内网endpoint，否则使用外网endpoint
 IsInternal=false
 
-# 内网的endpoint
+#内网的endpoint
 EndpointInternal=oss-cn-hongkong-internal.aliyuncs.com
 
-# 外网的endpoint
+#外网的endpoint
 EndpointOuter=oss-cn-hongkong.aliyuncs.com
 
-# 您的阿里云 key
+#key
 AccessKeyId=
 
-# 您的阿里云 secret
+#secret
 AccessKeySecret=
 
-# 供文档预览的bucket，请把这个bucket设置为公共读
-BucketPreview=wenku-preview
+#供文档预览的bucket
+BucketPreview=dochub-public
 
-# 供文档存储的bucket，请把这个bucket设置为私有bucket。
-BucketStore=itwenku-store
+#供文档存储的bucket
+BucketStore=dochub-private
 
-# 提供文档预览的域名。即绑定公共读bucket(即BucketPreview)的域名。
-PreviewUrl=http://static.wenku.it
+# 预览地址
+PreviewUrl=http://dochub-public.oss-cn-hongkong.aliyuncs.com
+# 下载地址
+DownloadUrl=http://dochub-private.oss-cn-hongkong.aliyuncs.com
 
-# 文档下载的域名。即绑定私有bucket(即BucketStore)的域名。
-DownloadUrl=http://dl.wenku.it
 
-# 文档下载连接URL有效期(过期后，无法再根据URL下载地址下载文档)，单位为秒，默认60秒。
+#签名链接默认有效期时间，单位为秒
 UrlExpire=600
-
-# 说明：之前还有配置默认图片的，但是dochub v1.1版本开始，直接在前端做了优化，不需要这些OSS默认图片的配置项了，简直是个累赘。
 
 ############ 阿里云OSS配置 end ############
