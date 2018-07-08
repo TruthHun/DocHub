@@ -61,7 +61,7 @@ func (this *ViewController) Get() {
 	this.Data["PageId"] = "wenku-content"
 	this.Data["Doc"] = doc
 	pages := helper.Interface2Int(doc["Page"])
-	PageShow := 5 //TODO 刚开始显示供浏览的页数，后面需要设置为后台可控
+	PageShow := 5
 	if pages > PageShow {
 		this.Data["PreviewPages"] = make([]string, PageShow)
 	} else {

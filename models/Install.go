@@ -70,9 +70,7 @@ func installSys() {
 		TimeExpireRelate:  604800,
 	}
 	beego.Info("初始化系统数据")
-	if _, _, err := O.ReadOrCreate(&sys, "Id"); err != nil {
-		helper.Logger.Error("初始化系统数据失败：" + err.Error())
-	}
+	O.ReadOrCreate(&sys, "Id")
 }
 
 //安装友链初始数据
@@ -276,9 +274,7 @@ func installSeo() {
 			Description: "{description}",
 		},
 	}
-	if _, err := O.InsertMulti(len(seos), &seos); err != nil {
-		helper.Logger.Error("初始化SEO数据失败：" + err.Error())
-	}
+	O.InsertMulti(len(seos), &seos)
 }
 
 //安装分类初始数据
