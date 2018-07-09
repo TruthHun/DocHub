@@ -324,8 +324,7 @@ $(function(){
 
         //滚动到指定页
         function ScrollToPage(page) {
-            // $('html,body').animate({scrollTop:$(".wenku-page"+page).offset().top}, 200);
-            $('html,body').animate({scrollTop:top+height*(page-1)}, 200);
+            $('html,body').animate({scrollTop:$(".wenku-page"+page).offset().top}, 200);
         }
 
         //调整当前页，用于文档预览放大或缩小时
