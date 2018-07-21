@@ -293,7 +293,7 @@ $(function(){
                 if(hScrollTop-$(this).offset().top+hWinow>0){
                     if($(this).attr("src")!=$(this).attr("data-original")){
                         $(this).attr("src",$(this).attr("data-original")).fadeIn(100);
-                        $(this).removeClass("wenku-lazy");
+                        // $(this).removeClass("wenku-lazy");
                     }
                     $(".wenku-current-page").text($(this).attr("data-page"));
                 }
