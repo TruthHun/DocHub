@@ -348,8 +348,12 @@ $(function(){
         }
 
         WenkuLazyLoad();//document ready也调用一次
+        var timeout;
         $(window).on("scroll",function () {
-            WenkuLazyLoad();
+            clearTimeout(timeout);//避免短时间内重复计算
+            timeout=setTimeout(function () {
+                WenkuLazyLoad();
+            },100);
         });
         $(window).on("resize",function () {
             WenkuLazyLoad();
@@ -388,14 +392,21 @@ $(function(){
                 }
             }
         });
+
         //下一页
         $(".wenku-page-next").click(function(){
+            //如果下一页正在加载中，则不再执行下一页请求
             if($(".wenku-page-next").attr("data-loading")==1) return false;
+            //设置下一页的状态为正在加载中
             $(".wenku-page-next").attr("data-loading",1);
-            var nextPage=GetCurrentPage()+1,nextStart=NextStartPage(),total=GetTotalPage();
+
+            var nextPage=GetCurrentPage()+1,//下一页
+                nextStart=NextStartPage(),//下一批次页面
+                total=GetTotalPage();//总页数
             var limit=nextStart>0?nextStart:total;
             if(nextPage<limit){
-                var hWindow=$(window).height(),hPage=$(".wenku-page"+nextPage).height();
+                var hWindow=$(window).height(),//窗口高度
+                    hPage=$(".wenku-page"+nextPage).height();//下一页的高度
                 if(hPage>hWindow){//文档页面高度与窗口高度做比较
                     ScrollToPage(nextPage);
                 }else{

@@ -25,7 +25,7 @@
                     <!--<div class="help-block wenku-preview-tips">温馨提示：如果当前文档出现乱码或未能正常浏览，请先下载原文档进行浏览。</div>-->
                     {{if gt (.Doc.PreviewPage | Interface2Int) 0}}
                     <div class="help-block wenku-preview-tips">
-                        温馨提示：当前文档最多只能预览 <span class="strong text-primary">{{.Doc.PreviewPage}}</span> 页，若文档超出了 <span class="strong text-primary">{{.Doc.PreviewPage}}</span> 页，请下载原文档以浏览全部内容。
+                        温馨提示：当前文档最多只能预览 <span class="strong text-primary">{{.Doc.PreviewPage}}</span> 页，若文档总页数超出了 <span class="strong text-primary">{{.Doc.PreviewPage}}</span> 页，请下载原文档以浏览全部内容。
                     </div>
                     {{else}}
                         <div class="help-block wenku-preview-tips">温馨提示：如果当前文档出现乱码或未能正常浏览，请先下载原文档进行浏览。</div>
