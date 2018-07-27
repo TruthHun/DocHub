@@ -9,6 +9,7 @@ import (
 
 	"fmt"
 
+	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego"
 )
 
@@ -32,8 +33,8 @@ func (this *BaseController) Prepare() {
 		this.Redirect("/admin/login", 302)
 		return
 	}
-	version := beego.AppConfig.String("version")
-	if beego.AppConfig.String("runmode") != "prod" {
+	version := helper.VERSION
+	if helper.Debug {
 		version = fmt.Sprintf("v%v.%v", version, time.Now().Unix())
 	}
 	this.Data["Version"] = version
@@ -96,7 +97,7 @@ func (this *BaseController) Error501() {
 func (this *BaseController) ErrorDb() {
 	this.Layout = ""
 	this.Data["content"] = "Database is now down"
-	this.Data["content_zh"] = "数据库别外星人抢走了"
+	this.Data["content_zh"] = "数据库被外星人抢走了"
 	this.TplName = "error.html"
 }
 

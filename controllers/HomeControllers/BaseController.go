@@ -49,16 +49,14 @@ func (this *BaseController) Prepare() {
 	//当前模板静态文件
 	this.Data["TplStatic"] = "/static/Home/" + this.TplTheme
 
-	version := beego.AppConfig.String("version")
-	if beego.AppConfig.String("runmode") != "prod" {
-		version = fmt.Sprintf("v%v.%v", version, time.Now().Unix())
+	version := helper.VERSION
+	if helper.Debug { //debug模式下，每次更新js
+		version = fmt.Sprintf("%v.%v", version, time.Now().Unix())
 	}
 	this.Sys, _ = models.ModelSys.Get()
-	//this.Sys = models.GlobalSys//暂时先不用这个，先每次都从数据库查询
 	this.Data["Version"] = version
 	this.Data["Sys"] = this.Sys
 	this.Data["PreviewDomain"] = beego.AppConfig.String("oss::PreviewUrl")
-	//this.Data["PreviewDomain"] = models.ModelConfig.GetConfig("oss", "PreviewUrl")
 	this.Data["Chanels"] = this.Chanels()
 	//单页
 	ModelPages := models.Pages{}

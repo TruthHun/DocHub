@@ -41,9 +41,18 @@ import (
 	"rsc.io/pdf"
 )
 
+const (
+	//DocHub Version
+	VERSION = "v1.2"
+	//Cache Config
+	CACHE_CONF = `{"CachePath":"./cache/runtime","FileSuffix":".cache","DirectoryLevel":2,"EmbedExpiry":120}`
+)
+
 var (
+	//develop mode
 	Debug     = beego.AppConfig.String("runmode") == "dev"
 	StaticExt = make(map[string]bool)
+	Segmenter sego.Segmenter
 )
 
 func init() {

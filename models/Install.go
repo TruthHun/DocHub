@@ -3,26 +3,18 @@ package models
 import (
 	"time"
 
-	"io/ioutil"
-	"os"
-
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego"
 )
 
 func install() {
-	lockfile := "conf/install.lock"
-	if _, err := os.Stat(lockfile); err != nil {
-		//数据初始化，如果数据已经存在，则不会继续写入(因为数据已存在，继续写入会报错，所以没影响)
-		installAdmin()
-		installCategory()
-		installFriendlinks()
-		installPages()
-		installSeo()
-		installSys()
-		ioutil.WriteFile(lockfile, []byte(""), os.ModePerm)
-	}
-
+	//数据初始化，如果数据已经存在，则不会继续写入(因为数据已存在，继续写入会报错，所以没影响)
+	installAdmin()
+	installCategory()
+	installFriendlinks()
+	installPages()
+	installSeo()
+	installSys()
 }
 
 //安装管理员初始数据
@@ -188,6 +180,10 @@ func installPages() {
 //安装SEO初始数据
 //存在唯一索引Page字段，已存在数据，不会继续写入
 func installSeo() {
+	seo := new(Seo)
+	if O.QueryTable(seo).Filter("id__gt", 0).One(seo); seo.Id > 0 {
+		return
+	}
 	var seos = []Seo{
 		Seo{
 			Name:        "首页",
@@ -619,4 +615,54 @@ func installCategory() {
 		(334, 10, '高考', 0, 0, '', 1);
 `
 	O.Raw(sql).Exec()
+}
+
+//初始化配置项
+func initCfg() {
+	cfgEmail := string(CONFIG_EMAIL)
+	//cfgOss := string(CONFIG_OSS)
+	//cfgDepend := string(CONFIG_DEPEND)
+	//host=smtpdm.aliyun.com
+	//port=465
+	//username=admin@wenkuzhijia.cn
+	//password=HCF1990wenkuzhijia
+	//replyto=truthhun@foxmail.com
+	var configs = []Config{
+		Config{
+			Title:       "主机",
+			Description: "请填写邮箱HOST，当前仅支持SMTP",
+			Key:         "host",
+			Value:       "",
+			Category:    cfgEmail,
+		},
+		Config{
+			Title:       "端口",
+			Description: "服务邮箱端口",
+			Key:         "port",
+			Value:       "",
+			Category:    cfgEmail,
+		},
+		Config{
+			Title:       "用户名",
+			Description: "邮箱用户名",
+			Key:         "username",
+			Value:       "",
+			Category:    cfgEmail,
+		},
+		Config{
+			Title:       "密码",
+			Description: "邮箱密码",
+			Key:         "password",
+			Value:       "",
+			Category:    cfgEmail,
+		},
+		Config{
+			Title:       "收件邮箱地址",
+			Description: "接收回件的邮箱。留空则表示使用发件邮箱作为收件邮箱",
+			Key:         "replyto",
+			Value:       "",
+			Category:    cfgEmail,
+		},
+	}
+	O.InsertMulti(len(configs), &configs)
 }

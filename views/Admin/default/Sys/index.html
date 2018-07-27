@@ -2,6 +2,14 @@
             <h1 class="page-header">系统设置</h1>
             <div class="panel panel-default">
                 <div class="panel-body">
+
+                    <ul class="nav nav-tabs" style="margin-bottom: 15px;">
+                        <li {{if eq .Tab "default"}}class="active"{{end}}><a href="/admin/sys">网站设置</a></li>
+                        <li {{if eq .Tab "email"}}class="active"{{end}}><a href="/admin/sys?tab=email">邮箱设置</a></li>
+                        <li {{if eq .Tab "oss"}}class="active"{{end}}><a href="/admin/sys?tab=oss">OSS设置</a></li>
+                        <li {{if eq .Tab "depend"}}class="active"{{end}}><a href="/admin/sys?tab=depend">依赖设置</a></li>
+                    </ul>
+
                     {{with .Sys}}
                     <form action="" class="wenku-ajax-form" data-redirect="" method="post">
                         <input type="hidden" name="Id" value="1" />
@@ -23,16 +31,16 @@
 
                         <div class="form-group">
                             <label >首页分类</label>
-                            <input type="text" class="form-control input-lg" name="HomeCates" placeholder="请按照想要的首页显示顺序填写频道ids" value="{{.HomeCates}}" />
+                            <input type="text" class="form-control input-lg" name="HomeCates" placeholder="请按顺序填写频道id，以便在首页显示，多个id用英文逗号分隔" value="{{.HomeCates}}" />
                         </div>
 
-                        <div class="col-xs-6" style="padding-left: 0px;">
+                        <div class="col-xs-6 hide" style="padding-left: 0px;">
                             <div class="form-group">
                                 <label >PC端域名</label>
                                 <input type="text" class="form-control input-lg" name="DomainPc" value="{{.DomainPc}}" />
                             </div>
                         </div>
-                        <div class="col-xs-6" style="padding-left: 0px;">
+                        <div class="col-xs-6 hide" style="padding-left: 0px;">
                             <div class="form-group">
                                 <label >移动端域名</label>
                                 <input type="text" class="form-control input-lg" name="DomainMobile" value="{{.DomainMobile}}" />
@@ -52,19 +60,19 @@
                             </div>
                         </div>
 
-                        <div class="col-xs-4" style="padding-left: 0px;">
+                        <div class="col-xs-4 hide" style="padding-left: 0px;">
                             <div class="form-group">
                                 <label >PC端模板(区分大小写)</label>
                                 <input type="text" class="form-control input-lg" name="TplComputer" value="{{.TplComputer}}" />
                             </div>
                         </div>
-                        <div class="col-xs-4" style="padding-left: 0px;">
+                        <div class="col-xs-4 hide" style="padding-left: 0px;">
                             <div class="form-group">
                                 <label >移动端模板(区分大小写)</label>
                                 <input type="text" class="form-control input-lg" name="TplMobile" value="{{.TplMobile}}" />
                             </div>
                         </div>
-                        <div class="col-xs-4" style="padding-left: 0px;">
+                        <div class="col-xs-4 hide" style="padding-left: 0px;">
                             <div class="form-group">
                                 <label >后台模板(区分大小写)</label>
                                 <input type="text" class="form-control input-lg" name="TplAdmin" readonly value="{{.TplAdmin}}" />
@@ -163,6 +171,8 @@
                         <input type="submit" class="btn btn-success btn-lg" value="提交更改"/>
                     </form>
                     {{end}}
+
+
                 </div>
             </div>
 

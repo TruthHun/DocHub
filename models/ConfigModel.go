@@ -6,6 +6,15 @@ import (
 	"strconv"
 )
 
+type ConfigCate string
+
+const (
+	CONFIG_EMAIL         ConfigCate = "email"         //email
+	CONFIG_OSS           ConfigCate = "oss"           //oss
+	CONFIG_DEPEND        ConfigCate = "depend"        //依赖
+	CONFIG_ELASTICSEARCH ConfigCate = "elasticsearch" //全文搜索
+)
+
 //配置管理表
 type Config struct {
 	Id          int    `orm:"column(Id)"`                                //主键
@@ -33,7 +42,7 @@ func (this *Config) All() (configs []Config) {
 //@param            cate            配置分类
 //@param            key             键
 //@return           val             值
-func (this *Config) GetConfig(cate string, key string) (val string) {
+func (this *Config) GetConfig(cate ConfigCate, key string) (val string) {
 	var ok bool
 	if val, ok = GlobalConfigMap[fmt.Sprintf("%v.%v", cate, key)]; !ok {
 		val = ""
@@ -45,7 +54,7 @@ func (this *Config) GetConfig(cate string, key string) (val string) {
 //@param            cate            配置分类
 //@param            key             键
 //@return           val             值
-func (this *Config) GetConfigBool(cate string, key string) (val bool) {
+func (this *Config) GetConfigBool(cate ConfigCate, key string) (val bool) {
 	value := this.GetConfig(cate, key)
 	if value == "true" || value == "1" {
 		val = true
@@ -57,7 +66,7 @@ func (this *Config) GetConfigBool(cate string, key string) (val bool) {
 //@param            cate            配置分类
 //@param            key             键
 //@return           val             值
-func (this *Config) GetConfigInt64(cate string, key string) (val int64) {
+func (this *Config) GetConfigInt64(cate ConfigCate, key string) (val int64) {
 	val, _ = strconv.ParseInt(this.GetConfig(cate, key), 10, 64)
 	return
 }
@@ -66,7 +75,7 @@ func (this *Config) GetConfigInt64(cate string, key string) (val int64) {
 //@param            cate            配置分类
 //@param            key             键
 //@return           val             值
-func (this *Config) GetConfigFloat64(cate string, key string) (val float64) {
+func (this *Config) GetConfigFloat64(cate ConfigCate, key string) (val float64) {
 	val, _ = strconv.ParseFloat(this.GetConfig(cate, key), 64)
 	return
 }
