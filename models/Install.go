@@ -15,6 +15,7 @@ func install() {
 	installPages()
 	installSeo()
 	installSys()
+	installCfg()
 }
 
 //安装管理员初始数据
@@ -618,51 +619,214 @@ func installCategory() {
 }
 
 //初始化配置项
-func initCfg() {
-	cfgEmail := string(CONFIG_EMAIL)
-	//cfgOss := string(CONFIG_OSS)
-	//cfgDepend := string(CONFIG_DEPEND)
-	//host=smtpdm.aliyun.com
-	//port=465
-	//username=admin@wenkuzhijia.cn
-	//password=HCF1990wenkuzhijia
-	//replyto=truthhun@foxmail.com
-	var configs = []Config{
+func installCfg() {
+	var configs []Config
+
+	//邮箱
+	cateEmail := string(CONFIG_EMAIL)
+	cfgEmail := []Config{
 		Config{
 			Title:       "主机",
 			Description: "请填写邮箱HOST，当前仅支持SMTP",
 			Key:         "host",
 			Value:       "",
-			Category:    cfgEmail,
+			Category:    cateEmail,
 		},
 		Config{
 			Title:       "端口",
-			Description: "服务邮箱端口",
+			Description: "邮箱服务端口",
 			Key:         "port",
 			Value:       "",
-			Category:    cfgEmail,
+			Category:    cateEmail,
 		},
 		Config{
 			Title:       "用户名",
 			Description: "邮箱用户名",
 			Key:         "username",
 			Value:       "",
-			Category:    cfgEmail,
+			Category:    cateEmail,
 		},
 		Config{
 			Title:       "密码",
 			Description: "邮箱密码",
 			Key:         "password",
 			Value:       "",
-			Category:    cfgEmail,
+			Category:    cateEmail,
 		},
 		Config{
 			Title:       "收件邮箱地址",
 			Description: "接收回件的邮箱。留空则表示使用发件邮箱作为收件邮箱",
 			Key:         "replyto",
 			Value:       "",
-			Category:    cfgEmail,
+			Category:    cateEmail,
 		},
 	}
-	O.InsertMulti(len(configs), &configs)
+
+	//oss
+	cateOss := string(CONFIG_OSS)
+	cfgOss := []Config{
+		Config{
+			Title:       "AccessKeyId",
+			Description: "",
+			Key:         "access_key_id",
+			Value:       "",
+			Category:    cateOss,
+		},
+		Config{
+			Title:       "AccessKeySecret",
+			Description: "",
+			Key:         "access_key_secret",
+			Value:       "",
+			Category:    cateOss,
+		},
+		Config{
+			Title:       "是否内网",
+			Description: "当前环境是否内网，内网则使用内网endpoint，否则使用外网endpoint",
+			Key:         "is_internal",
+			Value:       "false",
+			Category:    cateOss,
+			InputType:   INPUT_BOOL,
+		},
+		Config{
+			Title:       "内网Endpoint",
+			Description: "",
+			Key:         "endpoint_internal",
+			Value:       "",
+			Category:    cateOss,
+		},
+		Config{
+			Title:       "外网Endpoint",
+			Description: "",
+			Key:         "endpoint_outer",
+			Value:       "",
+			Category:    cateOss,
+		},
+		Config{
+			Title:       "公共读Bucket",
+			Description: "提供图片和文档预览，如：dochub-public",
+			Key:         "bucket_preview",
+			Value:       "",
+			Category:    cateOss,
+		},
+		Config{
+			Title:       "私有Bucket",
+			Description: "存储文档，无法直接访问，如：dochub-private",
+			Key:         "bucket_store",
+			Value:       "",
+			Category:    cateOss,
+		},
+		Config{
+			Title:       "预览链接",
+			Description: "如：http://dochub-public.oss-cn-hongkong.aliyuncs.com",
+			Key:         "preview_url",
+			Value:       "",
+			Category:    cateOss,
+		},
+		Config{
+			Title:       "下载链接",
+			Description: "如：http://dochub-private.oss-cn-hongkong.aliyuncs.com",
+			Key:         "download_url",
+			Value:       "",
+			Category:    cateOss,
+		},
+		Config{
+			Title:       "下载链接过期时长(秒)",
+			Description: "",
+			Key:         "url_expire",
+			Value:       "600",
+			InputType:   INPUT_NUMBER,
+			Category:    cateOss,
+		},
+	}
+
+	//日志
+	cateLogs := string(CONFIG_LOGS)
+	cfgLogs := []Config{
+		Config{
+			Title:       "保留时长(天)",
+			Description: "日志保留时长，至少一天",
+			Key:         "max_days",
+			Value:       "7",
+			InputType:   INPUT_NUMBER,
+			Category:    cateLogs,
+		},
+		Config{
+			Title:       "日志文件最大行数",
+			Description: "日志文件最大行数，默认为10000行，用于拆分较大日志文件",
+			Key:         "max_lines",
+			Value:       "10000",
+			Category:    cateLogs,
+		},
+	}
+
+	//依赖
+	cateDepend := string(CONFIG_DEPEND)
+	cfgDepend := []Config{
+		Config{
+			Title:       "PDF2SVG",
+			Description: "PDF转SVG命令工具，默认为pdf2svg",
+			Key:         "pdf2svg",
+			Value:       "pdf2svg",
+			Category:    cateDepend,
+		},
+		Config{
+			Title:       "Soffice",
+			Description: "libreoffice/openoffice将office文档转PDF文档的工具，默认为soffice",
+			Key:         "soffice",
+			Value:       "soffice",
+			Category:    cateDepend,
+		},
+		Config{
+			Title:       "Calibre",
+			Description: "calibre文档转换命令，将mobi等转PDF，默认为ebook-convert",
+			Key:         "calibre",
+			Value:       "ebook-convert",
+			Category:    cateDepend,
+		},
+		Config{
+			Title:       "PDF2TEXT",
+			Description: "从pdf中提取文本的工具，默认为pdftotext",
+			Key:         "pdftotext",
+			Value:       "pdftotext",
+			Category:    cateDepend,
+		},
+		Config{
+			Title:       "ImageMagick",
+			Description: "图片转换工具命令，用于将svg转png，默认为convert",
+			Key:         "imagemagick",
+			Value:       "convert",
+			Category:    cateDepend,
+		},
+	}
+
+	//全文搜索
+	cateES := string(CONFIG_ELASTICSEARCH)
+	cfgES := []Config{
+		Config{
+			Title:       "是否开启",
+			Description: "是否开启ElasticSearch作为全文搜索引擎",
+			Key:         "on",
+			Value:       "false",
+			InputType:   INPUT_BOOL,
+			Category:    cateES,
+		},
+		Config{
+			Title:       "Host",
+			Description: "ElasticSearch Host，如：http://localhost:9300",
+			Key:         "host",
+			Value:       "",
+			Category:    cateES,
+		},
+	}
+
+	configs = append(configs, cfgEmail...)
+	configs = append(configs, cfgOss...)
+	configs = append(configs, cfgLogs...)
+	configs = append(configs, cfgDepend...)
+	configs = append(configs, cfgES...)
+	//注意：这里使用逐项写入，以便有升级的时候，存在了的配置项不再写入，不存在的则写入
+	//O.InsertMulti(len(configs), &configs)
+	for _, cfg := range configs {
+		O.Insert(&cfg)
+	}
 }

@@ -26,7 +26,6 @@ import (
 
 //OSS配置【这个不再作为数据库表，直接在oss.conf文件中进行配置】
 type Oss struct {
-	Id               int    //主键
 	EndpointInternal string //内网的endpoint
 	EndpointOuter    string //外网的endpoint
 	AccessKeyId      string //key

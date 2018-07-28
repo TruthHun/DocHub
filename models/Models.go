@@ -100,11 +100,9 @@ var (
 
 //以下是数据库全局数据变量
 var (
-	GlobalSys               Sys                               //全局系统设置
-	GlobalGitbookPublishing bool                      = false //是否正在发布gitbook书籍，如果是，则不能再点击发布
-	GlobalGitbookNextAbled  bool                      = true  //是否可以继续采集和发布下一本数据，如果true，则表示可以继续下载和发布下一本电子书，否则执行等待操作
-	GlobalConfig            []Config                          //全局配置文件
-	GlobalConfigMap         = make(map[string]string)         //配置文件的全局map
+	GlobalSys               Sys          //全局系统设置
+	GlobalGitbookPublishing bool = false //是否正在发布gitbook书籍，如果是，则不能再点击发布
+	GlobalGitbookNextAbled  bool = true  //是否可以继续采集和发布下一本数据，如果true，则表示可以继续下载和发布下一本电子书，否则执行等待操作
 )
 
 //以下是表字段查询

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"math/rand"
+	"sync"
 
 	"crypto/md5"
 
@@ -50,9 +51,10 @@ const (
 
 var (
 	//develop mode
-	Debug     = beego.AppConfig.String("runmode") == "dev"
-	StaticExt = make(map[string]bool)
-	Segmenter sego.Segmenter
+	Debug           = beego.AppConfig.String("runmode") == "dev"
+	StaticExt       = make(map[string]bool)
+	Segmenter       sego.Segmenter
+	GlobalConfigMap sync.Map //配置文件的全局map
 )
 
 func init() {
