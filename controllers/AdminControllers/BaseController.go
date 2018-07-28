@@ -35,7 +35,7 @@ func (this *BaseController) Prepare() {
 	}
 	version := helper.VERSION
 	if helper.Debug {
-		version = fmt.Sprintf("v%v.%v", version, time.Now().Unix())
+		version = fmt.Sprintf("%v.%v", version, time.Now().Unix())
 	}
 	this.Data["Version"] = version
 	//后台关闭XSRF功能

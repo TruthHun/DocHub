@@ -13,6 +13,7 @@ const (
 	CONFIG_OSS           ConfigCate = "oss"           //oss
 	CONFIG_DEPEND        ConfigCate = "depend"        //依赖
 	CONFIG_ELASTICSEARCH ConfigCate = "elasticsearch" //全文搜索
+	CONFIG_LOGS          ConfigCate = "logs"          //日志配置管理
 )
 
 //配置管理表
@@ -23,6 +24,36 @@ type Config struct {
 	Key         string `orm:"column(Key);default();size(30)"`            //键
 	Value       string `orm:"column(Value);default()"`                   //值
 	Category    string `orm:"column(Category);default();index;size(30)"` //分类，如oss、email、redis等
+}
+
+//邮箱配置
+type configEmail struct {
+}
+
+//环境依赖
+type configDepend struct {
+	Pdf2svg   string //PDF转svg工具
+	Soffice   string //libreoffice/openoffice将office文档转PDF文档的工具
+	Calibre   string //calibre，将mobi等转PDF
+	Pdftotext string //PDF文本提取工具
+	Imagick   string //imagick设置，永远转换封面
+}
+
+//oss配置
+type configOss struct {
+}
+
+//全文搜索配置
+type configElasticSearch struct {
+	On   bool   //是否开启全文搜索
+	Host string //全文搜索地址
+}
+
+//日志配置
+type configLogs struct {
+	Level    int //日志等级
+	MaxDays  int //最大保留多长时间
+	MaxLines int //一个日志文件，最大多少行日志
 }
 
 // 多字段唯一键

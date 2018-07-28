@@ -8,6 +8,8 @@
                         <li {{if eq .Tab "email"}}class="active"{{end}}><a href="/admin/sys?tab=email">邮箱设置</a></li>
                         <li {{if eq .Tab "oss"}}class="active"{{end}}><a href="/admin/sys?tab=oss">OSS设置</a></li>
                         <li {{if eq .Tab "depend"}}class="active"{{end}}><a href="/admin/sys?tab=depend">依赖设置</a></li>
+                        <li {{if eq .Tab "logs"}}class="active"{{end}}><a href="/admin/sys?tab=logs">日志设置</a></li>
+                        <li {{if eq .Tab "elasticsearch"}}class="active"{{end}}><a href="/admin/sys?tab=elasticsearch">全文搜索设置</a></li>
                     </ul>
 
                     {{with .Sys}}
@@ -25,7 +27,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label >文库动态</label>
+                            <label >热门推荐</label>
                             <input type="text" class="form-control input-lg" name="Trends" placeholder="请填写5个文档ID，id之间用英文逗号分隔" value="{{.Trends}}" />
                         </div>
 

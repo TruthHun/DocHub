@@ -15,7 +15,7 @@ type SysController struct {
 func (this *SysController) Get() {
 	tab := models.ConfigCate(strings.ToLower(this.GetString("tab")))
 	switch tab {
-	case models.CONFIG_EMAIL, models.CONFIG_OSS, models.CONFIG_DEPEND, models.CONFIG_ELASTICSEARCH:
+	case models.CONFIG_EMAIL, models.CONFIG_OSS, models.CONFIG_DEPEND, models.CONFIG_ELASTICSEARCH, models.CONFIG_LOGS:
 	default:
 		tab = "default"
 	}
