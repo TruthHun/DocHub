@@ -362,7 +362,8 @@ func GetPdfPagesNum(file string) (pages int, err error) {
 //@return           cover           封面文件
 //@return           err             错误
 func ConvertToJpeg(pdffile string, removeFile bool) (cover string, err error) {
-	convert := beego.AppConfig.DefaultString("imagick", "convert")
+	//convert := beego.AppConfig.DefaultString("imagick", "convert")
+	convert := GetConfig("depend", "imagemagick", "convert")
 	cover = pdffile + ".jpg"
 	cmd := exec.Command(convert, "-density", "150", "-quality", "100", pdffile, cover)
 	if Debug {
@@ -378,7 +379,8 @@ func ConvertToJpeg(pdffile string, removeFile bool) (cover string, err error) {
 //office文档转pdf，返回转化后的文档路径和错误
 func OfficeToPdf(office string) error {
 	//	soffice --headless --invisible --convert-to pdf doctest.docx
-	soffice := beego.AppConfig.DefaultString("soffice", "soffice")
+	//soffice := beego.AppConfig.DefaultString("soffice", "soffice")
+	soffice := GetConfig("depend", "soffice", "soffice")
 	dir_slice := strings.Split(office, "/")
 	dir := strings.Join(dir_slice[0:(len(dir_slice)-1)], "/")
 	cmd := exec.Command(soffice, "--headless", "--invisible", "--convert-to", "pdf", office, "--outdir", dir)
@@ -390,7 +392,8 @@ func OfficeToPdf(office string) error {
 
 //非office文档(.txt,.mobi,.epub)转pdf文档
 func UnofficeToPdf(file string) (pdfFile string, err error) {
-	calibre := beego.AppConfig.DefaultString("calibre", "ebook-convert")
+	//calibre := beego.AppConfig.DefaultString("calibre", "ebook-convert")
+	calibre := GetConfig("depend", "calibre", "ebook-convert")
 	pdfFile = filepath.Dir(file) + "/" + strings.TrimSuffix(filepath.Base(file), filepath.Ext(file)) + ".pdf"
 	cmd := exec.Command(calibre, file, pdfFile)
 	if Debug {
@@ -801,7 +804,8 @@ func UpperFirst(str string) string {
 //@param			from		起始页
 //@param			to			截止页
 func ExtractPdfText(file string, from, to int) (content string) {
-	pdftotext := beego.AppConfig.DefaultString("pdftotext", "pdftotext")
+	//pdftotext := beego.AppConfig.DefaultString("pdftotext", "pdftotext")
+	pdftotext := GetConfig("depend", "pdftotext")
 	textfile := file + ".txt"
 	defer os.Remove(textfile)
 	args := []string{"-f", strconv.Itoa(from), "-l", strconv.Itoa(to), file, textfile}

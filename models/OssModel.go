@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/TruthHun/DocHub/helper"
-	"github.com/astaxie/beego"
 
 	"strings"
 
@@ -42,18 +41,17 @@ type Oss struct {
 //@return               oss             Oss配置信息
 func NewOss() (oss *Oss) {
 	oss = &Oss{
-		IsInternal:       beego.AppConfig.DefaultBool("oss::IsInternal", false),
-		EndpointInternal: beego.AppConfig.String("oss::EndpointInternal"),
-		EndpointOuter:    beego.AppConfig.String("oss::EndpointOuter"),
-		AccessKeyId:      beego.AppConfig.String("oss::AccessKeyId"),
-		AccessKeySecret:  beego.AppConfig.String("oss::AccessKeySecret"),
-		BucketPreview:    beego.AppConfig.String("oss::BucketPreview"),
-		BucketStore:      beego.AppConfig.String("oss::BucketStore"),
-		UrlExpire:        beego.AppConfig.DefaultInt("oss::UrlExpire", 60),
-		PreviewUrl:       strings.TrimRight(beego.AppConfig.String("oss::PreviewUrl"), "/") + "/",
-		DownloadUrl:      strings.TrimRight(beego.AppConfig.String("oss::DownloadUrl"), "/") + "/",
+		IsInternal:       helper.GetConfigBool("oss", "is_internal"),
+		EndpointInternal: helper.GetConfig("oss", "endpoint_internal"),
+		EndpointOuter:    helper.GetConfig("oss", "endpoint_outer"),
+		AccessKeyId:      helper.GetConfig("oss", "access_key_id"),
+		AccessKeySecret:  helper.GetConfig("oss", "access_key_secret"),
+		BucketPreview:    helper.GetConfig("oss", "bucket_preview"),
+		BucketStore:      helper.GetConfig("oss", "bucket_store"),
+		UrlExpire:        int(helper.GetConfigInt64("oss", "url_expire")),
+		PreviewUrl:       strings.TrimRight(helper.GetConfig("oss", "preview_url"), "/") + "/",
+		DownloadUrl:      strings.TrimRight(helper.GetConfig("oss", "download_url"), "/") + "/",
 	}
-
 	return oss
 }
 

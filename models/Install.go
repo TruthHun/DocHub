@@ -829,4 +829,5 @@ func installCfg() {
 	for _, cfg := range configs {
 		O.Insert(&cfg)
 	}
+	ModelConfig.UpdateGlobal()
 }

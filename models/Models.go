@@ -556,9 +556,12 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	//如果文件夹folder已经存在了，则需要先删除
 	os.MkdirAll(folder, os.ModePerm)
 	defer os.RemoveAll(folder)
-	pdf2svg := beego.AppConfig.String("pdf2svg")                  //pdf转svg命令
-	compress := beego.AppConfig.DefaultBool("compressSvg", false) //是否压缩svg
-	content = helper.ExtractPdfText(file, 1, 5)                   //提取前5页的PDF文本内容
+
+	pdf2svg := helper.GetConfig("depend", "pdf2svg", "pdf2svg")
+
+	//compress := beego.AppConfig.DefaultBool("compressSvg", false) //是否压缩svg
+	compress := true                            //强制为true
+	content = helper.ExtractPdfText(file, 1, 5) //提取前5页的PDF文本内容
 	//处理pdf转svg
 	for i := 0; i < totalPage; i++ {
 		num := i + 1
@@ -566,7 +569,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 		//Usage: pdf2svg <in file.pdf> <out file.svg> [<page no>]
 		cmd := exec.Command(pdf2svg, file, svgfile, strconv.Itoa(num))
 		if helper.Debug {
-			beego.Debug("pdf转svg", cmd.Args)
+			beego.Debug("pdf转svg参数", cmd.Args)
 		}
 		if err := cmd.Run(); err != nil {
 			helper.Logger.Error(err.Error())
@@ -694,16 +697,17 @@ func Count(table string, cond *orm.Condition) (cnt int64) {
 //@param            content     string          邮件内容
 //@return           error                       发送错误
 func SendMail(to, subject, content string) (err error) {
-	port := beego.AppConfig.DefaultInt("email::port", 80)
-	host := beego.AppConfig.String("email::host")
-	username := beego.AppConfig.String("email::username")
-	password := beego.AppConfig.String("email::password")
-	replyto := beego.AppConfig.DefaultString("mail::replyto", username)
-
+	port := int(helper.GetConfigInt64("email", "port"))
+	host := helper.GetConfig("email", "host")
+	username := helper.GetConfig("email", "username")
+	password := helper.GetConfig("email", "password")
+	replyto := helper.GetConfig("email", "replyto")
 	m := gomail.NewMessage()
 	m.SetHeader("From", username)
 	m.SetHeader("To", to)
-	m.SetHeader("Reply-To", replyto)
+	if strings.TrimSpace(replyto) != "" {
+		m.SetHeader("Reply-To", replyto)
+	}
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/html", content)
 
