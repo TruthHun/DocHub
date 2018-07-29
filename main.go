@@ -19,6 +19,8 @@ func init() {
 	fmt.Println("Powered By DocHub")
 	fmt.Println("Author:进击的皇虫(TruthHun@QQ.COM)")
 	fmt.Println("")
+	//sitemap静态目录
+	beego.SetStaticPath("/sitemap", "sitemap")
 
 	//数据库初始化
 	models.Init()

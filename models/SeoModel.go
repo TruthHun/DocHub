@@ -1,6 +1,16 @@
 package models
 
-import "strings"
+import (
+	"strings"
+	"time"
+
+	"os"
+
+	"strconv"
+
+	"github.com/TruthHun/DocHub/helper"
+	"github.com/TruthHun/gotil/sitemap"
+)
 
 //SEO配置表
 type Seo struct {
@@ -48,4 +58,63 @@ func (this *Seo) GetByPage(page string, defaultTitle, defaultKeywords, defaultDe
 		seo["Description"] = replaceFunc(seoStruct.Description, defSeo)
 	}
 	return seo
+}
+
+//baseUrl := this.Ctx.Input.Scheme() + "://" + this.Ctx.Request.Host
+//if host := beego.AppConfig.String("sitemap_host"); len(host) > 0 {
+//	baseUrl = this.Ctx.Input.Scheme() + "://" + host
+//}
+//生成站点地图
+//@param			domain			站点域名
+func (this *Seo) BuildSitemap(domain string) {
+
+	var (
+		files   []string
+		fileNum int
+		Sitemap = sitemap.NewSitemap("1.0", "utf-8")
+		si      []sitemap.SitemapIndex
+		count   int64
+		limit   = 10000 //每个sitemap文件，限制10000个链接
+	)
+	domain = strings.TrimRight(domain, "/")
+	//文档总数
+	count, _ = O.QueryTable(TableDocInfo).Filter("Status__gt", -1).Count()
+	cnt := int(count)
+	if fileNum = cnt / limit; cnt%limit > 0 {
+		fileNum = fileNum + 1
+	}
+	//创建文件夹
+	os.MkdirAll("sitemap", os.ModePerm)
+	for i := 0; i < fileNum; i++ {
+		var docs []DocumentInfo
+		O.QueryTable(TableDocInfo).Filter("Status__gt", -1).Limit(limit).Offset(i*limit).All(&docs, "Id", "TimeCreate")
+		if len(docs) > 0 {
+			//文件
+			file := "sitemap/doc-" + strconv.Itoa(i) + ".xml"
+			files = append(files, file)
+			var su []sitemap.SitemapUrl
+			for _, doc := range docs {
+				su = append(su, sitemap.SitemapUrl{
+					Loc:        domain + "/view/" + strconv.Itoa(doc.Id),
+					Lastmod:    time.Unix(int64(doc.TimeCreate), 0).Format("2006-01-02 15:04:05"),
+					ChangeFreq: sitemap.WEEKLY,
+					Priority:   0.9,
+				})
+			}
+			if err := Sitemap.CreateSitemapContent(su, file); err != nil {
+				helper.Logger.Error("sitemap生成失败：" + err.Error())
+			}
+		}
+	}
+	if len(files) > 0 {
+		for _, f := range files {
+			si = append(si, sitemap.SitemapIndex{
+				Loc:     domain + "/" + f,
+				Lastmod: time.Now().Format("2006-01-02 15:04:05"),
+			})
+		}
+	}
+	if err:=Sitemap.CreateSitemapIndex(si, "sitemap.xml");err!=nil{
+		helper.Logger.Error("sitemap生成失败：" + err.Error())
+	}
 }
