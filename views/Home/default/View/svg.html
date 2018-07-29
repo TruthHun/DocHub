@@ -45,7 +45,7 @@
                         <div class="wenku-viewer-more text-center" data-next="{{CalcInt $.PageShow "+" 1}}" data-ext="{{Default $.Doc.PreviewExt "svg"}}" data-svg="{{$.PreviewDomain}}/{{Xmd5 $.Doc.Md5}}/">
                             <div>下载文档到电脑，方便使用</div>
                             <div><a href="javascript:void(0);" class="btn btn-primary" data-toggle="modal" data-target="#ModalDownload"><i class="fa fa-cloud-download"></i> 下载文档</a></div>
-                        {{if gt $.TotalPages (.Doc.PreviewPage | Interface2Int)}}
+                        {{if and (gt (.Doc.PreviewPage | Interface2Int) 0) (gt $.TotalPages (.Doc.PreviewPage | Interface2Int))}}
                             <a href="javascript:void(0);" class="wenku-viewer-more-btn"><div class="help-block">还有 <span class="wenku-unread-pages">{{CalcInt (.Doc.PreviewPage | Interface2Int) "-" $.PageShow}}</span> 页未阅读，<span class="text-primary">继续阅读</span></div></a>
                         {{else}}
                             <a href="javascript:void(0);" class="wenku-viewer-more-btn"><div class="help-block">还有 <span class="wenku-unread-pages">{{CalcInt $.TotalPages "-" $.PageShow}}</span> 页未阅读，<span class="text-primary">继续阅读</span></div></a>

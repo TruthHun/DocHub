@@ -36,11 +36,13 @@
                             </td>
                             <td>
                                 {{if eq .Status "1"}}
-                                <a href="/admin/update?table=report&id={{.Id}}&field=Status&value=0" class="wenku-ajax-get wenku-confirm" title="将当前记录标记为已处理">标记为待处理</a>
+                                <a href="/admin/update?table=report&id={{.Id}}&field=Status&value=0" class="wenku-tooltip wenku-ajax-get wenku-confirm" title="将当前举报记录标记为已处理">标记为待处理</a>
                                 {{else}}
-                                <a href="/admin/update?table=report&id={{.Id}}&field=Status&value=1" class="wenku-ajax-get wenku-confirm" title="将当前记录标记为待处理">标记为已处理</a>
+                                <a href="/admin/update?table=report&id={{.Id}}&field=Status&value=1" class="wenku-tooltip wenku-ajax-get wenku-confirm" title="将当前举报记录标记为待处理">标记为已处理</a>
                                 {{end}}
-                                <a href="/admin/update?table=report&id={{.Id}}&field=Status&value=-1" class="wenku-ajax-get wenku-confirm" title="删除当前记录">删除记录</a>
+                                |
+                                <a href="/admin/update?table=report&id={{.Id}}&field=Status&value=-1" class="wenku-tooltip wenku-ajax-get wenku-confirm" title="删除举报记录">删除记录</a> |
+                                <a href="/admin/doc/action?type=remove&id={{.Did}}" class="wenku-tooltip wenku-confirm wenku-ajax-get" title="删除被举报文档，将该文档移入回收站">删除文档</a>
                             </td>
                         </tr>
                         {{end}}

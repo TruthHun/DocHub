@@ -71,7 +71,7 @@ func (this *ViewController) Get() {
 	if this.Data["Comments"], _, err = models.ModelDocComment.GetCommentList(id, 1, 10); err != nil {
 		helper.Logger.Error(err.Error())
 	}
-	seoTitle := fmt.Sprintf("【%v·%v·%v】", chanelTitle, parentTitle, childrenTitle) + doc["Title"].(string)
+	seoTitle := fmt.Sprintf("[%v·%v·%v] ", chanelTitle, parentTitle, childrenTitle) + doc["Title"].(string)
 	seoKeywords := fmt.Sprintf("%v,%v,%v,", chanelTitle, parentTitle, childrenTitle) + doc["Keywords"].(string)
 	seoDesc := doc["Description"].(string)
 	this.Data["Seo"] = models.ModelSeo.GetByPage("PC-View", seoTitle, seoKeywords, seoDesc, this.Sys.Site)
