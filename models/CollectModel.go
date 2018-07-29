@@ -61,7 +61,7 @@ func (this *Collect) DelFolder(id, uid int) (err error) {
 		} else {
 			if _, err = O.Delete(&cf, "Id"); err == nil {
 				if len(cf.Cover) > 0 {
-					go ModelOss.DelFromOss(true, cf.Cover)
+					go NewOss().DelFromOss(true, cf.Cover)
 				}
 				err = Regulate("user_info", "Collect", -1, "Uid=?", uid)
 			}

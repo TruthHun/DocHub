@@ -635,7 +635,7 @@ func installCfg() {
 	cfgEmail := []Config{
 		Config{
 			Title:       "主机",
-			Description: "请填写邮箱HOST，当前仅支持SMTP",
+			Description: "请填写邮箱HOST，当前仅支持SMTP。示例：smtpdm.aliyun.com",
 			Key:         "host",
 			Value:       "",
 			Category:    cateEmail,
@@ -826,8 +826,8 @@ func installCfg() {
 			Category:    cateES,
 		},
 		Config{
-			Title:       "Host",
-			Description: "ElasticSearch Host，如：http://localhost:9200",
+			Title:       "服务地址",
+			Description: "ElasticSearch Host，如：http://localhost:9200，带http",
 			Key:         "host",
 			Value:       "",
 			Category:    cateES,

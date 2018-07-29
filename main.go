@@ -39,7 +39,7 @@ func init() {
 	beego.AddFuncMap("DoesCollect", DoesCollect)                        //判断用户是否已收藏了该文档
 	beego.AddFuncMap("DoesSign", DoesSign)                              //用户今日是否已签到
 	beego.AddFuncMap("Friends", Friends)                                //友情链接
-	beego.AddFuncMap("DefPic", models.ModelOss.DefaultPicture)          //获取默认图片
+	beego.AddFuncMap("DefPic", models.NewOss().DefaultPicture)          //获取默认图片
 	beego.AddFuncMap("CategoryName", models.ModelCategory.GetTitleById) //根据分类id获取分类名称
 	beego.AddFuncMap("IsIllegal", models.ModelDoc.IsIllegal)            //根据md5判断文档是否是非法文档
 	beego.AddFuncMap("IsRemark", models.ModelDocRemark.IsRemark)        //根据文档是否存在备注

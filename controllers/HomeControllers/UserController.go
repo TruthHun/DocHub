@@ -463,7 +463,7 @@ func (this *UserController) CreateCollectFolder() {
 			err = this.SaveToFile("Cover", dir+file)
 			if err == nil {
 				//将图片移动到OSS
-				err = models.ModelOss.MoveToOss(dir+file, file, true, true)
+				err = models.NewOss().MoveToOss(dir+file, file, true, true)
 				helper.Logger.Debug(dir + file)
 				if err != nil {
 					helper.Logger.Error(err.Error())
@@ -752,7 +752,7 @@ func (this *UserController) Avatar() {
 			helper.Logger.Error("用户(%v)头像保存失败：%v", this.IsLogin, err.Error())
 			this.ResponseJson(0, "头像文件保存失败")
 		}
-		err = models.ModelOss.MoveToOss(tmpfile, savefile, true, true)
+		err = models.NewOss().MoveToOss(tmpfile, savefile, true, true)
 		if err != nil {
 			helper.Logger.Error(err.Error())
 			this.ResponseJson(0, "头像文件保存失败")
@@ -762,7 +762,7 @@ func (this *UserController) Avatar() {
 		models.O.Read(&user)
 		if len(user.Avatar) > 0 {
 			//删除原头像图片
-			go models.ModelOss.DelFromOss(true, user.Avatar)
+			go models.NewOss().DelFromOss(true, user.Avatar)
 		}
 		user.Avatar = savefile
 		rows, err := models.O.Update(&user, "Avatar")

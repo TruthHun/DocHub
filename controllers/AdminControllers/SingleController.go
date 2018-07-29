@@ -25,7 +25,7 @@ func (this *SingleController) Edit() {
 	if this.Ctx.Request.Method == "POST" {
 		this.ParseForm(&page)
 		page.TimeCreate = int(time.Now().Unix())
-		page.Content = models.ModelOss.HandleContent(page.Content, false)
+		page.Content = models.NewOss().HandleContent(page.Content, false)
 		if rows, err := models.O.Update(&page); err == nil && rows > 0 {
 			this.ResponseJson(1, "更新成功")
 		} else if err != nil {
@@ -35,7 +35,7 @@ func (this *SingleController) Edit() {
 		}
 	} else {
 		page, _ = models.ModelPages.One(alias)
-		page.Content = models.ModelOss.HandleContent(page.Content, true)
+		page.Content = models.NewOss().HandleContent(page.Content, true)
 		this.Data["Data"] = page
 		this.TplName = "edit.html"
 	}
@@ -51,7 +51,7 @@ func (this *SingleController) Del() {
 		if _, err = models.O.QueryTable(models.TablePages).Filter("Id", page.Id).Delete(); err != nil {
 			this.ResponseJson(0, err.Error())
 		} else {
-			go models.ModelOss.DelByHtmlPics(page.Content)
+			go models.NewOss().DelByHtmlPics(page.Content)
 			this.ResponseJson(1, "删除成功")
 		}
 	}

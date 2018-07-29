@@ -275,7 +275,7 @@ func HandlePdf(uid int, tmpfile string, form FormUpload) error {
 				//处理pdf文档，转成svg图片，再将svg图片压缩，上传到OSS预览库
 				go func(tmpfile, md5str string, totalPage int) {
 					//把原文档移动到存档库，先暂时不要删除本地的原PDF文件
-					ModelOss.MoveToOss(tmpfile, md5str+".pdf", false, false)
+					NewOss().MoveToOss(tmpfile, md5str+".pdf", false, false)
 
 					if sys.PreviewPage > 0 {
 						totalPage = sys.PreviewPage //转化供预览的总页数
@@ -312,7 +312,7 @@ func HandleOffice(uid int, tmpfile string, form FormUpload) (err error) {
 		//处理pdf
 		if err = HandlePdf(uid, pdf, form); err == nil {
 			//如果转成pdf文档成功，则把原文档移动到OSS存储服务器
-			ModelOss.MoveToOss(tmpfile, form.Md5+"."+form.Ext, false, true)
+			NewOss().MoveToOss(tmpfile, form.Md5+"."+form.Ext, false, true)
 		} else {
 			helper.Logger.Error("pdf文档（%v）处理错误：%v", pdf, err.Error())
 		}
@@ -330,7 +330,7 @@ func HandleUnOffice(uid int, tmpfile string, form FormUpload) error {
 	if form.Ext != ".umd" { //calibre暂时无法转换umd文档
 		if pdfFile, err := helper.UnofficeToPdf(tmpfile); err == nil {
 			//如果转成pdf文档成功，则把原文档移动到OSS存储服务器
-			defer ModelOss.MoveToOss(tmpfile, form.Md5+"."+form.Ext, false, true)
+			defer NewOss().MoveToOss(tmpfile, form.Md5+"."+form.Ext, false, true)
 			return HandlePdf(uid, pdfFile, form)
 		} else {
 			helper.Logger.Error(err.Error())
@@ -382,7 +382,7 @@ func HandleUnOffice(uid int, tmpfile string, form FormUpload) error {
 			_, err = O.Insert(&docinfo)
 			if err == nil {
 				//把原文档移动到存档库
-				go ModelOss.MoveToOss(tmpfile, form.Md5+"."+form.Ext, false, true)
+				go NewOss().MoveToOss(tmpfile, form.Md5+"."+form.Ext, false, true)
 				//增加文档统计数量
 				DocCntInre(form.Chanel, form.Pid, form.Cid, uid)
 			}
@@ -539,18 +539,18 @@ func (this *Document) DocDeepDel(ids ...interface{}) (errs []string) {
 		}
 		go func() {
 			//删除预览文档
-			if err := ModelOss.DelFromOss(true, store.Md5+".pdf"); err != nil {
+			if err := NewOss().DelFromOss(true, store.Md5+".pdf"); err != nil {
 				helper.Logger.Error(err.Error())
 			}
 			//删除封面图片
-			if err := ModelOss.DelFromOss(true, store.Md5+".jpg"); err != nil {
+			if err := NewOss().DelFromOss(true, store.Md5+".jpg"); err != nil {
 				helper.Logger.Error(err.Error())
 			}
 			//删除原文档
-			if err := ModelOss.DelFromOss(false, store.Md5+"."+store.Ext); err != nil {
+			if err := NewOss().DelFromOss(false, store.Md5+"."+store.Ext); err != nil {
 				helper.Logger.Error(err.Error())
 			}
-			if err := ModelOss.DelFromOss(false, store.Md5+".pdf"); err != nil {
+			if err := NewOss().DelFromOss(false, store.Md5+".pdf"); err != nil {
 				helper.Logger.Error(err.Error())
 			}
 		}()

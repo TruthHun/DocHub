@@ -42,7 +42,7 @@ func (this *BannerController) Add() {
 		if err == nil {
 			if md5str, err := helper.FileMd5(filepath); err == nil {
 				save := md5str + "." + ext
-				err = models.ModelOss.MoveToOss(filepath, save, true, true)
+				err = models.NewOss().MoveToOss(filepath, save, true, true)
 				if err == nil {
 					var banner models.Banner
 					this.ParseForm(&banner)

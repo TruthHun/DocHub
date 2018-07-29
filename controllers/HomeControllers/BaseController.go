@@ -200,7 +200,7 @@ func (this *BaseController) Pages() {
 	this.Data["Seo"] = models.ModelSeo.GetByPage("PC-Pages", page.Title, page.Keywords, page.Description, this.Sys.Site)
 	page.Vcnt += 1
 	models.O.Update(&page, "Vcnt")
-	page.Content = models.ModelOss.HandleContent(page.Content, true)
+	page.Content = models.NewOss().HandleContent(page.Content, true)
 
 	this.Data["Page"] = page
 	this.Data["Lists"], _, _ = models.ModelPages.List(20, 1)

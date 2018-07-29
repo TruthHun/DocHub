@@ -61,7 +61,6 @@ var (
 	ModelSys           = new(Sys)             //系统
 	ModelUser          = new(User)            //用户
 	ModelUserInfo      = new(UserInfo)        //用户信息
-	ModelOss           = NewOss()             //OSS
 	ModelWord          = new(Word)            //关键字
 	ModelFreeDown      = new(FreeDown)        //免费下载，如果文档时收费下载，则用户下载第一次之后，在一定的时间范围内，再次下载则免费
 	ModelSearchLog     = new(SearchLog)       //搜索日志
@@ -577,7 +576,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 			if num == 1 {
 				//封面处理
 				if cover, err := helper.ConvertToJpeg(svgfile, false); err == nil {
-					ModelOss.MoveToOss(cover, md5str+".jpg", true, true)
+					NewOss().MoveToOss(cover, md5str+".jpg", true, true)
 				}
 				//获取svg的宽高(pt)
 				width, height = helper.ParseSvgWidthAndHeight(svgfile)
@@ -590,7 +589,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 
 			//压缩svg内容
 			helper.CompressSvg(svgfile)
-			ModelOss.MoveToOss(svgfile, md5str+"/"+strconv.Itoa(num)+".svg", true, true, compress)
+			NewOss().MoveToOss(svgfile, md5str+"/"+strconv.Itoa(num)+".svg", true, true, compress)
 		}
 	}
 
@@ -614,10 +613,10 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 				//svg结尾
 				if strings.HasSuffix(file, ".svg") { //svg结尾的，都是文档页
 					slice := strings.Split(file, "/")
-					ModelOss.MoveToOss(file, fmt.Sprintf("%v/%v", md5str, slice[len(slice)-1]), true, true, compress)
+					NewOss().MoveToOss(file, fmt.Sprintf("%v/%v", md5str, slice[len(slice)-1]), true, true, compress)
 					filenum++ //
 				} else if strings.HasSuffix(file, ".jpg") { //jpg结尾的，基本都是封面图片
-					ModelOss.MoveToOss(file, md5str+".jpg", true, true)
+					NewOss().MoveToOss(file, md5str+".jpg", true, true)
 					filenum++
 				}
 			}

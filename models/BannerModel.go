@@ -31,7 +31,7 @@ func (this *Banner) Del(id ...interface{}) (affected int64, err error) {
 		}
 	}
 	if len(objs) > 0 {
-		go ModelOss.DelFromOss(true, objs...)
+		go NewOss().DelFromOss(true, objs...)
 	}
 	return qs.Delete()
 }

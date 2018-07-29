@@ -127,17 +127,17 @@ func (this *Oss) MoveToOss(local, save string, IsPreview, IsDel bool, IsGzip ...
 		return err
 	}
 
-	isgzip := false
+	isGzip := false
 	//如果是开启了gzip，则需要设置文件对象的响应头
 	if len(IsGzip) > 0 && IsGzip[0] == true {
-		isgzip = true
+		isGzip = true
 	}
 
 	//在移动文件到OSS之前，先压缩文件
-	if isgzip {
+	if isGzip {
 		if bs, err := ioutil.ReadFile(local); err != nil {
 			helper.Logger.Error(err.Error())
-			isgzip = false //设置为false
+			isGzip = false //设置为false
 		} else {
 			var by bytes.Buffer
 			w := gzip.NewWriter(&by)
@@ -152,7 +152,7 @@ func (this *Oss) MoveToOss(local, save string, IsPreview, IsDel bool, IsGzip ...
 		helper.Logger.Error("文件移动到OSS失败：%v", err.Error())
 	}
 	//如果是开启了gzip，则需要设置文件对象的响应头
-	if isgzip {
+	if isGzip {
 		bucket.SetObjectMeta(save, oss.ContentEncoding("gzip")) //设置gzip响应头
 	}
 

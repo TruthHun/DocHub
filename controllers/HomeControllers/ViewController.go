@@ -128,9 +128,9 @@ func (this *ViewController) Download() {
 
 						file := fmt.Sprintf("%v.%v", info["Md5"], info["Ext"])
 						//设置附件名
-						models.ModelOss.SetObjectMeta(file, fmt.Sprintf("%v.%v", info["Title"], info["Ext"]))
+						models.NewOss().SetObjectMeta(file, fmt.Sprintf("%v.%v", info["Title"], info["Ext"]))
 						//链接签名
-						url := models.ModelOss.BuildSign(file)
+						url := models.NewOss().BuildSign(file)
 						//文档下载次数+1
 						models.Regulate(models.TableDocInfo, "Dcnt", 1, fmt.Sprintf("Id=%v", info["Id"]))
 						if price < 0 { //扣除了金币，则下载可以免费下载

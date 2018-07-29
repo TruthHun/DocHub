@@ -37,7 +37,7 @@
 				{{with .User}}
 					<div class="text-center row">
 						<div class="col-xs-5">
-							<a href="/user/{{.Id}}" title="{{.Username}}" class="thumbnail wenku-avatar"><img alt="{{.Username}}" src="{{DefPic .Avatar "avatar"}}"/></a>
+							<a href="/user/{{.Id}}" title="{{.Username}}" class="thumbnail wenku-avatar"><img onerror="this.src='/static/Common/img/avatar.png'" alt="{{.Username}}" src="{{DefPic .Avatar "avatar"}}"/></a>
 						</div>
 						<div class="col-xs-7 text-left wenku-mgt-15px">
 							<div class="wenku-username"><a href="/user/{{.Id}}" target="_blank" title="{{.Username}}">{{.Username}}</a></div>
