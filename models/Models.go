@@ -561,6 +561,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	//compress := beego.AppConfig.DefaultBool("compressSvg", false) //是否压缩svg
 	compress := true                            //强制为true
 	content = helper.ExtractPdfText(file, 1, 5) //提取前5页的PDF文本内容
+	watermarkText := ModelSys.GetByField("Watermark").Watermark
 	//处理pdf转svg
 	for i := 0; i < totalPage; i++ {
 		num := i + 1
@@ -585,7 +586,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 				}
 			}
 			//添加文字水印
-			helper.SvgTextWatermark(svgfile, beego.AppConfig.String("watermark"), width/6, height/4)
+			helper.SvgTextWatermark(svgfile, watermarkText, width/6, height/4)
 
 			//压缩svg内容
 			helper.CompressSvg(svgfile)

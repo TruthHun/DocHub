@@ -1,22 +1,32 @@
-#项目名称
+# 项目名称
 appname = DocHub
 
-#程序版本
-version=1.1
-
-#运行端口
+# 运行端口
 httpport = 8090
 
-#运行模式：prod, dev【正式部署站点的时候，请设置为prod】
+# 运行模式：prod, dev【正式站点，务必设置为prod】
 runmode = dev
 
-#页面底部单页显示个数限制
-pageslimit=6
+# 开启GZip[建议开启]
+EnableGzip=true
 
-#必须启用session，否则无法登录后台
+# 启用XSRF
+enablexsrf = true
+xsrfkey = gsrtewrt45324joidsffrtqwe
+xsrfexpire = 3600
+
+# cookie的加密密钥
+cookieSecret=sfgowtrfgjqwetryfqef8sd
+
+# 静态文件扩展名【注意：不要把.conf设置为扩展名，以避免泄露数据库账号密码】
+StaticExt=.txt,.html,.ico,.jpeg,.png,.gif
+
+############ SESSION #############
+
+# 必须启用session，否则无法登录
 sessionon = true
 
-#开启文件存储session
+# 使用文件的形式存储session
 SessionProvider=file
 
 #Session存放位置
@@ -25,60 +35,7 @@ SessionProviderConfig=cache/session
 # session的名称
 SessionName=dochub
 
-# 静态文件扩展名【注意：不要把.conf设置为扩展名，以避免泄露数据库账号密码】
-StaticExt=.txt,.html,.ico,.jpeg,.png,.gif
-
-# cookie的加密密钥
-cookieSecret=sfgowtrfgjqwetryfqef8sd
-
-#允许上传的文件大小(单位：字节)，默认50MB=52428800
-MaxMemory=52428800
-
-#会员注册的金币奖励
-coinreg=10
-
-#开启GZip[建议开启]
-EnableGzip=true
-
-
-
-#libreoffice的可执行文件路径(注意，windows下要用\\代替原路径的\)，用于将office文档转成PDF
-#如：“C:\Program Files (x86)\LibreOffice 4\program\soffice”要换成“C:\\Program Files (x86)\\LibreOffice 4\\program\\soffice”
-#soffice=C:\\Program Files (x86)\\LibreOffice 5\\program\\soffice
-#soffice=/Applications/LibreOffice.app/Contents/MacOS/soffice
-# 安装命令：`apt install libreoffice`
-soffice=soffice
-
-#imagick命令行。用于转换封面。
-# 安装命令：`apt install imagemagick`
-imagick=convert
-
-#pdf2svg命令。用于将PDF转成svg
-# 安装命令：`apt install pdf2svg`
-pdf2svg=pdf2svg
-
-#calibre转化命令，用于将epub、mobi等格式电子书转成PDF
-# calibre下载安装地址：https://calibre-ebook.com/download
-calibre=ebook-convert
-
-#提取PDF文本内容:`apt install poppler-utils`，用于提取PDF中的文本
-pdftotext=pdftotext
-
-# 是否压缩svg（建议压缩），即对svg进行gzip压缩
-compressSvg=true
-
-# SVG水印文字【现在是文本水印，图片水印，后期再实现】
-watermark=DocHub
-
-#举报原因，参考格式：1:垃圾广告;2:淫秽色情;3:虚假中奖;4:敏感信息;5:人身攻击;6:骚扰他人
-#TODO:这个要写在数据库配置表里面，暂时先这样吧
-ReportReason=1:垃圾广告;2:淫秽色情;3:虚假中奖;4:敏感信息;5:人身攻击;6:骚扰他人
-
-
-#启动XSRF
-enablexsrf = true
-xsrfkey = gsrtewrt45324joidsffrtqwe
-xsrfexpire = 3600
+############ SESSION #############
 
 
 
@@ -88,19 +45,19 @@ xsrfexpire = 3600
 [db]
 
 # 数据库host（之前分内网host和外网host，当初只是为了开发方便。但是后来发现，用户在使用的时候会感觉很不方便，所以移除了内网和外网的区分）
-host=
+host=localhost
 
 #数据库端口
 port=3306
 
 # 数据库用户名
-user=
+user=root
 
 # 数据库密码
 password=
 
 # 使用的数据库的名称
-database=
+database=dochub
 
 # 表前缀
 prefix=hc_
@@ -116,64 +73,3 @@ maxConn= 300
 
 
 ############ 数据库配置 end ############
-
-
-
-############ 邮箱配置 start ############
-
-#邮箱配置，当前仅支持SMTP
-[email]
-# 邮箱服务的host
-host=
-
-# 端口
-port=
-
-# 您用来发送邮件的邮箱地址
-username=
-
-# 密码
-password=
-
-# 接口回件的邮箱。如果使用发件邮箱接收回件，可以留空
-replyto=
-
-############ 邮箱配置 end ############
-
-
-############ 阿里云OSS配置 start ############
-
-# oss配置
-
-[oss]
-#当前环境是否内网，内网则使用内网endpoint，否则使用外网endpoint
-IsInternal=false
-
-#内网的endpoint
-EndpointInternal=oss-cn-hongkong-internal.aliyuncs.com
-
-#外网的endpoint
-EndpointOuter=oss-cn-hongkong.aliyuncs.com
-
-#key
-AccessKeyId=
-
-#secret
-AccessKeySecret=
-
-#供文档预览的bucket
-BucketPreview=dochub-public
-
-#供文档存储的bucket
-BucketStore=dochub-private
-
-# 预览地址
-PreviewUrl=http://dochub-public.oss-cn-hongkong.aliyuncs.com
-# 下载地址
-DownloadUrl=http://dochub-private.oss-cn-hongkong.aliyuncs.com
-
-
-#签名链接默认有效期时间，单位为秒
-UrlExpire=600
-
-############ 阿里云OSS配置 end ############

@@ -56,7 +56,9 @@ func (this *BaseController) Prepare() {
 	this.Sys, _ = models.ModelSys.Get()
 	this.Data["Version"] = version
 	this.Data["Sys"] = this.Sys
-	this.Data["PreviewDomain"] = beego.AppConfig.String("oss::PreviewUrl")
+	//this.Data["PreviewDomain"] = beego.AppConfig.String("oss::PreviewUrl")
+	this.Data["PreviewDomain"] = strings.TrimRight(helper.GetConfig("oss", "preview_url"), "/")
+
 	this.Data["Chanels"] = this.Chanels()
 	//单页
 	ModelPages := models.Pages{}
