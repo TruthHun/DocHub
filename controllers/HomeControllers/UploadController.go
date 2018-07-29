@@ -17,7 +17,6 @@ import (
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/helper/conv"
 	"github.com/TruthHun/DocHub/models"
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -44,7 +43,7 @@ func (this *UploadController) Get() {
 	this.Data["json"] = data
 	this.Data["IsUpload"] = true
 	this.Data["PageId"] = "wenku-upload"
-	this.Data["MaxSize"] = beego.AppConfig.DefaultInt("MaxMemory", 52428800)
+	this.Data["MaxSize"] = models.ModelSys.GetByField("MaxFile").MaxFile
 	this.TplName = "index.html"
 }
 

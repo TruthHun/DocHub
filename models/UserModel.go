@@ -6,9 +6,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"github.com/TruthHun/DocHub/helper"
+	"github.com/astaxie/beego/orm"
 )
 
 //用户表
@@ -121,7 +120,8 @@ func (u *User) Reg(email, username, password, repassword, intro string) (error, 
 	user = User{Email: email, Username: username, Password: pwd, Intro: intro}
 	_, err := O.Insert(&user)
 	if user.Id > 0 {
-		coin := beego.AppConfig.DefaultInt("coinreg", 10)
+		//coin := beego.AppConfig.DefaultInt("coinreg", 10)
+		coin := ModelSys.GetByField("CoinReg").CoinReg
 		var userinfo = UserInfo{Id: user.Id, Status: true, Coin: coin}
 		_, err = O.Insert(&userinfo)
 	}

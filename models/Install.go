@@ -61,8 +61,16 @@ func installSys() {
 		ListRows:          10,
 		TimeExpireHotspot: 604800,
 		TimeExpireRelate:  604800,
+		MaxFile:           52428800, //50M
+		CoinReg:           10,       //注册奖励金币
+		ReportReasons: `1:垃圾广告
+2:淫秽色情
+3:虚假中奖
+4:敏感信息
+5:人身攻击
+6:骚扰他人`, //举报原因
+		Watermark: "DocHub", //文档水印
 	}
-	beego.Info("初始化系统数据")
 	O.ReadOrCreate(&sys, "Id")
 }
 
@@ -811,8 +819,15 @@ func installCfg() {
 			Category:    cateES,
 		},
 		Config{
+			Title:       "索引名称",
+			Description: "请输入索引名称，默认为dochub",
+			Key:         "index",
+			Value:       "dochub",
+			Category:    cateES,
+		},
+		Config{
 			Title:       "Host",
-			Description: "ElasticSearch Host，如：http://localhost:9300",
+			Description: "ElasticSearch Host，如：http://localhost:9200",
 			Key:         "host",
 			Value:       "",
 			Category:    cateES,

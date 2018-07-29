@@ -1,14 +1,20 @@
 package models
 
+import (
+	"fmt"
+	"strings"
+)
+
 //系统设置表
 type Sys struct {
-	Id                int    `orm:"column(Id)"`
-	Site              string `orm:"size(100);default();column(Site)"`                    //站点名称
-	Tongji            string `orm:"size(2048);default();column(Tongji)"`                 //统计代码
-	CntDoc            int    `orm:"default(0);column(CntDoc)"`                           //文档数量
-	CntUser           int    `orm:"default(0);column(CntUser)"`                          //注册用户数量
-	Reward            int    `orm:"column(Reward);default(5)"`                           //上传一篇未被上传过的文档可以获得的金币奖励
-	Price             int    `orm:"default(1);column(Price)"`                            //会员下载一篇文档需要的最大金币【会员在上传分享文档时允许设置的最大金币上限】
+	Id      int    `orm:"column(Id)"`
+	Site    string `orm:"size(100);default();column(Site)"`    //站点名称
+	Tongji  string `orm:"size(2048);default();column(Tongji)"` //统计代码
+	CntDoc  int    `orm:"default(0);column(CntDoc)"`           //文档数量
+	CntUser int    `orm:"default(0);column(CntUser)"`          //注册用户数量
+	Reward  int    `orm:"column(Reward);default(5)"`           //上传一篇未被上传过的文档可以获得的金币奖励
+	//Price             int    `orm:"default(1);column(Price)"`                            //会员下载一篇文档需要的最大金币【会员在上传分享文档时允许设置的最大金币上限】
+	MaxFile           int    `orm:"column(MaxFile);default(52428800)"`                   //允许上传的文件大小(字节)，默认50M
 	Sign              int    `orm:"column(Sign);default(1)"`                             //每日签到获得的金币奖励
 	ListRows          int    `orm:"default(10);column(ListRows)"`                        //每页记录数
 	Statement         string `orm:"size(512);default();column(Statement)"`               //站点声明
@@ -30,6 +36,9 @@ type Sys struct {
 	FreeDay           int    `orm:"default(7);column(FreeDay)"`                          //文档免费下载时长。即上次下载扣除金币后多长时间后下载需要收费。时间单位为天
 	Question          string `orm:"default(DocHub文库的中文名是？);column(Question)"`            //评论问答问题
 	Answer            string `orm:"default(多哈);column(Answer)"`                          //评论问答的问题
+	CoinReg           int    `orm:"column(CoinReg);default(10)"`                         //用户注册奖励金币
+	Watermark         string `orm:"column(Watermark);default()"`                         //水印文案
+	ReportReasons     string `orm:"column(ReportReasons);default();size(2048)"`          //举报原因
 }
 
 //获取系统配置信息。注意：系统配置信息的记录只有一条，而且id主键为1
@@ -46,4 +55,33 @@ func (this *Sys) Get() (sys Sys, err error) {
 //@return           err         错误
 func (this *Sys) UpdateGlobal() {
 	GlobalSys, _ = this.Get()
+}
+
+//获取指定指端内容
+//@param			field			需要查询的字段
+//@return			sys				系统配置信息
+func (this *Sys) GetByField(field string) (sys Sys) {
+	O.QueryTable(TableSys).Filter("Id", 1).One(&sys, field)
+	return
+}
+
+//获取举报原因
+func (this *Sys) GetReportReasons() (reasons map[string]string) {
+	reasons = make(map[string]string)
+	reasonStr := this.GetByField("ReportReasons").ReportReasons
+	if slice := strings.Split(reasonStr, "\n"); len(slice) > 0 {
+		for _, item := range slice {
+			if arr := strings.Split(item, ":"); len(arr) > 1 {
+				reasons[arr[0]] = strings.Join(arr[1:], ":")
+			}
+		}
+	}
+	return
+}
+
+//根据序号获取举报原因
+func (this *Sys) GetReportReason(num interface{}) (reason string) {
+	reasons := this.GetReportReasons()
+	reason, _ = reasons[fmt.Sprintf("%v", num)]
+	return
 }

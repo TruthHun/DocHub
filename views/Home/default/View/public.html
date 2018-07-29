@@ -8,12 +8,9 @@
             </div>
             <div class="modal-body clearfix">
                 <div class="help-block clearfix">举报原因：</div>
-                <div class="col-xs-4"><label><input type="radio" checked name="Reason" value="1"> 垃圾广告</label></div>
-                <div class="col-xs-4"><label><input type="radio"  name="Reason" value="2"> 淫秽色情</label></div>
-                <div class="col-xs-4"><label><input type="radio"  name="Reason" value="3"> 虚假中奖</label></div>
-                <div class="col-xs-4"><label><input type="radio"  name="Reason" value="4"> 敏感信息</label></div>
-                <div class="col-xs-4"><label><input type="radio"  name="Reason" value="5"> 人身攻击</label></div>
-                <div class="col-xs-4"><label><input type="radio"  name="Reason" value="6"> 骚扰他人</label></div>
+                {{range $idx,$item:=.Reasons}}
+                <div class="col-xs-4"><label><input type="radio" name="Reason" value="{{$idx}}"> {{$item}}</label></div>
+                {{end}}
                 <input type="hidden" name="Did" value="{{.Doc.Id}}">
             </div>
             <div class="modal-footer">
@@ -95,6 +92,72 @@
                 <button type="button" class="btn btn-primary btn-submit-download" data-url="/down/{{.Doc.Id}}" data-id="{{.Doc.Id}}">确定下载</button>
             </div>
         </div>
+    </div>
+</div>
+{{end}}
+{{define "Comment"}}
+<div class="panel panel-default wenku-noborder wenku-comment">
+    <div class="panel-body">
+        <div title="给文档打分">给文档打分
+            <span class="wenku-score disabled">
+            <i class="fa fa-star-o" data-v="1"></i>
+            <i class="fa fa-star-o" data-v="2"></i>
+            <i class="fa fa-star-o" data-v="3"></i>
+            <i class="fa fa-star-o" data-v="4"></i>
+            <i class="fa fa-star-o" data-v="5"></i>
+            </span>
+            <span class="wenku-score-tips color-gray"></span>
+        </div>
+        <form role="form" method="post" action="/comment/{{.Doc.Id}}" class="wenku-comment-form">
+            <div class="form-group">
+                <textarea name="Comment" rows="3" class="form-control" required="required" placeholder="文明评论，文明你我他"></textarea>
+                <input type="hidden" name="Score" id="score" value="0" />
+            </div>
+            <div class="form-group">
+                <div class="col-xs-3 clearfix wenku-nopadding">
+                    <div class="help-block">您好可以输入 <span class="text-danger wenku-comment-num">255</span> 个字符</div>
+                </div>
+                <div class="col-xs-5 clearfix text-right wenku-answer-tips">
+                    <div class="help-block">{{.Sys.Question}}( 答案：<span class="text-danger">{{.Sys.Answer}}</span> )</div>
+                </div>
+                {{.xsrfdata}}
+                <div class="col-xs-2 clearfix wenku-nopadding">
+                    <input type="text" name="Answer" required="required" class="form-control" placeholder="请输入答案">
+                </div>
+                <div class="col-xs-2 wenku-no-pdr clearfix text-right">
+                    <input type="submit" class="btn btn-danger btn-block" value="发表评论">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="panel panel-default wenku-noborder wenku-comment-list">
+    <div class="panel-heading">评论列表</div>
+    <div class="panel-body">
+
+        <ul>
+            {{range .Comments}}
+            <li class="clearfix">
+                <div class="col-xs-1 wenku-nopadding">
+                    <a href="/user/{{.Uid}}" target="_blank" class="thumbnail thumbnail-avatar" title="{{.Username}}">
+                        <img onerror="this.src='/static/Common/img/avatar.png'" src="{{DefPic .Avatar "avatar"}}" class="img-responsive " alt="{{.Username}}">
+                    </a>
+                </div>
+                <div class="col-xs-11 wenku-no-pdr">
+                    <a href="/user/{{.Uid}}" target="_blank" title="{{.Username}}">{{.Username}}</a>
+                    <span><i class="wenku-star star-{{StarVal (Interface2Int .Score) false}}"></i> {{StarVal (Interface2Int .Score) true}}分</span>
+                    <span class="color-gray pull-right">{{TimestampFormat (Interface2Int .TimeCreate)}}</span>
+                    <div class="help-block wenku-comment-content">{{.Content}}</div>
+                </div>
+            </li>
+            {{else}}
+            <li>
+                <div class="help-block">暂时还没有评论，期待您的金玉良言</div>
+            </li>
+            {{end}}
+        </ul>
+
+
     </div>
 </div>
 {{end}}

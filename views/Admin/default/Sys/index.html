@@ -28,16 +28,26 @@
                                 <label >网站备案号</label>
                                 <input type="text" class="form-control input-lg" name="Icp" placeholder="请输入网站备案号，如 桂ICP备 xxxx" value="{{.Icp}}" />
                             </div>
-
                             <div class="form-group">
-                                <label >热门推荐</label>
-                                <input type="text" class="form-control input-lg" name="Trends" placeholder="请填写5个文档ID，id之间用英文逗号分隔" value="{{.Trends}}" />
+                                <label >文档水印文本</label>
+                                <input type="text" class="form-control input-lg" name="Watermark" placeholder="文档水印文案，留空则表示不添加水印" value="{{.Watermark}}" />
                             </div>
 
-                            <div class="form-group">
-                                <label >首页分类</label>
-                                <input type="text" class="form-control input-lg" name="HomeCates" placeholder="请按顺序填写频道id，以便在首页显示，多个id用英文逗号分隔" value="{{.HomeCates}}" />
+                            <div class="col-xs-6" style="padding-left: 0px">
+                                <div class="form-group">
+                                    <label >首页分类(按照顺序输入频道id)</label>
+                                    <input type="text" class="form-control input-lg" name="HomeCates" placeholder="请按顺序填写频道id，以便在首页显示，多个id用英文逗号分隔" value="{{.HomeCates}}" />
+                                </div>
                             </div>
+
+                            <div class="col-xs-6" style="padding-left: 0px;">
+                                <div class="form-group">
+                                    <label >热门推荐(按照顺序输入文档id)</label>
+                                    <input type="text" class="form-control input-lg" name="Trends" placeholder="请填写5个文档ID，id之间用英文逗号分隔" value="{{.Trends}}" />
+                                </div>
+                            </div>
+
+
 
                             <div class="col-xs-6 hide" style="padding-left: 0px;">
                                 <div class="form-group">
@@ -85,22 +95,28 @@
                             </div>
 
 
-                            <div class="col-xs-4" style="padding-left: 0px;">
+                            <div class="col-xs-6" style="padding-left: 0px;">
+                                <div class="form-group">
+                                    <label >新用户注册奖励金币</label>
+                                    <input type="number" class="form-control input-lg" name="CoinReg" value="{{.CoinReg}}" />
+                                </div>
+                            </div>
+                            <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >文档上传金币奖励</label>
                                     <input type="number" class="form-control input-lg" name="Reward" value="{{.Reward}}" />
                                 </div>
                             </div>
-                            <div class="col-xs-4" style="padding-left: 0px;">
+                            <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >每日签到金币奖励</label>
                                     <input type="number" class="form-control input-lg" name="Sign" value="{{.Sign}}" />
                                 </div>
                             </div>
-                            <div class="col-xs-4" style="padding-left: 0px;">
+                            <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
-                                    <label >文档下载消费金币</label>
-                                    <input type="number" class="form-control input-lg" name="Price" value="{{.Price}}" />
+                                    <label >允许上传的最大文件(字节，默认50M)</label>
+                                    <input type="number" class="form-control input-lg" name="MaxFile" value="{{.MaxFile}}" />
                                 </div>
                             </div>
 
@@ -116,8 +132,6 @@
                                     <input type="number" min="10" max="100" class="form-control input-lg" name="ListRows" value="{{.ListRows}}" />
                                 </div>
                             </div>
-
-
 
 
                             <div class="col-xs-6" style="padding-left: 0px;">
@@ -164,6 +178,10 @@
                             <div class="form-group">
                                 <label >不良信息关键字</label>
                                 <textarea name="DirtyWord" rows="6" class="form-control" placeholder="请输入不良信息关键字，资源过滤需要用到，多个关键字请用空格分隔">{{.DirtyWord}}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label >举报原因(<small class="text-muted">文档被举报的原因，多个，请换行输入。格式为"序号:原因"，如"1:垃圾广告"</small>)</label>
+                                <textarea name="ReportReasons" rows="6" class="form-control" placeholder="文档被举报的原因，多个，请换行输入">{{.ReportReasons}}</textarea>
                             </div>
                             <div class="form-group">
                                 <label >网站声明(支持html代码)</label>

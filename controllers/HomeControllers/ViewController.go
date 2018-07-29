@@ -16,7 +16,6 @@ type ViewController struct {
 	BaseController
 }
 
-//pdf.js文档浏览
 func (this *ViewController) Get() {
 	id, _ := this.GetInt(":id")
 	if id < 1 {
@@ -78,7 +77,7 @@ func (this *ViewController) Get() {
 	this.Data["Seo"] = models.ModelSeo.GetByPage("PC-View", seoTitle, seoKeywords, seoDesc, this.Sys.Site)
 	this.Xsrf()
 	ext := fmt.Sprintf("%v", doc["Ext"])
-
+	this.Data["Reasons"] = models.ModelSys.GetReportReasons()
 	if pages == 0 && (ext == "txt" || ext == "chm" || ext == "umd" || ext == "epub" || ext == "mobi") {
 		this.Data["OnlyCover"] = true
 		//不能预览的文档

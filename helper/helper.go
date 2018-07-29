@@ -691,19 +691,6 @@ func HeightLight(title string, words []string) template.HTML {
 	return template.HTML(title)
 }
 
-//举报原因
-func ReportReason(num interface{}) (reason string) {
-	slice := strings.Split(beego.AppConfig.String("ReportReason"), ";")
-	var dict = make(map[string]string)
-	for _, v := range slice {
-		vv := strings.Split(v, ":")
-		if len(vv) == 2 {
-			dict[vv[0]] = vv[1]
-		}
-	}
-	return dict[fmt.Sprintf("%v", num)]
-}
-
 //字符串截取
 func SubStr(str interface{}, start, length int) string {
 	v := fmt.Sprintf("%v", str)

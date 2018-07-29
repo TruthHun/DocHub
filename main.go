@@ -46,7 +46,7 @@ func init() {
 	beego.AddFuncMap("Xmd5", helper.Xmd5)                               //xmd5，MD5扩展加密
 	beego.AddFuncMap("BuildURL", helper.BuildURL)                       //创建URL
 	beego.AddFuncMap("HeightLight", helper.HeightLight)                 //高亮
-	beego.AddFuncMap("ReportReason", helper.ReportReason)               //举报原因
+	beego.AddFuncMap("ReportReason", models.ModelSys.GetReportReason)   //举报原因
 	beego.AddFuncMap("GetDescByMd5", models.ModelDocText.GetDescByMd5)
 	beego.AddFuncMap("GetDescByDsId", models.ModelDocText.GetDescByDsId)
 	beego.AddFuncMap("GetDescByDid", models.ModelDocText.GetDescByDid)
