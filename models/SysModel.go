@@ -7,17 +7,15 @@ import (
 
 //系统设置表
 type Sys struct {
-	Id      int    `orm:"column(Id)"`
-	Site    string `orm:"size(100);default();column(Site)"`    //站点名称
-	Tongji  string `orm:"size(2048);default();column(Tongji)"` //统计代码
-	CntDoc  int    `orm:"default(0);column(CntDoc)"`           //文档数量
-	CntUser int    `orm:"default(0);column(CntUser)"`          //注册用户数量
-	Reward  int    `orm:"column(Reward);default(5)"`           //上传一篇未被上传过的文档可以获得的金币奖励
-	//Price             int    `orm:"default(1);column(Price)"`                            //会员下载一篇文档需要的最大金币【会员在上传分享文档时允许设置的最大金币上限】
+	Id                int    `orm:"column(Id)"`
+	Site              string `orm:"size(100);default();column(Site)"`                    //站点名称
+	Tongji            string `orm:"size(2048);default();column(Tongji)"`                 //统计代码
+	CntDoc            int    `orm:"default(0);column(CntDoc)"`                           //文档数量
+	CntUser           int    `orm:"default(0);column(CntUser)"`                          //注册用户数量
+	Reward            int    `orm:"column(Reward);default(5)"`                           //上传一篇未被上传过的文档可以获得的金币奖励
 	MaxFile           int    `orm:"column(MaxFile);default(52428800)"`                   //允许上传的文件大小(字节)，默认50M
 	Sign              int    `orm:"column(Sign);default(1)"`                             //每日签到获得的金币奖励
 	ListRows          int    `orm:"default(10);column(ListRows)"`                        //每页记录数
-	Statement         string `orm:"size(512);default();column(Statement)"`               //站点声明
 	Icp               string `orm:"default();column(Icp)"`                               //ICP备案
 	DirtyWord         string `orm:"size(2048);default();column(DirtyWord)"`              //不良信息关键字
 	TimeExpireRelate  int    `orm:"default(604800);column(TimeExpireRelate)"`            //相关资源过期更新的时间周期，0表示关闭相关资源
@@ -39,6 +37,7 @@ type Sys struct {
 	CoinReg           int    `orm:"column(CoinReg);default(10)"`                         //用户注册奖励金币
 	Watermark         string `orm:"column(Watermark);default()"`                         //水印文案
 	ReportReasons     string `orm:"column(ReportReasons);default();size(2048)"`          //举报原因
+	//Price             int    `orm:"default(1);column(Price)"`                            //会员下载一篇文档需要的最大金币【会员在上传分享文档时允许设置的最大金币上限】
 }
 
 //获取系统配置信息。注意：系统配置信息的记录只有一条，而且id主键为1

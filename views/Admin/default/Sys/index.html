@@ -25,6 +25,10 @@
                                 <input type="text" class="form-control input-lg" name="Site" placeholder="请输入站点名称" value="{{.Site}}" />
                             </div>
                             <div class="form-group">
+                                <label >绑定域名( <small class="text-muted">[必填]生成sitemap需要用到。示例：https://www.dochub.me</small> )</label>
+                                <input type="text" class="form-control input-lg" name="DomainPc" value="{{.DomainPc}}" />
+                            </div>
+                            <div class="form-group">
                                 <label >网站备案号</label>
                                 <input type="text" class="form-control input-lg" name="Icp" placeholder="请输入网站备案号，如 桂ICP备 xxxx" value="{{.Icp}}" />
                             </div>
@@ -49,12 +53,12 @@
 
 
 
-                            <div class="col-xs-6 hide" style="padding-left: 0px;">
-                                <div class="form-group">
-                                    <label >PC端域名</label>
-                                    <input type="text" class="form-control input-lg" name="DomainPc" value="{{.DomainPc}}" />
-                                </div>
-                            </div>
+                            <!--<div class="col-xs-6 hide" style="padding-left: 0px;">-->
+                                <!--<div class="form-group">-->
+                                    <!--<label >PC端域名</label>-->
+                                    <!--<input type="text" class="form-control input-lg" name="DomainPc" value="{{.DomainPc}}" />-->
+                                <!--</div>-->
+                            <!--</div>-->
                             <div class="col-xs-6 hide" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >移动端域名</label>
@@ -182,10 +186,6 @@
                             <div class="form-group">
                                 <label >举报原因(<small class="text-muted">文档被举报的原因，多个，请换行输入。格式为"序号:原因"，如"1:垃圾广告"</small>)</label>
                                 <textarea name="ReportReasons" rows="6" class="form-control" placeholder="文档被举报的原因，多个，请换行输入">{{.ReportReasons}}</textarea>
-                            </div>
-                            <div class="form-group">
-                                <label >网站声明(支持html代码)</label>
-                                <textarea name="Statement" rows="6" class="form-control" placeholder="请输入网站声明">{{.Statement}}</textarea>
                             </div>
                             <div class="form-group">
                                 <label >统计代码(支持html代码)</label>

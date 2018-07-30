@@ -65,8 +65,7 @@ func (this *Seo) GetByPage(page string, defaultTitle, defaultKeywords, defaultDe
 //	baseUrl = this.Ctx.Input.Scheme() + "://" + host
 //}
 //生成站点地图
-//@param			domain			站点域名
-func (this *Seo) BuildSitemap(domain string) {
+func (this *Seo) BuildSitemap() {
 
 	var (
 		files   []string
@@ -75,7 +74,11 @@ func (this *Seo) BuildSitemap(domain string) {
 		si      []sitemap.SitemapIndex
 		count   int64
 		limit   = 10000 //每个sitemap文件，限制10000个链接
+		domain  = strings.ToLower(ModelSys.GetByField("DomainPc").DomainPc)
 	)
+	if !(strings.HasPrefix(domain, "https://") || strings.HasPrefix(domain, "http://")) {
+		domain = "http://" + domain
+	}
 	domain = strings.TrimRight(domain, "/")
 	//文档总数
 	count, _ = O.QueryTable(TableDocInfo).Filter("Status__gt", -1).Count()
@@ -114,7 +117,7 @@ func (this *Seo) BuildSitemap(domain string) {
 			})
 		}
 	}
-	if err:=Sitemap.CreateSitemapIndex(si, "sitemap.xml");err!=nil{
+	if err := Sitemap.CreateSitemapIndex(si, "sitemap.xml"); err != nil {
 		helper.Logger.Error("sitemap生成失败：" + err.Error())
 	}
 }
