@@ -8,7 +8,15 @@ import (
 	"github.com/TruthHun/DocHub/models"
 	_ "github.com/TruthHun/DocHub/routers"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/toolbox"
 )
+
+func main() {
+	go execTask()
+	//定义错误和异常处理控制器
+	beego.ErrorController(&HomeControllers.BaseController{})
+	beego.Run()
+}
 
 //初始化函数
 func init() {
@@ -52,8 +60,21 @@ func init() {
 	beego.AddFuncMap("GetDescByDid", models.ModelDocText.GetDescByDid)
 }
 
-func main() {
-	//定义错误和异常处理控制器
-	beego.ErrorController(&HomeControllers.BaseController{})
-	beego.Run()
+//定时器，定时更新sitemap和ElasticSearch全量索引
+func execTask() {
+	//每天凌晨两点执行sitemap更新
+	updateSitemap := toolbox.NewTask("updateSitemap", "0 0 2 * * *", func() error {
+		models.ModelSeo.BuildSitemap()
+		return nil
+	})
+	//每天凌晨3:00执行elasticsearch全文搜索全量更新
+	updateIndex := toolbox.NewTask("updateIndex", "0 0 3 * * *", func() error {
+		//TODO:
+		return nil
+	})
+
+	toolbox.AddTask("updateSitemap", updateSitemap)
+	toolbox.AddTask("updateIndex", updateIndex)
+	toolbox.StartTask()
+	//defer toolbox.StopTask()
 }

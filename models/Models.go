@@ -111,7 +111,7 @@ var Fields = map[string]map[string]string{
 }
 
 //初始化数据库注册
-func nit() {
+func init() {
 	//初始化数据库
 	RegisterDB()
 	runmode := beego.AppConfig.String("runmode")

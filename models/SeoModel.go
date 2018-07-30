@@ -8,6 +8,8 @@ import (
 
 	"strconv"
 
+	"fmt"
+
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/gotil/sitemap"
 )
@@ -66,7 +68,8 @@ func (this *Seo) GetByPage(page string, defaultTitle, defaultKeywords, defaultDe
 //}
 //生成站点地图
 func (this *Seo) BuildSitemap() {
-
+	//更新站点地图
+	helper.Logger.Info(fmt.Sprintf("[%v]更新站点地图[start]", time.Now().Format("2006-01-02 15:04:05")))
 	var (
 		files   []string
 		fileNum int
@@ -120,4 +123,5 @@ func (this *Seo) BuildSitemap() {
 	if err := Sitemap.CreateSitemapIndex(si, "sitemap.xml"); err != nil {
 		helper.Logger.Error("sitemap生成失败：" + err.Error())
 	}
+	helper.Logger.Info(fmt.Sprintf("[%v]更新站点地图[end]", time.Now().Format("2006-01-02 15:04:05")))
 }
