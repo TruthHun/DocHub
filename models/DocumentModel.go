@@ -689,3 +689,9 @@ func (this *Document) GetDocsByIds(ids interface{}, num ...int) (data []orm.Para
 	}
 	return
 }
+
+//文档简易列表
+func (this *Document) TplSimpleList(chinelid interface{}) []orm.Params {
+	data, _, _ := this.SimpleList(fmt.Sprintf("di.ChanelId=%v", helper.Interface2Int(chinelid)), 5)
+	return data
+}

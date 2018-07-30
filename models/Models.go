@@ -111,7 +111,7 @@ var Fields = map[string]map[string]string{
 }
 
 //初始化数据库注册
-func Init() {
+func nit() {
 	//初始化数据库
 	RegisterDB()
 	runmode := beego.AppConfig.String("runmode")
@@ -718,4 +718,24 @@ func SendMail(to, subject, content string) (err error) {
 	err = d.DialAndSend(m)
 
 	return
+}
+
+//是否已收藏文档
+//@param			did			文档id，即document id
+//@param			uid			用户id
+//@return			bool		bool值，true表示已收藏，否则未收藏
+func DoesCollect(did, uid int) bool {
+	if uid == 0 {
+		return false
+	}
+	var params []orm.Params
+	sql := fmt.Sprintf("select c.Id from %v cf left join %v c on c.cid=cf.id where c.Did=? and cf.Uid=? limit 1", TableCollectFolder, TableCollect)
+	rows, err := O.Raw(sql, did, uid).Values(&params)
+	if err != nil {
+		helper.Logger.Error(err.Error())
+	}
+	if rows > 0 && err == nil {
+		return true
+	}
+	return false
 }

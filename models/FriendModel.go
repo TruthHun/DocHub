@@ -23,3 +23,9 @@ func (this *Friend) GetListByStatus(status int) (links []Friend, rows int64, err
 	rows, err = qs.OrderBy("sort", "-status", "-id").All(&links)
 	return
 }
+
+//获取友链
+func (this *Friend) Friends() (links []Friend) {
+	links, _, _ = this.GetListByStatus(1)
+	return
+}

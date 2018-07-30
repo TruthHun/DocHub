@@ -1,6 +1,8 @@
 package models
 
-import "errors"
+import (
+	"errors"
+)
 
 //会员文档收藏的文件夹
 type CollectFolder struct {
