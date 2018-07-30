@@ -810,3 +810,12 @@ func ExtractPdfText(file string, from, to int) (content string) {
 	}
 	return
 }
+
+//页数处理，处理页数为0或者页数为空的时候的显示
+func HandlePageNum(PageNum interface{}) string {
+	pn := strings.TrimSpace(fmt.Sprintf("%v", PageNum))
+	if pn == "0" || pn == "" {
+		return " -- "
+	}
+	return pn
+}

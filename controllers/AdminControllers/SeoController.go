@@ -11,3 +11,8 @@ func (this *SeoController) Get() {
 	this.Data["IsSeo"] = true
 	this.TplName = "index.html"
 }
+
+func (this *SeoController) UpdateSitemap() {
+	go models.ModelSeo.BuildSitemap()
+	this.ResponseJson(1, "Sitemap更新已提交后台执行，请耐心等待")
+}

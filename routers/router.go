@@ -75,6 +75,7 @@ func back() {
 	beego.Router("/admin/doc/list/*", &AdminControllers.DocController{}, "get:List")
 	beego.Router("/admin/sys", &AdminControllers.SysController{}, "get,post:Get")
 	beego.Router("/admin/seo", &AdminControllers.SeoController{})
+	beego.Router("/admin/seo/sitemap", &AdminControllers.SeoController{}, "get:UpdateSitemap") //更新站点地图
 	beego.Router("/admin/ad", &AdminControllers.AdController{})
 	beego.Router("/admin/friend", &AdminControllers.FriendController{}, "get,post:Get")
 	beego.Router("/admin/update", &AdminControllers.BaseController{}, "get,post:Update")
