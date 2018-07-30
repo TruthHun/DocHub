@@ -19,7 +19,7 @@ xsrfexpire = 3600
 cookieSecret=sfgowtrfgjqwetryfqef8sd
 
 # 静态文件扩展名【注意：不要把.conf设置为扩展名，以避免泄露数据库账号密码】
-StaticExt=.txt,.html,.ico,.jpeg,.png,.gif
+StaticExt=.txt,.html,.ico,.jpeg,.png,.gif,.xml
 
 ############ SESSION #############
 
