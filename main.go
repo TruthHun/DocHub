@@ -69,7 +69,7 @@ func execTask() {
 	})
 	//每天凌晨3:00执行elasticsearch全文搜索全量更新
 	updateIndex := toolbox.NewTask("updateIndex", "0 0 3 * * *", func() error {
-		//TODO:
+		//TODO:只有开启了全文搜索，才执行索引更新
 		return nil
 	})
 
