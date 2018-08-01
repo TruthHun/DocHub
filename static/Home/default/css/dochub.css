@@ -74,6 +74,8 @@ body{background-color: #f6f6f6;}
 /*global css [start]*/
 .wenku-progress{position: fixed;width: 100%;height: 100%;z-index: 999;left:0px;top:0px;background-color:rgba(0,0,0,0.5);}
 .wenku-progress .text-center{background-color: #fff;margin:150px auto;width: 500px;padding: 20px;border-radius: 3px;}
+.wenku-progress .progress{margin-top: 30px;margin-bottom: 0px;height: 17px;}
+.wenku-progress .progress-bar{line-height: 17px;}
 
 .wenku-viewer-img{width: 100%;min-height: 500px;}
 .navbar-fixed-bottom{border-top: 1px solid #dddddd;}
