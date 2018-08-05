@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>程序安装 - Powered By DocHub</title>
+    <meta name="keywords" content="DocHub,程序安装"/>
+    <meta name="description" content="DocHub程序安装"/>
+    <!--<link rel="stylesheet" type="text/css" href="{{.TplStatic}}/css/bootstrap.min.css"/>-->
+    <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
+    <!--<link rel="stylesheet" type="text/css" href="/static/Home/default/css/flat-ui.min.css"/>-->
+    <!--<link rel="stylesheet" href="//cdn.bootcss.com/flat-ui/2.2.2/css/flat-ui.min.css">-->
+    <link rel="stylesheet" href="//cdn.staticfile.org/flat-ui/2.3.0/css/flat-ui.min.css">
+    <!--<link rel="stylesheet" type="text/css" href="/static/Home/default/css/font-awesome.min.css"/>-->
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/Common/css/jquery.toast.min.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/Home/default/css/dochub.css?version={{$.Version}}"/>
+    <link rel="shortcut icon" href="/static/Home/default/img/favicon.ico">
+    <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body id="page-install">
+<div class="container">
+    <div class="row">
+        <div class="col-xs-8 col-xs-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading"><strong>DocHub程序安装</strong></div>
+                <div class="panel-body">
+                    <form action="" method="post" class="wenku-ajax-form">
+                        <div class="form-group">
+                            <label>数据库地址</label>
+                            <input type="text" required name="host" autocomplete="off" class="form-control">
+                            <p class="help-block">请填写MySQL数据库地址，Docker部署程序时慎用localhost</p>
+                        </div>
+                        <div class="form-group">
+                            <label>数据库服务端口</label>
+                            <input type="number" name="port" autocomplete="off" value="3306"  class="form-control">
+                            <p class="help-block">仅支持MySQL数据库，默认3306</p>
+                        </div>
+                        <div class="form-group">
+                            <label>数据库名称</label>
+                            <input type="text"  autocomplete="off"  name="database" value=""  class="form-control">
+                            <p class="help-block">请填写您预先创建的 <span class="text-danger">UTF8</span> 字符编码的数据库名称</p>
+                        </div>
+                        <div class="form-group">
+                            <label>数据库用户名</label>
+                            <input type="text" autocomplete="off" name="username" value=""  class="form-control">
+                            <p class="help-block">请填写您的数据库用户名</p>
+                        </div>
+                        <div class="form-group">
+                            <label>数据库密码</label>
+                            <input type="text" autocomplete="off" name="password"  class="form-control">
+                            <p class="help-block">请填写您的数据库密码，密码中不要带 <span class="text-danger">@</span> 符号 </p>
+                        </div>
+                        <div class="form-group wenku-mgt-15px">
+                            <input type="submit" class="btn btn-primary btn-block" value="安装程序">
+                        </div>
+                    </form>
+                </div>
+                <div class="panel-footer">
+                    <div class="help-block">感谢使用DocHub文库系统.
+                    <span class="pull-right">
+                        Powered By <a href="https://github.com/TruthHun/DocHub" class="text-primary" target="_blank" title="DocHub">DocHub</a>
+                    </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>-->
+<script src="//apps.bdimg.com/libs/jquery/1.11.3/jquery.min.js"></script>
+<!--<script src="{{.TplStatic}}/js/bootstrap.min.js"></script>-->
+<script src="//apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/static/Common/js/jquery.toast.min.js"></script>
+<!--<script src="/static/Common/js/jquery.lazyload.min.js"></script>-->
+<script src="/static/Home/default/js/dochub.js?version={{$.Version}}"></script>
+</body>
+</html>

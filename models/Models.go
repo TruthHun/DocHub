@@ -26,6 +26,8 @@ import (
 
 	"crypto/tls"
 
+	"database/sql"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -110,8 +112,14 @@ var Fields = map[string]map[string]string{
 	TableUserInfo: helper.StringSliceToMap(GetFields(ModelUserInfo)),
 }
 
-//初始化数据库注册
 func init() {
+	if helper.IsInstalled {
+		Init()
+	}
+}
+
+//初始化数据库注册
+func Init() {
 	//初始化数据库
 	RegisterDB()
 	runmode := beego.AppConfig.String("runmode")
@@ -126,11 +134,6 @@ func init() {
 
 	//安装初始数据
 	install()
-
-	//全局变量赋值
-	ModelConfig.UpdateGlobal() //配置文件全局变量更新
-	ModelSys.UpdateGlobal()    //更新系统配置的全局变量
-
 }
 
 //注册数据库
@@ -205,7 +208,7 @@ func RegisterDB() {
 //获取带表前缀的数据表
 //@param            table               数据表
 func GetTable(table string) string {
-	prefix := beego.AppConfig.String("db::prefix")
+	prefix := beego.AppConfig.DefaultString("db::prefix", "hc_")
 	return prefix + strings.TrimPrefix(table, prefix)
 }
 
@@ -738,4 +741,20 @@ func DoesCollect(did, uid int) bool {
 		return true
 	}
 	return false
+}
+
+//检查数据库是否存在
+//@param            host            数据库地址
+//@param            port            端口
+//@param            password        密码
+//@param            database        数据库
+//@return           err             错误
+func CheckDatabaseIsExist(host string, port int, username, password, database string) (err error) {
+	var db *sql.DB
+	if db, err = sql.Open("mysql", fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8",
+		username, password, host, port, database,
+	)); err == nil {
+		err = db.Ping()
+	}
+	return
 }

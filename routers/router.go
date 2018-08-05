@@ -4,10 +4,19 @@ import (
 	"github.com/TruthHun/DocHub/controllers/AdminControllers"
 
 	"github.com/TruthHun/DocHub/controllers/HomeControllers"
+	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 )
 
 func init() {
+
+	beego.InsertFilter("/*", beego.BeforeRouter, func(ctx *context.Context) {
+		if !helper.IsInstalled && ctx.Request.URL.Path != "/install" { //程序未安装，且请求路径不是install，则跳转到install
+			ctx.Redirect(302, "/install")
+		}
+	})
+
 	front()
 	back()
 }
@@ -15,6 +24,7 @@ func init() {
 //前台路由
 func front() {
 	beego.Router("/", &HomeControllers.IndexController{})
+	beego.Router("/install", &HomeControllers.InstallController{}, "get,post:Install")
 	beego.Router("/list/:chanel", &HomeControllers.ListController{})
 	beego.Router("/list/:chanel/*", &HomeControllers.ListController{})
 	beego.Router("/user", &HomeControllers.UserController{})

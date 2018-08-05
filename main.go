@@ -20,6 +20,7 @@ func main() {
 
 //初始化函数
 func init() {
+
 	fmt.Println("")
 	fmt.Println("Powered By DocHub")
 	fmt.Println("Version:", helper.VERSION)

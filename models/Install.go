@@ -16,6 +16,8 @@ func install() {
 	installSeo()
 	installSys()
 	installCfg()
+
+	ModelSys.UpdateGlobal() //更新系统配置的全局变量
 }
 
 //安装管理员初始数据
@@ -859,5 +861,6 @@ func installCfg() {
 	for _, cfg := range configs {
 		O.Insert(&cfg)
 	}
-	ModelConfig.UpdateGlobal()
+	//全局变量赋值
+	ModelConfig.UpdateGlobal() //配置文件全局变量更新
 }

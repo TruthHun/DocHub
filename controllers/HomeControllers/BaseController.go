@@ -95,7 +95,7 @@ func (this *BaseController) Xsrf() {
 
 //检测用户登录的cookie是否存在
 func (this *BaseController) checkCookieLogin() {
-	secret := beego.AppConfig.String("cookieSecret")
+	secret := beego.AppConfig.DefaultString("CookieSecret", helper.DEFAULT_COOKIE_SECRET)
 	timestamp, b := this.GetSecureCookie(secret, "uid")
 	if b {
 		uid, b := this.Ctx.GetSecureCookie(secret+timestamp, "token")
@@ -116,7 +116,7 @@ func (this *BaseController) ResetCookie() {
 //设置用户登录的cookie，其实uid是时间戳的加密，而token才是真正的uid
 //@param            uid         interface{}         用户UID
 func (this *BaseController) SetCookieLogin(uid interface{}) {
-	secret := beego.AppConfig.String("cookieSecret")
+	secret := beego.AppConfig.DefaultString("CookieSecret", helper.DEFAULT_COOKIE_SECRET)
 	timestamp := fmt.Sprintf("%v", time.Now().Unix())
 	expire := 3600 * 24 * 365
 	this.Ctx.SetSecureCookie(secret, "uid", timestamp, expire)

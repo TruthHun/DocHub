@@ -47,6 +47,9 @@ const (
 	VERSION = "v1.2"
 	//Cache Config
 	CACHE_CONF = `{"CachePath":"./cache/runtime","FileSuffix":".cache","DirectoryLevel":2,"EmbedExpiry":120}`
+
+	DEFAULT_STATIC_EXT    = ".txt,.html,.ico,.jpeg,.png,.gif,.xml"
+	DEFAULT_COOKIE_SECRET = "dochub"
 )
 
 var (
@@ -55,10 +58,17 @@ var (
 	StaticExt       = make(map[string]bool)
 	Segmenter       sego.Segmenter
 	GlobalConfigMap sync.Map //配置文件的全局map
+	//程序是否已经安装
+	IsInstalled = false
 )
 
 func init() {
-	exts := strings.Split(beego.AppConfig.String("StaticExt"), ",")
+	//如果存在配置文件，则表示程序已经安装
+	if _, err := os.Stat("conf/app.conf"); err == nil {
+		IsInstalled = true
+	}
+	setDefaultConfig()
+	exts := strings.Split(beego.AppConfig.DefaultString("StaticExt", DEFAULT_STATIC_EXT), ",")
 	for _, ext := range exts {
 		StaticExt[strings.ToLower(strings.TrimSpace(ext))] = true
 	}

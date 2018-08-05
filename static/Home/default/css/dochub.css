@@ -71,6 +71,7 @@ body{background-color: #f6f6f6;}
 .star-49,.star-50{background:url(../img/sprite_star.png) no-repeat 0px 0px;}/*5.0星*/
 
 
+
 /*global css [start]*/
 .wenku-progress{position: fixed;width: 100%;height: 100%;z-index: 999;left:0px;top:0px;background-color:rgba(0,0,0,0.5);}
 .wenku-progress .text-center{background-color: #fff;margin:150px auto;width: 500px;padding: 20px;border-radius: 3px;}
@@ -150,6 +151,22 @@ textarea{resize: none;}
 .panel{box-shadow: none;-moz-box-shadow: none;-o-box-shadow: none;-webkit-box-shadow: none;}
 /*global css [end]*/
 
+
+/* 程序安装页面样式 【start】 */
+#page-install .panel-default{
+    border-radius: 6px;background-color: #ffffff;margin: 50px 0px 50px;
+}
+#page-install .panel-default > .panel-heading{
+    border-color: #F6F6F6;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+#page-install .panel-footer{
+    background-color: #ffffff;
+    border-color: #F6F6F6;
+}
+#page-install .form-group{margin-bottom: 0px;}
+/* 程序安装页面样式 【end】 */
 
 
 /*wenku page index [start]*/
