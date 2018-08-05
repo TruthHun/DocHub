@@ -787,6 +787,14 @@ func installCfg() {
 			Category:    cateDepend,
 		},
 		Config{
+			Title:       "Soffice转化超时时间(秒)",
+			Description: "转换office文档的超时时间，避免转化失败还占用服务器资源，默认1800秒",
+			Key:         "soffice-expire",
+			Value:       "1800",
+			InputType:   INPUT_NUMBER,
+			Category:    cateDepend,
+		},
+		Config{
 			Title:       "Calibre",
 			Description: "calibre文档转换命令，将mobi等转PDF，默认为ebook-convert",
 			Key:         "calibre",

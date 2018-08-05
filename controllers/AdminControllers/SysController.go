@@ -38,6 +38,11 @@ func (this *SysController) Get() {
 			}
 			//最后更新全局配置
 			modelCfg.UpdateGlobal()
+			if tab == models.CONFIG_ELASTICSEARCH {
+				if err := models.NewElasticSearchClient().Init(); err != nil {
+					this.ResponseJson(0, "ElasticSearch初始化失败："+err.Error())
+				}
+			}
 		}
 		this.ResponseJson(1, "更新成功")
 	} else {

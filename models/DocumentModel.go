@@ -695,3 +695,43 @@ func (this *Document) TplSimpleList(chinelid interface{}) []orm.Params {
 	data, _, _ := this.SimpleList(fmt.Sprintf("di.ChanelId=%v", helper.Interface2Int(chinelid)), 5)
 	return data
 }
+
+//根据id查询搜索数据结构
+//@param            id         根据id查询搜索文档
+func (this *Document) GetDocForElasticSearch(id int) (es ElasticSearchData, err error) {
+	var (
+		sql    string
+		params []orm.Params
+		num    int64
+	)
+	tables := []string{TableDocInfo + " i", TableDoc + " d", TableDocStore + " ds"}
+	on := []map[string]string{
+		{"i.Id": "d.Id"},
+		{"i.DsId": "ds.Id"},
+	}
+	fields := map[string][]string{
+		"i":  {"Score", "Id", "Dcnt", "Vcnt", "Ccnt"},
+		"d":  {"Title", "Description", "Keywords"},
+		"ds": {"Page", "Size", "ExtNum DocType", "Id DsId"},
+	}
+	listRows := 1
+	if sql, err = LeftJoinSqlBuild(tables, on, fields, 1, listRows, nil, nil, fmt.Sprintf("i.Status>=0 and i.Id = %v", id)); err == nil {
+		if num, err = O.Raw(sql).Values(&params); num > 0 {
+			es = ElasticSearchData{
+				Id:          helper.Interface2Int(params[0]["Id"]),
+				Title:       params[0]["Title"].(string),
+				Keywords:    params[0]["Keywords"].(string),
+				Description: params[0]["Description"].(string),
+				Vcnt:        helper.Interface2Int(params[0]["Vcnt"]),
+				Ccnt:        helper.Interface2Int(params[0]["Ccnt"]),
+				Dcnt:        helper.Interface2Int(params[0]["Dcnt"]),
+				Score:       helper.Interface2Int(params[0]["Score"]),
+				Size:        helper.Interface2Int(params[0]["Size"]),
+				Page:        helper.Interface2Int(params[0]["Page"]),
+				DocType:     helper.Interface2Int(params[0]["DocType"]),
+				DsId:        helper.Interface2Int(params[0]["DsId"]),
+			}
+		}
+	}
+	return
+}

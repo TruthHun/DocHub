@@ -312,33 +312,32 @@ func FormatByte(size int) string {
 }
 
 //获取文档扩展名分类以及扩展名分类对应的catenum数字
-func GetExtCate(ext string) (string, int) {
-	var (
-		extcate string
-		extnum  int
-	)
-	ext = strings.ToLower(ext)
+//@param            ext         扩展名
+//@return           extCate     文档类型(字符串)
+//@return           extNum      文档类型(整型)
+func GetExtCate(ext string) (extCate string, extNum int) {
+	ext = strings.ToLower(strings.TrimLeft(ext, "."))
 	switch ext {
 	case "doc", "docx", "rtf", "wps", "odt":
-		extcate = "word"
-		extnum = 1
+		extCate = "word"
+		extNum = 1
 	case "ppt", "pptx", "pps", "ppsx", "dps", "odp", "pot":
-		extcate = "ppt"
-		extnum = 2
+		extCate = "ppt"
+		extNum = 2
 	case "xls", "xlsx", "et", "ods":
-		extcate = "excel"
-		extnum = 3
+		extCate = "excel"
+		extNum = 3
 	case "pdf":
-		extcate = "pdf"
-		extnum = 4
+		extCate = "pdf"
+		extNum = 4
 	case "txt":
-		extcate = "text"
-		extnum = 5
+		extCate = "text"
+		extNum = 5
 	case "umd", "chm", "epub", "mobi":
-		extcate = ext
-		extnum = 6
+		extCate = ext
+		extNum = 6
 	}
-	return extcate, extnum
+	return
 }
 
 //PdfProcedure专用
