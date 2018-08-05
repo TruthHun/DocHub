@@ -805,6 +805,21 @@ func installCfg() {
 			Value:       "convert",
 			Category:    cateDepend,
 		},
+		Config{
+			Title:       "SVGO",
+			Description: "svg内容压缩工具，清除多余字符",
+			Key:         "svgo",
+			Value:       "svgo",
+			Category:    cateDepend,
+		},
+		Config{
+			Title:       "启用SVGO",
+			Description: "是否启用svgo，默认为false",
+			Key:         "svgo-on",
+			Value:       "false",
+			InputType:   INPUT_BOOL,
+			Category:    cateDepend,
+		},
 	}
 
 	//全文搜索

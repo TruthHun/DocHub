@@ -18,6 +18,8 @@ import (
 
 	"compress/gzip"
 
+	"path/filepath"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	oss2 "github.com/denverdino/aliyungo/oss"
@@ -131,6 +133,12 @@ func (this *Oss) MoveToOss(local, save string, IsPreview, IsDel bool, IsGzip ...
 	//如果是开启了gzip，则需要设置文件对象的响应头
 	if len(IsGzip) > 0 && IsGzip[0] == true {
 		isGzip = true
+	}
+
+	if strings.ToLower(filepath.Ext(local)) == ".svg" && helper.GetConfigBool("depend", "svgo-on") {
+		if errCompress := helper.SvgoCompress(local, local); errCompress != nil {
+			helper.Logger.Error(errCompress.Error())
+		}
 	}
 
 	//在移动文件到OSS之前，先压缩文件

@@ -819,3 +819,13 @@ func HandlePageNum(PageNum interface{}) string {
 	}
 	return pn
 }
+
+//使用SVGO压缩svg文件
+//@param            input           需要压缩的原文件
+//@param            output          压缩后的文件路径
+//@param            err             压缩错误
+func SvgoCompress(input, output string) (err error) {
+	svgo := GetConfig("depend", "svgo", "svgo")
+	args := []string{input, "-o", output}
+	return exec.Command(svgo, args...).Run()
+}

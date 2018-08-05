@@ -619,10 +619,6 @@ $(function(){
             $(".wenku-comment-num").text(len-$(this).val().length);
         });
 
-
-
-
-		
 	}
 	
 
