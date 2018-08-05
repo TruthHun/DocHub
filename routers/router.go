@@ -99,6 +99,7 @@ func back() {
 	beego.Router("/admin/banner/add", &AdminControllers.BannerController{}, "post:Add")
 	beego.Router("/admin/banner/del", &AdminControllers.BannerController{}, "get,post:Del")
 	beego.Router("/admin/report", &AdminControllers.ReportController{})
-	beego.Router("/admin/crawl", &AdminControllers.CrawlController{})
-	beego.Router("/admin/psGitbook", &AdminControllers.CrawlController{}, "get:PublishGitbook")
+	beego.Router("/admin/elasticsearch/rebuild", &AdminControllers.SysController{}, "get:RebuildAllIndex") //重建全量索引
+	//beego.Router("/admin/crawl", &AdminControllers.CrawlController{})
+	//beego.Router("/admin/psGitbook", &AdminControllers.CrawlController{}, "get:PublishGitbook")
 }

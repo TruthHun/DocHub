@@ -22,32 +22,32 @@
                                 <label >网站名称</label>
                                 <input type="hidden" name="CntDoc" value="{{.CntDoc}}">
                                 <input type="hidden" name="CntUser" value="{{.CntUser}}">
-                                <input type="text" class="form-control input-lg" name="Site" placeholder="请输入站点名称" value="{{.Site}}" />
+                                <input type="text" class="form-control" name="Site" placeholder="请输入站点名称" value="{{.Site}}" />
                             </div>
                             <div class="form-group">
                                 <label >绑定域名( <small class="text-muted">[必填]生成sitemap需要用到。示例：https://www.dochub.me</small> )</label>
-                                <input type="text" class="form-control input-lg" name="DomainPc" value="{{.DomainPc}}" />
+                                <input type="text" class="form-control" name="DomainPc" value="{{.DomainPc}}" />
                             </div>
                             <div class="form-group">
                                 <label >网站备案号</label>
-                                <input type="text" class="form-control input-lg" name="Icp" placeholder="请输入网站备案号，如 桂ICP备 xxxx" value="{{.Icp}}" />
+                                <input type="text" class="form-control" name="Icp" placeholder="请输入网站备案号，如 桂ICP备 xxxx" value="{{.Icp}}" />
                             </div>
                             <div class="form-group">
                                 <label >文档水印文本</label>
-                                <input type="text" class="form-control input-lg" name="Watermark" placeholder="文档水印文案，留空则表示不添加水印" value="{{.Watermark}}" />
+                                <input type="text" class="form-control" name="Watermark" placeholder="文档水印文案，留空则表示不添加水印" value="{{.Watermark}}" />
                             </div>
 
                             <div class="col-xs-6" style="padding-left: 0px">
                                 <div class="form-group">
                                     <label >首页分类(按照顺序输入频道id)</label>
-                                    <input type="text" class="form-control input-lg" name="HomeCates" placeholder="请按顺序填写频道id，以便在首页显示，多个id用英文逗号分隔" value="{{.HomeCates}}" />
+                                    <input type="text" class="form-control" name="HomeCates" placeholder="请按顺序填写频道id，以便在首页显示，多个id用英文逗号分隔" value="{{.HomeCates}}" />
                                 </div>
                             </div>
 
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >热门推荐(按照顺序输入文档id)</label>
-                                    <input type="text" class="form-control input-lg" name="Trends" placeholder="请填写5个文档ID，id之间用英文逗号分隔" value="{{.Trends}}" />
+                                    <input type="text" class="form-control" name="Trends" placeholder="请填写5个文档ID，id之间用英文逗号分隔" value="{{.Trends}}" />
                                 </div>
                             </div>
 
@@ -56,45 +56,45 @@
                             <!--<div class="col-xs-6 hide" style="padding-left: 0px;">-->
                                 <!--<div class="form-group">-->
                                     <!--<label >PC端域名</label>-->
-                                    <!--<input type="text" class="form-control input-lg" name="DomainPc" value="{{.DomainPc}}" />-->
+                                    <!--<input type="text" class="form-control" name="DomainPc" value="{{.DomainPc}}" />-->
                                 <!--</div>-->
                             <!--</div>-->
                             <div class="col-xs-6 hide" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >移动端域名</label>
-                                    <input type="text" class="form-control input-lg" name="DomainMobile" value="{{.DomainMobile}}" />
+                                    <input type="text" class="form-control" name="DomainMobile" value="{{.DomainMobile}}" />
                                 </div>
                             </div>
 
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >文档评论验证问题</label>
-                                    <input type="text" class="form-control input-lg" name="Question" value="{{.Question}}" />
+                                    <input type="text" class="form-control" name="Question" value="{{.Question}}" />
                                 </div>
                             </div>
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >文档评论验证问题答案</label>
-                                    <input type="text" class="form-control input-lg" name="Answer" value="{{.Answer}}" />
+                                    <input type="text" class="form-control" name="Answer" value="{{.Answer}}" />
                                 </div>
                             </div>
 
                             <div class="col-xs-4 hide" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >PC端模板(区分大小写)</label>
-                                    <input type="text" class="form-control input-lg" name="TplComputer" value="{{.TplComputer}}" />
+                                    <input type="text" class="form-control" name="TplComputer" value="{{.TplComputer}}" />
                                 </div>
                             </div>
                             <div class="col-xs-4 hide" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >移动端模板(区分大小写)</label>
-                                    <input type="text" class="form-control input-lg" name="TplMobile" value="{{.TplMobile}}" />
+                                    <input type="text" class="form-control" name="TplMobile" value="{{.TplMobile}}" />
                                 </div>
                             </div>
                             <div class="col-xs-4 hide" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >后台模板(区分大小写)</label>
-                                    <input type="text" class="form-control input-lg" name="TplAdmin" readonly value="{{.TplAdmin}}" />
+                                    <input type="text" class="form-control" name="TplAdmin" readonly value="{{.TplAdmin}}" />
                                 </div>
                             </div>
 
@@ -102,38 +102,38 @@
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >新用户注册奖励金币</label>
-                                    <input type="number" class="form-control input-lg" name="CoinReg" value="{{.CoinReg}}" />
+                                    <input type="number" class="form-control" name="CoinReg" value="{{.CoinReg}}" />
                                 </div>
                             </div>
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >文档上传金币奖励</label>
-                                    <input type="number" class="form-control input-lg" name="Reward" value="{{.Reward}}" />
+                                    <input type="number" class="form-control" name="Reward" value="{{.Reward}}" />
                                 </div>
                             </div>
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >每日签到金币奖励</label>
-                                    <input type="number" class="form-control input-lg" name="Sign" value="{{.Sign}}" />
+                                    <input type="number" class="form-control" name="Sign" value="{{.Sign}}" />
                                 </div>
                             </div>
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >允许上传的最大文件(字节，默认50M)</label>
-                                    <input type="number" class="form-control input-lg" name="MaxFile" value="{{.MaxFile}}" />
+                                    <input type="number" class="form-control" name="MaxFile" value="{{.MaxFile}}" />
                                 </div>
                             </div>
 
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >文档最大预览页数(此参数不要频繁变更；0表示不限制。)</label>
-                                    <input type="number" class="form-control input-lg" name="PreviewPage" value="{{.PreviewPage}}" />
+                                    <input type="number" class="form-control" name="PreviewPage" value="{{.PreviewPage}}" />
                                 </div>
                             </div>
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >每页显示记录数(仅对前台数据生效)</label>
-                                    <input type="number" min="10" max="100" class="form-control input-lg" name="ListRows" value="{{.ListRows}}" />
+                                    <input type="number" min="10" max="100" class="form-control" name="ListRows" value="{{.ListRows}}" />
                                 </div>
                             </div>
 
@@ -141,7 +141,7 @@
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >相关文档时间周期</label>
-                                    <select name="TimeExpireRelate" class="form-control input-lg">
+                                    <select name="TimeExpireRelate" class="form-control">
                                         <option  value="31536000" {{if eq .TimeExpireRelate 31536000}}selected="selected"{{end}}>一年</option>
                                         <option  value="15552000" {{if eq .TimeExpireRelate 15552000}}selected="selected"{{end}}>半年</option>
                                         <option  value="7776000" {{if eq .TimeExpireRelate 7776000}}selected="selected"{{end}}>三月</option>
@@ -156,7 +156,7 @@
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >热门文档时间周期</label>
-                                    <select name="TimeExpireHotspot" class="form-control input-lg">
+                                    <select name="TimeExpireHotspot" class="form-control">
                                         <option  value="31536000" {{if eq .TimeExpireHotspot 31536000}}selected="selected"{{end}}>一年</option>
                                         <option  value="15552000" {{if eq .TimeExpireHotspot 15552000}}selected="selected"{{end}}>半年</option>
                                         <option  value="7776000" {{if eq .TimeExpireHotspot 7776000}}selected="selected"{{end}}>三月</option>
@@ -191,7 +191,7 @@
                                 <label >统计代码(支持html代码)</label>
                                 <textarea name="Tongji" rows="6" class="form-control" placeholder="请输入站点的统计代码">{{.Tongji}}</textarea>
                             </div>
-                            <input type="submit" class="btn btn-success btn-lg" value="提交更改"/>
+                            <input type="submit" class="btn btn-success" value="提交更改"/>
                         </form>
                         {{end}}
 
@@ -207,17 +207,26 @@
                                             <label style="font-weight: normal"><input type="radio" name="{{.Key}}" value="0" {{if eq .Value "1"}}{{else}}checked{{end}}> 否</label>
                                         </div>
                                         {{else if eq .InputType "number"}}
-                                            <input type="number" class="form-control input-lg" name="{{.Key}}" placeholder="" value="{{.Value}}" />
+                                            <input type="number" class="form-control" name="{{.Key}}" placeholder="" value="{{.Value}}" />
                                         {{else if eq .InputType "textarea"}}
                                         <textarea name="{{.Key}}" class="form-control" rows="3">{{.Value}}</textarea>
                                         {{else}}
-                                            <input type="text" class="form-control input-lg" name="{{.Key}}" placeholder="" value="{{.Value}}" />
+                                            <input type="text" class="form-control" name="{{.Key}}" placeholder="" value="{{.Value}}" />
                                         {{end}}
                                         <div class="help-block">{{.Description}}</div>
                                     </div>
                                 {{end}}
                             {{end}}
-                            <input type="submit" class="btn btn-success btn-lg" value="提交更改"/>
+                            <input type="submit" class="btn btn-success" value="提交更改"/>
+                            {{if eq $.Tab "email"}}
+                                <a href="#" class="btn btn-default">测试邮件发送</a>
+                            {{end}}
+                            {{if eq $.Tab "oss"}}
+                                <a href="#" class="btn btn-default">测试OSS连通</a>
+                            {{end}}
+                            {{if eq $.Tab "elasticsearch"}}
+                                <a href="/admin/elasticsearch/rebuild" title="重建全量索引" class="btn btn-default wenku-ajax-get">重建全量索引</a>
+                            {{end}}
                         </form>
                     {{end}}
 

@@ -174,7 +174,7 @@ func RegisterDB() {
 		ModelGitbook,
 		ModelConfig,
 	}
-	orm.RegisterModelWithPrefix(beego.AppConfig.String("db::prefix"), models...)
+	orm.RegisterModelWithPrefix(beego.AppConfig.DefaultString("db::prefix", "hc_"), models...)
 	db_user := beego.AppConfig.String("db::user")
 	db_password := beego.AppConfig.String("db::password")
 	if envpass := os.Getenv("MYSQL_PASSWORD"); envpass != "" {

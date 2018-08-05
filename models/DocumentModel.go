@@ -31,6 +31,7 @@ type DocumentInfo struct {
 	Pid         int  `orm:"index;default(0);column(Pid)"`      //文档一级分类
 	Cid         int  `orm:"index;default(0);column(Cid)"`      //频道下的最底层的分类id（二级分类），如幼儿教育下的幼儿读物等
 	TimeCreate  int  `orm:"default(0);column(TimeCreate)"`     //文档上传时间
+	TimeUpdate  int  `orm:"default(0);column(TimeUpdate)"`     //文档更新时间
 	Dcnt        int  `orm:"default(0);column(Dcnt)"`           //下载次数
 	Vcnt        int  `orm:"default(0);column(Vcnt)"`           //浏览次数
 	Ccnt        int  `orm:"default(0);column(Ccnt)"`           //收藏次数
@@ -733,5 +734,21 @@ func (this *Document) GetDocForElasticSearch(id int) (es ElasticSearchData, err 
 			}
 		}
 	}
+	return
+}
+
+//查询需要索引的稳定id
+//@param            page            页面
+//@param            pageSize        每页记录数
+//@param            startTime       开始时间
+//@param            fields          查询字段
+//@return           infos           文档信息
+//@return           rows            查询到的文档数量
+//@return           err             查询错误
+func (this *Document) GetDocInfoForElasticSearch(page, pageSize int, startTime int, fields ...string) (infos []DocumentInfo, rows int64, err error) {
+	if len(fields) == 0 {
+		fields = append(fields, "Id")
+	}
+	rows, err = O.QueryTable(TableDocInfo).Filter("Status__gte", 0).Filter("TimeUpdate__gte", startTime).Limit(pageSize).Offset((page-1)*pageSize).All(&infos, fields...)
 	return
 }

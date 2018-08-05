@@ -11,9 +11,12 @@ import (
 	"encoding/json"
 	"strconv"
 
+	"fmt"
+
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/httplib"
+	"github.com/astaxie/beego/orm"
 )
 
 //全文搜索客户端
@@ -137,7 +140,33 @@ func (this *ElasticSearchClient) Init() (err error) {
 
 //重建索引【全量】
 func (this *ElasticSearchClient) RebuildAllIndex() {
-
+	helper.GlobalConfigMap.Store("indexing", true)
+	defer helper.GlobalConfigMap.Store("indexing", false)
+	//执行全量索引更新
+	pageSize := 100
+	maxPage := 100000
+	for page := 1; page < maxPage; page++ {
+		if infos, rows, err := ModelDoc.GetDocInfoForElasticSearch(page, pageSize, 0); err != nil || rows == 0 {
+			if err != nil && err != orm.ErrNoRows {
+				helper.Logger.Error(err.Error())
+			}
+			page = maxPage
+		} else {
+			for _, info := range infos {
+				//开始创建索引的时间
+				tStart := time.Now().Unix()
+				if err := this.BuildIndexById(info.Id); err != nil {
+					helper.Logger.Error("创建索引失败：" + err.Error())
+				}
+				//创建索引完成时间
+				tEnd := time.Now().Unix()
+				//如果创建索引响应时长达到1秒钟，则休眠一定时长，以避免服务器负载过高，造成整站无法正常运行
+				if t := tEnd - tStart; t >= 1 {
+					time.Sleep(time.Duration(t) * time.Second)
+				}
+			}
+		}
+	}
 }
 
 //根据id查询文档，并创建索引
@@ -158,6 +187,11 @@ func (this *ElasticSearchClient) BuildIndex(es ElasticSearchData) (err error) {
 	)
 	if !this.On {
 		return
+	}
+	if helper.Debug {
+		beego.Info("创建索引--------start--------")
+		fmt.Printf("%+v\n", es)
+		beego.Info("创建索引-------- end --------")
 	}
 	api := this.Host + this.Index + "/" + this.Type + "/" + strconv.Itoa(es.Id)
 	if js, err = json.Marshal(es); err == nil {

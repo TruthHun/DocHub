@@ -58,3 +58,38 @@ func (this *SysController) Get() {
 	}
 
 }
+
+//重建全量索引
+func (this *SysController) RebuildAllIndex() {
+	resp := map[string]interface{}{
+		"status": 0, "msg": "全量索引重建失败",
+	}
+	if client := models.NewElasticSearchClient(); client.On {
+		//再次初始化，避免elasticsearch未初始化
+		if err := client.Init(); err != nil {
+			resp["msg"] = "全量索引重建失败：" + err.Error()
+		} else {
+			//索引是否正在进行，如果正在进行，则不再执行全量索引
+			exist := false
+			if indexing, ok := helper.GlobalConfigMap.Load("indexing"); ok {
+				if b, ok := indexing.(bool); b && ok { //索引正在重建
+					exist = true
+				} else {
+					exist = false
+				}
+			} else { //不存在正在重建的全量索引操作
+				exist = false
+			}
+			if exist == false {
+				go client.RebuildAllIndex()
+				resp["msg"] = "全量索引重建提交成功，正在后端执行，请耐心等待."
+				resp["status"] = 1
+			} else {
+				resp["msg"] = "全量索引重建失败：存在正在重建的全量索引"
+			}
+		}
+	} else {
+		resp["msg"] = "全量索引重建失败，您未启用ElasticSearch"
+	}
+	this.Response(resp)
+}
