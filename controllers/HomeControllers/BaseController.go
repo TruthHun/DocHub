@@ -96,11 +96,16 @@ func (this *BaseController) Xsrf() {
 //检测用户登录的cookie是否存在
 func (this *BaseController) checkCookieLogin() {
 	secret := beego.AppConfig.DefaultString("CookieSecret", helper.DEFAULT_COOKIE_SECRET)
-	timestamp, b := this.GetSecureCookie(secret, "uid")
-	if b {
-		uid, b := this.Ctx.GetSecureCookie(secret+timestamp, "token")
-		if b && len(uid) > 0 {
-			this.IsLogin = helper.Interface2Int(uid)
+	timestamp, ok := this.GetSecureCookie(secret, "uid")
+	if ok {
+		uid, ok := this.Ctx.GetSecureCookie(secret+timestamp, "token")
+		if ok && len(uid) > 0 {
+			if this.IsLogin = helper.Interface2Int(uid); this.IsLogin > 0 {
+				if info := models.ModelUser.UserInfo(this.IsLogin); info.Status == false {
+					//被封禁的账号，重置cookie
+					this.ResetCookie()
+				}
+			}
 		} else {
 			this.ResetCookie()
 		}
