@@ -387,7 +387,7 @@ func ConvertToJpeg(pdffile string, removeFile bool) (cover string, err error) {
 }
 
 //office文档转pdf，返回转化后的文档路径和错误
-func OfficeToPdf(office string) error {
+func OfficeToPdf(office string) (err error) {
 	//	soffice --headless --invisible --convert-to pdf doctest.docx
 	//soffice := beego.AppConfig.DefaultString("soffice", "soffice")
 	soffice := GetConfig("depend", "soffice", "soffice")
@@ -397,7 +397,16 @@ func OfficeToPdf(office string) error {
 	if Debug {
 		Logger.Debug("office 文档转 PDF:", cmd.Args)
 	}
-	return cmd.Run()
+	go func() { //超时关闭程序
+		expire := GetConfigInt64("depend", "soffice-expire")
+		if expire <= 0 {
+			expire = 1800
+		}
+		time.Sleep(time.Duration(expire) * time.Second)
+		cmd.Process.Kill()
+	}()
+	err = cmd.Run()
+	return
 }
 
 //非office文档(.txt,.mobi,.epub)转pdf文档
