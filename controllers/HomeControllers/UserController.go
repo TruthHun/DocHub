@@ -260,13 +260,21 @@ func (this *UserController) Login() {
 			ModelUser := models.ModelUser
 			users, rows, err := ModelUser.UserList(1, 1, "", "", "u.`email`=? and u.`password`=?", post.Email, helper.MyMD5(post.Password))
 			if rows > 0 && err == nil {
-				//登录成功
-				ret["status"] = 1
-				ret["msg"] = "登录成功"
+
 				user := users[0]
 				this.IsLogin = helper.Interface2Int(user["Id"])
 				if this.IsLogin > 0 {
-					this.BaseController.SetCookieLogin(this.IsLogin)
+					//查询用户有没有被封禁
+					if info := ModelUser.UserInfo(this.IsLogin); info.Status == false { //被封禁了
+						//登录失败，账号已被封禁
+						ret["status"] = 0
+						ret["msg"] = "登录失败，您的账号已被管理员禁用"
+					} else {
+						//登录成功
+						ret["status"] = 1
+						ret["msg"] = "登录成功"
+						this.BaseController.SetCookieLogin(this.IsLogin)
+					}
 				}
 			} else {
 				if err != nil {

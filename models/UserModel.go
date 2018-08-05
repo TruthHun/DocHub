@@ -27,7 +27,7 @@ type UserInfo struct {
 	Document   int  `orm:"default(0);index;column(Document)"` //文档数量
 	Collect    int  `orm:"default(0);column(Collect)"`        //收藏专辑数量，每个收藏专辑下面有文档
 	TimeCreate int  `orm:"column(TimeCreate);default(0)"`     //用户注册时间
-	Status     bool `orm:"column(Status);default(true)"`      //用户信息状态
+	Status     bool `orm:"column(Status);default(true)"`      //用户信息状态，false(即0)表示被禁用
 }
 
 //根据条件查询用户信息，比如用户登录、用户列表等的获取也可以使用这个函数
