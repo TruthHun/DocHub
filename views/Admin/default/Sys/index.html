@@ -226,6 +226,18 @@
                             {{end}}
                             {{if eq $.Tab "elasticsearch"}}
                                 <a href="/admin/elasticsearch/rebuild" title="重建全量索引" class="btn btn-default wenku-ajax-get">重建全量索引</a>
+                                <hr>
+                                    <div class="help-block">
+                                        <span>索引数量：{{.Count}}</span>
+                                        &nbsp;&nbsp; | &nbsp;&nbsp;
+                                        <span>连通状态：
+                                            {{if .ErrES}}
+                                            <span class="text-danger">{{.ErrES}}</span>
+                                            {{else}}
+                                                <span class="text-success">成功</span>
+                                            {{end}}
+                                        </span>
+                                    </div>
                             {{end}}
                         </form>
                     {{end}}

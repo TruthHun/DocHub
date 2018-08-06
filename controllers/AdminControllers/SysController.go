@@ -53,6 +53,13 @@ func (this *SysController) Get() {
 			this.Data["Sys"], _ = models.ModelSys.Get()
 		} else {
 			this.Data["Configs"] = new(models.Config).All()
+			if tab == models.CONFIG_ELASTICSEARCH {
+				count, errES := models.NewElasticSearchClient().Count()
+				this.Data["Count"] = count
+				if errES != nil {
+					this.Data["ErrES"] = errES.Error()
+				}
+			}
 		}
 		this.TplName = "index.html"
 	}

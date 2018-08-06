@@ -44,6 +44,16 @@ type ElasticSearchData struct {
 	DsId        int    `json:"DsId"`        //DocumentStoreId，对应于md5
 }
 
+type ElasticSearchCount struct {
+	Shards struct {
+		Failed     int `json:"failed"`
+		Skipped    int `json:"skipped"`
+		Successful int `json:"successful"`
+		Total      int `json:"total"`
+	} `json:"_shards"`
+	Count int `json:"count"`
+}
+
 //创建全文搜索客户端
 func NewElasticSearchClient() (client *ElasticSearchClient) {
 	cateES := string(CONFIG_ELASTICSEARCH)
@@ -138,6 +148,11 @@ func (this *ElasticSearchClient) Init() (err error) {
 	return
 }
 
+//搜索内容
+func (this *ElasticSearchClient) Search() {
+
+}
+
 //重建索引【全量】
 func (this *ElasticSearchClient) RebuildAllIndex() {
 	helper.GlobalConfigMap.Store("indexing", true)
@@ -205,9 +220,28 @@ func (this *ElasticSearchClient) BuildIndex(es ElasticSearchData) (err error) {
 	return
 }
 
-//搜索内容
-func (this *ElasticSearchClient) Search() {
-
+//查询索引量
+func (this *ElasticSearchClient) Count() (count int, err error) {
+	if !this.On {
+		err = errors.New("未启用ElasticSearch")
+		return
+	}
+	api := this.Host + this.Index + "/" + this.Type + "/_count"
+	if resp, errResp := this.get(api).Response(); errResp != nil {
+		err = errResp
+	} else {
+		b, _ := ioutil.ReadAll(resp.Body)
+		body := string(b)
+		if resp.StatusCode >= http.StatusMultipleChoices || resp.StatusCode < http.StatusOK {
+			err = errors.New(resp.Status + "；" + body)
+		} else {
+			var cnt ElasticSearchCount
+			if err = json.Unmarshal(b, &cnt); err == nil {
+				count = cnt.Count
+			}
+		}
+	}
+	return
 }
 
 //删除索引
