@@ -4,7 +4,7 @@ package models
 import (
 	"fmt"
 
-	gomail "gopkg.in/gomail.v2"
+	"gopkg.in/gomail.v2"
 
 	"github.com/TruthHun/DocHub/helper"
 
@@ -396,17 +396,17 @@ func SearchByMysql(wd, sourceType, order string, p, listRows int) (data []orm.Pa
 	ExtNum := 0 //这些也暂时写死了，后面再优化....
 	switch strings.ToLower(sourceType) {
 	case "doc":
-		ExtNum = 1
+		ExtNum = helper.EXT_NUM_WORD
 	case "ppt":
-		ExtNum = 2
+		ExtNum = helper.EXT_NUM_PPT
 	case "xls":
-		ExtNum = 3
+		ExtNum = helper.EXT_NUM_EXCEL
 	case "pdf":
-		ExtNum = 4
+		ExtNum = helper.EXT_NUM_PDF
 	case "txt":
-		ExtNum = 5
+		ExtNum = helper.EXT_NUM_TEXT
 	case "other":
-		ExtNum = 6
+		ExtNum = helper.EXT_NUM_OTHER
 	}
 	if ExtNum > 0 {
 		cond = cond + " and ds.ExtNum=" + strconv.Itoa(ExtNum)

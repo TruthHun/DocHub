@@ -50,6 +50,20 @@ const (
 
 	DEFAULT_STATIC_EXT    = ".txt,.html,.ico,.jpeg,.png,.gif,.xml"
 	DEFAULT_COOKIE_SECRET = "dochub"
+
+	//	扩展名
+	EXT_CATE_WORD  = "word"
+	EXT_NUM_WORD   = 1
+	EXT_CATE_PPT   = "ppt"
+	EXT_NUM_PPT    = 2
+	EXT_CATE_EXCEL = "excel"
+	EXT_NUM_EXCEL  = 3
+	EXT_CATE_PDF   = "pdf"
+	EXT_NUM_PDF    = 4
+	EXT_CATE_TEXT  = "text"
+	EXT_NUM_TEXT   = 5
+	EXT_CATE_OTHER = "other"
+	EXT_NUM_OTHER  = 6
 )
 
 var (
@@ -319,23 +333,23 @@ func GetExtCate(ext string) (extCate string, extNum int) {
 	ext = strings.ToLower(strings.TrimLeft(ext, "."))
 	switch ext {
 	case "doc", "docx", "rtf", "wps", "odt":
-		extCate = "word"
-		extNum = 1
+		extCate = EXT_CATE_WORD
+		extNum = EXT_NUM_WORD
 	case "ppt", "pptx", "pps", "ppsx", "dps", "odp", "pot":
-		extCate = "ppt"
-		extNum = 2
+		extCate = EXT_CATE_PPT
+		extNum = EXT_NUM_PPT
 	case "xls", "xlsx", "et", "ods":
-		extCate = "excel"
-		extNum = 3
+		extCate = EXT_CATE_EXCEL
+		extNum = EXT_NUM_EXCEL
 	case "pdf":
-		extCate = "pdf"
-		extNum = 4
+		extCate = EXT_CATE_PDF
+		extNum = EXT_NUM_PDF
 	case "txt":
-		extCate = "text"
-		extNum = 5
+		extCate = EXT_CATE_TEXT
+		extNum = EXT_NUM_TEXT
 	case "umd", "chm", "epub", "mobi":
-		extCate = ext
-		extNum = 6
+		extCate = EXT_CATE_OTHER
+		extNum = EXT_NUM_OTHER
 	}
 	return
 }

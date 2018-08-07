@@ -711,7 +711,7 @@ func (this *Document) GetDocForElasticSearch(id int) (es ElasticSearchData, err 
 		{"i.DsId": "ds.Id"},
 	}
 	fields := map[string][]string{
-		"i":  {"Score", "Id", "Dcnt", "Vcnt", "Ccnt"},
+		"i":  {"Score", "Id", "Dcnt", "Vcnt", "Ccnt", "Price", "TimeCreate"},
 		"d":  {"Title", "Description", "Keywords"},
 		"ds": {"Page", "Size", "ExtNum DocType", "Id DsId"},
 	}
@@ -731,6 +731,8 @@ func (this *Document) GetDocForElasticSearch(id int) (es ElasticSearchData, err 
 				Page:        helper.Interface2Int(params[0]["Page"]),
 				DocType:     helper.Interface2Int(params[0]["DocType"]),
 				DsId:        helper.Interface2Int(params[0]["DsId"]),
+				Price:       helper.Interface2Int(params[0]["Price"]),
+				TimeCreate:  helper.Interface2Int(params[0]["TimeCreate"]),
 			}
 		}
 	}

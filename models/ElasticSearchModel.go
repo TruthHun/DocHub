@@ -42,6 +42,8 @@ type ElasticSearchData struct {
 	Page        int    `json:"Page"`        //文档页数
 	DocType     int    `json:"DocType"`     //文档类型，对应各格式的数字表示
 	DsId        int    `json:"DsId"`        //DocumentStoreId，对应于md5
+	Price       int    `json:"Price"`       //文档售价
+	TimeCreate  int    `json:"TimeCreate"`  //文档创建时间
 }
 
 type ElasticSearchCount struct {
@@ -52,6 +54,47 @@ type ElasticSearchCount struct {
 		Total      int `json:"total"`
 	} `json:"_shards"`
 	Count int `json:"count"`
+}
+
+type ElasticSearchResult struct {
+	Shards struct {
+		Failed     int `json:"failed"`
+		Skipped    int `json:"skipped"`
+		Successful int `json:"successful"`
+		Total      int `json:"total"`
+	} `json:"_shards"`
+	Hits struct {
+		Hits []struct {
+			ID     string      `json:"_id"`
+			Index  string      `json:"_index"`
+			Score  interface{} `json:"_score"`
+			Source struct {
+				Ccnt        int    `json:"Ccnt"`
+				Dcnt        int    `json:"Dcnt"`
+				Description string `json:"Description"`
+				DocType     int    `json:"DocType"`
+				DsID        int    `json:"DsId"`
+				ID          int    `json:"Id"`
+				Keywords    string `json:"Keywords"`
+				Page        int    `json:"Page"`
+				Score       int    `json:"Score"`
+				Size        int    `json:"Size"`
+				Title       string `json:"Title"`
+				Vcnt        int    `json:"Vcnt"`
+			} `json:"_source"`
+			Type      string `json:"_type"`
+			Highlight struct {
+				Title       []string `json:"Title"`
+				Keywords    []string `json:"Keywords"`
+				Description []string `json:"Description"`
+			} `json:"highlight"`
+			Sort []int `json:"sort"`
+		} `json:"hits"`
+		MaxScore interface{} `json:"max_score"`
+		Total    int         `json:"total"`
+	} `json:"hits"`
+	TimedOut bool `json:"timed_out"`
+	Took     int  `json:"took"`
 }
 
 //创建全文搜索客户端
@@ -148,9 +191,124 @@ func (this *ElasticSearchClient) Init() (err error) {
 	return
 }
 
-//搜索内容
-func (this *ElasticSearchClient) Search() {
+//{
+//"query": {
+//"bool":{
+//"must":{
+//"multi_match" : {
+//"query":    "文库",
+//"fields": [ "Title", "Keywords","Description" ]
+//}
+//},
+//"filter":{
+//"term":{"DsId":5}
+//}
+//}
+//},
+//"from":0,
+//"size":10,
+//"sort":[
+//{"Page":"desc"}
+//],
+//"highlight": {
+//"fields" : {
+//"Title" : {},
+//"Description" : {}
+//}
+//}
+//}
 
+//搜索内容
+//@param            wd          搜索关键字
+//@param            sourceType  搜索的资源类型，可选择：doc、ppt、xls、pdf、txt、other、all
+//@param            order       排序，可选值：new(最新)、down(下载)、page(页数)、score(评分)、size(大小)、collect(收藏)、view（浏览）、default(默认)
+//@param            p           页码
+//@param            listRows    每页显示记录数
+func (this *ElasticSearchClient) Search(wd, sourceType, order string, p, listRows int) (result ElasticSearchResult, err error) {
+	wd = strings.Replace(wd, "\"", " ", -1)
+	wd = strings.Replace(wd, "\\", " ", -1)
+	filter := ""
+	//搜索资源类型，0表示全部类型（即不限资源类型）
+	ExtNum := 0
+	switch strings.ToLower(sourceType) {
+	case "doc":
+		ExtNum = helper.EXT_NUM_WORD
+	case "ppt":
+		ExtNum = helper.EXT_NUM_PPT
+	case "xls":
+		ExtNum = helper.EXT_NUM_EXCEL
+	case "pdf":
+		ExtNum = helper.EXT_NUM_PDF
+	case "txt":
+		ExtNum = helper.EXT_NUM_TEXT
+	case "other":
+		ExtNum = helper.EXT_NUM_OTHER
+	}
+	if ExtNum > 0 {
+		filter = fmt.Sprintf(`,"filter":{"term":{"DocType":%v}}`, ExtNum)
+	}
+
+	//搜索结果排序
+	sort := ""
+	field := ""
+	switch strings.ToLower(order) {
+	case "new":
+		field = "Id"
+	case "down":
+		field = "Dcnt"
+	case "page":
+		field = "Page"
+	case "score":
+		field = "Score"
+	case "size":
+		field = "size"
+	case "collect":
+		field = "Ccnt"
+	case "view":
+		field = "Vcnt"
+	}
+	if field != "" {
+		sort = fmt.Sprintf(`"sort":[{"%v":"desc"}],`, field)
+	}
+
+	//我elasticsearch不熟，只能这么用了...尴尬
+	queryBody := `
+{
+  "query": {
+    "bool":{
+      "must":{
+        "multi_match" : {
+          "query":    "%v", 
+          "fields": [ "Title", "Keywords","Description" ] 
+        }
+      }%v
+    }
+  },
+  "from":%v,
+  "size":%v,
+  %v
+  "highlight": {
+        "fields" : {
+          "Title" : {},
+          "Description" : {}
+        }
+   }
+}`
+	queryBody = fmt.Sprintf(queryBody, wd, filter, (p-1)*listRows, listRows, sort)
+	if helper.Debug {
+		helper.Logger.Debug(queryBody)
+	}
+	api := this.Host + this.Index + "/" + this.Type + "/_search"
+	if resp, errResp := this.post(api).Body(queryBody).Response(); errResp != nil {
+		err = errResp
+	} else {
+		b, _ := ioutil.ReadAll(resp.Body)
+		json.Unmarshal(b, &result)
+		fmt.Println("=======")
+		beego.Info(string(b))
+		fmt.Println("=======")
+	}
+	return
 }
 
 //重建索引【全量】

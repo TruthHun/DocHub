@@ -13,6 +13,7 @@ import (
 
 func main() {
 	go execTask()
+
 	//定义错误和异常处理控制器
 	beego.ErrorController(&HomeControllers.BaseController{})
 	beego.Run()
