@@ -219,10 +219,10 @@
                             {{end}}
                             <input type="submit" class="btn btn-success" value="提交更改"/>
                             {{if eq $.Tab "email"}}
-                                <a href="#" class="btn btn-default">测试邮件发送</a>
+                                <a href="/admin/test/send-email" class="btn btn-default wenku-ajax-get">测试邮件发送</a>
                             {{end}}
                             {{if eq $.Tab "oss"}}
-                                <a href="#" class="btn btn-default">测试OSS连通</a>
+                                <a href="/admin/test/ping-oss" class="btn btn-default wenku-ajax-get">测试OSS连通</a>
                             {{end}}
                             {{if eq $.Tab "elasticsearch"}}
                                 <a href="/admin/elasticsearch/rebuild" title="重建全量索引" class="btn btn-default wenku-ajax-get">重建全量索引</a>

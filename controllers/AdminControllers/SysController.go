@@ -3,8 +3,11 @@ package AdminControllers
 import (
 	"strings"
 
+	"fmt"
+
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 )
 
 type SysController struct {
@@ -99,4 +102,43 @@ func (this *SysController) RebuildAllIndex() {
 		resp["msg"] = "全量索引重建失败，您未启用ElasticSearch"
 	}
 	this.Response(resp)
+}
+
+//测试邮箱是否能发件成功
+func (this *SysController) TestForSendingEmail() {
+	//邮件接收人
+	to := helper.GetConfig(string(models.CONFIG_EMAIL), "test")
+	if err := models.SendMail(to, "测试邮件", "这是一封测试邮件，用于检测是否能正常发送邮件"); err != nil {
+		this.Response(map[string]interface{}{"status": 0, "msg": "邮件发送失败：" + err.Error()})
+	}
+	this.Response(map[string]interface{}{"status": 1, "msg": "邮件发送成功"})
+}
+
+//测试OSS是否连通成功
+func (this *SysController) TestOSS() {
+	var (
+		testFile        = "dochub-test.txt"
+		content         = strings.NewReader("this is test content")
+		public, private *oss.Bucket
+		err             error
+	)
+
+	if public, err = models.NewOss().NewBucket(true); err == nil {
+		err = public.PutObject(testFile, content)
+	}
+	if err != nil {
+		this.Response(map[string]interface{}{"status": 0, "msg": fmt.Sprintf("Bucket(%v)连通失败：%v", public.BucketName, err.Error())})
+	}
+	public.DeleteObject(testFile)
+
+	if private, err = models.NewOss().NewBucket(false); err == nil {
+		err = private.PutObject(testFile, content)
+	}
+	if err != nil {
+		this.Response(map[string]interface{}{"status": 0, "msg": fmt.Sprintf("Bucket(%v)连通失败：%v", private.BucketName, err.Error())})
+	}
+
+	private.DeleteObject(testFile)
+
+	this.Response(map[string]interface{}{"status": 1, "msg": "OSS连通成功"})
 }

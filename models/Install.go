@@ -664,9 +664,16 @@ func installCfg() {
 			Category:    cateEmail,
 		},
 		Config{
-			Title:       "收件邮箱地址",
-			Description: "接收回件的邮箱。留空则表示使用发件邮箱作为收件邮箱",
+			Title:       "回件收件邮箱",
+			Description: "用于接收邮件回件的邮箱。留空则表示使用发件邮箱作为收件邮箱",
 			Key:         "replyto",
+			Value:       "",
+			Category:    cateEmail,
+		},
+		Config{
+			Title:       "测试邮箱地址",
+			Description: "在测试邮箱配置是否成功的时候，接收测试邮件的邮箱地址",
+			Key:         "test",
 			Value:       "",
 			Category:    cateEmail,
 		},
