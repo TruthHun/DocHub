@@ -14,6 +14,7 @@ import (
 	"fmt"
 
 	"github.com/TruthHun/DocHub/helper"
+	"github.com/TruthHun/gotil/util"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/orm"
@@ -102,8 +103,8 @@ func NewElasticSearchClient() (client *ElasticSearchClient) {
 	cateES := string(CONFIG_ELASTICSEARCH)
 	//并未设置超时配置项
 	timeout := helper.GetConfigInt64(cateES, "timeout")
-	if timeout <= 0 { //默认超时时间为5秒
-		timeout = 5
+	if timeout <= 0 { //默认超时时间为10秒
+		timeout = 10
 	}
 	client = &ElasticSearchClient{
 		Host:    helper.GetConfig(cateES, "host", "http://localhost:920/"),
@@ -312,12 +313,14 @@ func (this *ElasticSearchClient) Search(wd, sourceType, order string, p, listRow
 }
 
 //重建索引【全量】
+//采用批量重建索引的方式进行
+//每次操作100条数据
 func (this *ElasticSearchClient) RebuildAllIndex() {
 	helper.GlobalConfigMap.Store("indexing", true)
 	defer helper.GlobalConfigMap.Store("indexing", false)
-	//执行全量索引更新
-	pageSize := 100
-	maxPage := 100000
+	//假设有10个亿的文档...
+	pageSize := 1000
+	maxPage := 1000000
 	for page := 1; page < maxPage; page++ {
 		if infos, rows, err := ModelDoc.GetDocInfoForElasticSearch(page, pageSize, 0); err != nil || rows == 0 {
 			if err != nil && err != orm.ErrNoRows {
@@ -325,20 +328,25 @@ func (this *ElasticSearchClient) RebuildAllIndex() {
 			}
 			page = maxPage
 		} else {
+			var ids []int
 			for _, info := range infos {
-				//开始创建索引的时间
-				tStart := time.Now().Unix()
-				if err := this.BuildIndexById(info.Id); err != nil {
-					helper.Logger.Error("创建索引失败：" + err.Error())
-				}
-				//创建索引完成时间
-				tEnd := time.Now().Unix()
-				//如果创建索引响应时长达到1秒钟，则休眠一定时长，以避免服务器负载过高，造成整站无法正常运行
-				if t := tEnd - tStart; t >= 1 {
-					time.Sleep(time.Duration(t) * time.Second)
+				ids = append(ids, info.Id)
+			}
+			timeStart := time.Now().Unix()
+			if data, err := ModelDoc.GetDocForElasticSearch(ids...); err != nil {
+				helper.Logger.Error("批量生成索引失败：" + err.Error())
+			} else {
+				if err := this.BuildIndexByBuck(data); err != nil {
+					helper.Logger.Error("批量生成索引失败：" + err.Error())
 				}
 			}
+			timeEnd := time.Now().Unix()
+			//如果生成/更新索引耗时超过默认超时时间的一半，则休眠一小段时间，避免由于生成索引导致服务器负载过高，从而影响整站服务
+			if spend := timeEnd - timeStart; spend > int64(this.Timeout)/2 {
+				time.Sleep(time.Duration(spend) * time.Second)
+			}
 		}
+
 	}
 }
 
@@ -347,7 +355,37 @@ func (this *ElasticSearchClient) BuildIndexById(id int) (err error) {
 	if es, errES := ModelDoc.GetDocForElasticSearch(id); errES != nil {
 		err = errES
 	} else {
-		err = this.BuildIndex(es)
+		//基本只会有一项
+		for _, item := range es {
+			err = this.BuildIndex(item)
+		}
+	}
+	return
+}
+
+//通过bulk，批量创建/更新索引
+func (this *ElasticSearchClient) BuildIndexByBuck(data []ElasticSearchData) (err error) {
+	var bodySlice []string
+	if len(data) > 0 {
+		for _, item := range data {
+			action := fmt.Sprintf(`{"index":{"_index":"%v","_type":"%v","_id":%v}}`, this.Index, this.Type, item.Id)
+			bodySlice = append(bodySlice, action)
+			bodySlice = append(bodySlice, util.InterfaceToJson(item))
+		}
+		api := this.Host + "_bulk"
+		body := strings.Join(bodySlice, "\n") + "\n"
+		if helper.Debug {
+			helper.Logger.Info("批量更新索引请求体")
+			helper.Logger.Info(body)
+		}
+		if resp, errResp := this.post(api).Body(body).Response(); errResp != nil {
+			err = errResp
+		} else {
+			if resp.StatusCode >= http.StatusMultipleChoices || resp.StatusCode < http.StatusOK {
+				b, _ := ioutil.ReadAll(resp.Body)
+				err = errors.New(resp.Status + "；" + string(b))
+			}
+		}
 	}
 	return
 }
@@ -379,6 +417,8 @@ func (this *ElasticSearchClient) BuildIndex(es ElasticSearchData) (err error) {
 }
 
 //查询索引量
+//@return           count           统计数据
+//@return           err             错误
 func (this *ElasticSearchClient) Count() (count int, err error) {
 	if !this.On {
 		err = errors.New("未启用ElasticSearch")

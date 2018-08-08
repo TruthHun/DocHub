@@ -10,6 +10,8 @@ import (
 
 	"errors"
 
+	"strconv"
+
 	"github.com/astaxie/beego/orm"
 )
 
@@ -699,7 +701,7 @@ func (this *Document) TplSimpleList(chinelid interface{}) []orm.Params {
 
 //根据id查询搜索数据结构
 //@param            id         根据id查询搜索文档
-func (this *Document) GetDocForElasticSearch(id int) (es ElasticSearchData, err error) {
+func (this *Document) GetDocForElasticSearch(id ...int) (es []ElasticSearchData, err error) {
 	var (
 		sql    string
 		params []orm.Params
@@ -715,24 +717,34 @@ func (this *Document) GetDocForElasticSearch(id int) (es ElasticSearchData, err 
 		"d":  {"Title", "Description", "Keywords"},
 		"ds": {"Page", "Size", "ExtNum DocType", "Id DsId"},
 	}
-	listRows := 1
-	if sql, err = LeftJoinSqlBuild(tables, on, fields, 1, listRows, nil, nil, fmt.Sprintf("i.Status>=0 and i.Id = %v", id)); err == nil {
+	listRows := len(id)
+	if listRows == 0 {
+		err = errors.New("请至少传递一个文档Id")
+		return
+	}
+	var idSlice []string
+	for _, v := range id {
+		idSlice = append(idSlice, strconv.Itoa(v))
+	}
+	if sql, err = LeftJoinSqlBuild(tables, on, fields, 1, listRows, nil, nil, fmt.Sprintf("i.Status>=0 and i.Id in(%v)", strings.Join(idSlice, ","))); err == nil {
 		if num, err = O.Raw(sql).Values(&params); num > 0 {
-			es = ElasticSearchData{
-				Id:          helper.Interface2Int(params[0]["Id"]),
-				Title:       params[0]["Title"].(string),
-				Keywords:    params[0]["Keywords"].(string),
-				Description: params[0]["Description"].(string),
-				Vcnt:        helper.Interface2Int(params[0]["Vcnt"]),
-				Ccnt:        helper.Interface2Int(params[0]["Ccnt"]),
-				Dcnt:        helper.Interface2Int(params[0]["Dcnt"]),
-				Score:       helper.Interface2Int(params[0]["Score"]),
-				Size:        helper.Interface2Int(params[0]["Size"]),
-				Page:        helper.Interface2Int(params[0]["Page"]),
-				DocType:     helper.Interface2Int(params[0]["DocType"]),
-				DsId:        helper.Interface2Int(params[0]["DsId"]),
-				Price:       helper.Interface2Int(params[0]["Price"]),
-				TimeCreate:  helper.Interface2Int(params[0]["TimeCreate"]),
+			for _, param := range params {
+				es = append(es, ElasticSearchData{
+					Id:          helper.Interface2Int(param["Id"]),
+					Title:       param["Title"].(string),
+					Keywords:    param["Keywords"].(string),
+					Description: param["Description"].(string),
+					Vcnt:        helper.Interface2Int(param["Vcnt"]),
+					Ccnt:        helper.Interface2Int(param["Ccnt"]),
+					Dcnt:        helper.Interface2Int(param["Dcnt"]),
+					Score:       helper.Interface2Int(param["Score"]),
+					Size:        helper.Interface2Int(param["Size"]),
+					Page:        helper.Interface2Int(param["Page"]),
+					DocType:     helper.Interface2Int(param["DocType"]),
+					DsId:        helper.Interface2Int(param["DsId"]),
+					Price:       helper.Interface2Int(param["Price"]),
+					TimeCreate:  helper.Interface2Int(param["TimeCreate"]),
+				})
 			}
 		}
 	}
