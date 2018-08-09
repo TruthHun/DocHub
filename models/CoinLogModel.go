@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/astaxie/beego/orm"
+)
 
 //金币变更日志
 type CoinLog struct {
@@ -11,11 +15,19 @@ type CoinLog struct {
 	TimeCreate int    `orm:"column(TimeCreate)"`              //记录变更时间
 }
 
+func NewCoinLog() *CoinLog {
+	return &CoinLog{}
+}
+
+func GetTableCoinLog() string {
+	return getTable("coin_log")
+}
+
 //记录金币记录变更情况，会自动对用户的金币做变更
 //@param                log             日志对象
 //@return               err             错误，nil表示true，否则表示false
 func (this *CoinLog) LogRecord(log CoinLog) (err error) {
 	log.TimeCreate = int(time.Now().Unix())
-	_, err = O.Insert(&log)
+	_, err = orm.NewOrm().Insert(&log)
 	return
 }

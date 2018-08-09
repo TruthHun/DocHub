@@ -13,6 +13,14 @@ type Report struct {
 	TimeUpdate int  `orm:"column(TimeUpdate);default(0)"` //举报处理时间
 }
 
+func NewReport() *Report {
+	return &Report{}
+}
+
+func GetTableReport() string {
+	return getTable("report")
+}
+
 // 不良信息举报多字段唯一索引
 func (this *Report) TableUnique() [][]string {
 	return [][]string{
@@ -23,7 +31,7 @@ func (this *Report) TableUnique() [][]string {
 //获取未删除的举报数据列表
 func (this *Report) Lists(p, listRows int) (params []orm.Params, rows int64, err error) {
 	var sql string
-	tables := []string{TableReport + " r", TableUser + " u", TableDoc + " d"}
+	tables := []string{GetTableReport() + " r", GetTableUser() + " u", GetTableDocument() + " d"}
 	on := []map[string]string{
 		{"r.Did": "d.Id"},
 		{"r.Uid": "u.Id"},
@@ -34,7 +42,7 @@ func (this *Report) Lists(p, listRows int) (params []orm.Params, rows int64, err
 		"u": {"Username"},
 	}
 	if sql, err = LeftJoinSqlBuild(tables, on, fields, p, listRows, []string{"r.Status asc", "r.Id desc"}, nil, "r.Status>-1"); err == nil {
-		rows, err = O.Raw(sql).Values(&params)
+		rows, err = orm.NewOrm().Raw(sql).Values(&params)
 	}
 	return
 }

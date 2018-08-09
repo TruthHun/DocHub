@@ -3,6 +3,8 @@ package models
 import (
 	"fmt"
 	"strings"
+
+	"github.com/astaxie/beego/orm"
 )
 
 //系统设置表
@@ -40,12 +42,20 @@ type Sys struct {
 	//Price             int    `orm:"default(1);column(Price)"`                            //会员下载一篇文档需要的最大金币【会员在上传分享文档时允许设置的最大金币上限】
 }
 
+func NewSys() *Sys {
+	return &Sys{}
+}
+
+func GetTableSys() string {
+	return getTable("sys")
+}
+
 //获取系统配置信息。注意：系统配置信息的记录只有一条，而且id主键为1
 //@return           sys         返回的系统信息
 //@return           err         错误
 func (this *Sys) Get() (sys Sys, err error) {
 	sys.Id = 1
-	err = O.Read(&sys)
+	err = orm.NewOrm().Read(&sys)
 	return
 }
 
@@ -60,7 +70,7 @@ func (this *Sys) UpdateGlobal() {
 //@param			field			需要查询的字段
 //@return			sys				系统配置信息
 func (this *Sys) GetByField(field string) (sys Sys) {
-	O.QueryTable(TableSys).Filter("Id", 1).One(&sys, field)
+	orm.NewOrm().QueryTable(GetTableSys()).Filter("Id", 1).One(&sys, field)
 	return
 }
 

@@ -31,73 +31,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-//Ormer对象
-var O orm.Ormer
-
 //注意一下，varchar最多能存储65535个字符
-
-//以下是数据表model对象
-var (
-	ModelAdmin         = new(Admin)           //管理员表
-	ModelAd            = new(Ad)              //广告内容表
-	ModelAdPosition    = new(AdPosition)      //广告位
-	ModelCollectFolder = new(CollectFolder)   //收藏夹
-	ModelBanner        = new(Banner)          //banner
-	ModelCategory      = new(Category)        //分类
-	ModelCoinLog       = new(CoinLog)         //金币记录
-	ModelCollect       = new(Collect)         //收藏内容
-	ModelDoc           = new(Document)        //文档
-	ModelDocInfo       = new(DocumentInfo)    //文档数据信息
-	ModelDocStore      = new(DocumentStore)   //文档存储
-	ModelDocRecycle    = new(DocumentRecycle) //回收站
-	ModelDocRemark     = new(DocumentRemark)  //文档备注
-	ModelDocIllegal    = new(DocumentIllegal) //非法文档
-	ModelDocComment    = new(DocumentComment) //文档评论
-	ModelFriend        = new(Friend)          //友链
-	ModelPages         = new(Pages)           //单页
-	ModelRelate        = new(Relate)          //相关文档
-	ModelReport        = new(Report)          //举报
-	ModelSeo           = new(Seo)             //SEO
-	ModelSign          = new(Sign)            //签到
-	ModelSuggest       = new(Suggest)         //建议
-	ModelSys           = new(Sys)             //系统
-	ModelUser          = new(User)            //用户
-	ModelUserInfo      = new(UserInfo)        //用户信息
-	ModelWord          = new(Word)            //关键字
-	ModelFreeDown      = new(FreeDown)        //免费下载，如果文档时收费下载，则用户下载第一次之后，在一定的时间范围内，再次下载则免费
-	ModelSearchLog     = new(SearchLog)       //搜索日志
-	ModelDocText       = new(DocText)         //文档文本内容
-	ModelCrawlWords    = new(CrawlWords)      //采集关键字
-	ModelCrawlFiles    = new(CrawlFiles)      //采集文件的信息
-	ModelGitbook       = new(Gitbook)         //Gitbook文档信息存储表
-	ModelConfig        = new(Config)          //配置
-)
-
-//以下是数据表
-var (
-	TableUser          = GetTable("user")
-	TableUserInfo      = GetTable("user_info")
-	TableCollect       = GetTable("collect")
-	TableCollectFolder = GetTable("collect_folder")
-	TableSeo           = GetTable("seo")
-	TableSearchLog     = GetTable("search_log")
-	TablePages         = GetTable("pages")
-	TableReport        = GetTable("report")
-	TableDocInfo       = GetTable("document_info")
-	TableDoc           = GetTable("document")
-	TableDocText       = GetTable("doc_text")
-	TableDocStore      = GetTable("document_store")
-	TableCategory      = GetTable("category")
-	TableFreeDown      = GetTable("free_down")
-	TableWord          = GetTable("word")
-	TableDocIllegal    = GetTable("document_illegal")
-	TableDocComment    = GetTable("document_comment")
-	TableDocRecycle    = GetTable("document_recycle")
-	TableDocRemark     = GetTable("document_remark")
-	TableSys           = GetTable("sys")
-	TableGitbook       = GetTable("gitbook")
-	TableConfig        = GetTable("config")
-)
 
 //以下是数据库全局数据变量
 var (
@@ -108,11 +42,12 @@ var (
 
 //以下是表字段查询
 var Fields = map[string]map[string]string{
-	TableUser:     helper.StringSliceToMap(GetFields(ModelUser)),
-	TableUserInfo: helper.StringSliceToMap(GetFields(ModelUserInfo)),
+	GetTableUser():     helper.StringSliceToMap(GetFields(NewUser())),
+	GetTableUserInfo(): helper.StringSliceToMap(GetFields(NewUserInfo())),
 }
 
 func init() {
+	//如果存在app.conf文件，则表示程序已安装，执行数据库初始化
 	if helper.IsInstalled {
 		Init()
 	}
@@ -130,7 +65,6 @@ func Init() {
 		orm.Debug = true
 		orm.RunSyncdb("default", false, true)
 	}
-	O = orm.NewOrm()
 
 	//安装初始数据
 	install()
@@ -140,39 +74,36 @@ func Init() {
 func RegisterDB() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	models := []interface{}{
-		ModelUser,
-		ModelUserInfo,
-		ModelAdmin,
-		ModelCategory,
-		ModelDoc,
-		ModelDocInfo,
-		ModelDocStore,
-		ModelDocRecycle,
-		ModelDocIllegal,
-		ModelDocComment,
-		ModelBanner,
-		ModelRelate,
-		ModelCollectFolder,
-		ModelCollect,
-		ModelAdPosition,
-		ModelAd,
-		ModelFriend,
-		ModelSys,
-		ModelWord,
-		ModelSeo,
-		ModelPages,
-		ModelSign,
-		ModelCoinLog,
-		ModelReport,
-		ModelSuggest,
-		ModelDocRemark,
-		ModelFreeDown,
-		ModelSearchLog,
-		ModelDocText,
-		ModelCrawlWords,
-		ModelCrawlFiles,
-		ModelGitbook,
-		ModelConfig,
+		NewUser(),
+		NewUserInfo(),
+		NewAdmin(),
+		NewCategory(),
+		NewDocument(),
+		NewDocumentInfo(),
+		NewDocumentStore(),
+		NewDocumentRecycle(),
+		NewDocumentIllegal(),
+		NewDocumentComment(),
+		NewBanner(),
+		NewRelate(),
+		NewCollectFolder(),
+		NewCollect(),
+		NewAdPosition(),
+		NewAd(),
+		NewFriend(),
+		NewSys(),
+		NewWord(),
+		NewSeo(),
+		NewPages(),
+		NewSign(),
+		NewCoinLog(),
+		NewReport(),
+		NewSuggest(),
+		NewDocumentRemark(),
+		NewFreeDown(),
+		NewSearchLog(),
+		NewDocText(),
+		NewConfig(),
 	}
 	orm.RegisterModelWithPrefix(beego.AppConfig.DefaultString("db::prefix", "hc_"), models...)
 	db_user := beego.AppConfig.String("db::user")
@@ -207,7 +138,7 @@ func RegisterDB() {
 
 //获取带表前缀的数据表
 //@param            table               数据表
-func GetTable(table string) string {
+func getTable(table string) string {
 	prefix := beego.AppConfig.DefaultString("db::prefix", "hc_")
 	return prefix + strings.TrimPrefix(table, prefix)
 }
@@ -218,7 +149,7 @@ func GetTable(table string) string {
 //@return           affected                影响的记录数
 //@return           err                     错误
 func DelByIds(table string, id ...interface{}) (affected int64, err error) {
-	return O.QueryTable(GetTable(table)).Filter("Id__in", id...).Delete()
+	return orm.NewOrm().QueryTable(table).Filter("Id__in", id...).Delete()
 }
 
 //根据指定的表和id条件更新表字段，不支持批量更新
@@ -229,7 +160,7 @@ func DelByIds(table string, id ...interface{}) (affected int64, err error) {
 //@return           affected                影响的记录数
 //@return           err                     错误
 func UpdateByIds(table string, field string, value interface{}, id ...interface{}) (affected int64, err error) {
-	return O.QueryTable(GetTable(table)).Filter("Id__in", id...).Update(orm.Params{
+	return orm.NewOrm().QueryTable(table).Filter("Id__in", id...).Update(orm.Params{
 		field: value,
 	})
 }
@@ -242,7 +173,7 @@ func UpdateByIds(table string, field string, value interface{}, id ...interface{
 //@return           affected                影响的记录数
 //@return           err                     错误
 func UpdateByField(table string, data map[string]interface{}, filter string, filterValue ...interface{}) (affected int64, err error) {
-	return O.QueryTable(GetTable(table)).Filter(filter, filterValue...).Update(data)
+	return orm.NewOrm().QueryTable(table).Filter(filter, filterValue...).Update(data)
 }
 
 //设置字段值减小
@@ -253,17 +184,16 @@ func UpdateByField(table string, data map[string]interface{}, filter string, fil
 //@param                conditionArgs   查询条件参数
 //@return               err             返回错误
 func Regulate(table, field string, step int, condition string, conditionArgs ...interface{}) (err error) {
-	table = GetTable(table) //表处理
-	mark := "+"             //符号
-	if step < 0 {           //步长处理
+	mark := "+"   //符号
+	if step < 0 { //步长处理
 		step = -step
 		mark = "-"
 	}
 	sql := fmt.Sprintf("update %v set %v=%v%v? where %v", table, field, field, mark, condition)
 	if len(conditionArgs) > 0 {
-		_, err = O.Raw(sql, step, conditionArgs[0:]).Exec()
+		_, err = orm.NewOrm().Raw(sql, step, conditionArgs[0:]).Exec()
 	} else {
-		_, err = O.Raw(sql, step).Exec()
+		_, err = orm.NewOrm().Raw(sql, step).Exec()
 	}
 	return err
 }
@@ -278,7 +208,7 @@ func Regulate(table, field string, step int, condition string, conditionArgs ...
 //@return           rows            返回的记录数
 //@return           err             错误
 func GetList(table string, p, listRows int, condition *orm.Condition, orderby ...string) (params []orm.Params, rows int64, err error) {
-	rows, err = O.QueryTable(GetTable(table)).SetCond(condition).Limit(listRows).Offset((p - 1) * listRows).OrderBy(orderby...).Values(&params)
+	rows, err = orm.NewOrm().QueryTable(table).SetCond(condition).Limit(listRows).Offset((p - 1) * listRows).OrderBy(orderby...).Values(&params)
 	return params, rows, err
 }
 
@@ -339,7 +269,7 @@ func Search(wd, sourceType, order string, p, listRows, accuracy int) (res Result
 	res.Word = []string{wd}
 	res.Msg = "ok"
 	res.Status = 1
-	qs := O.QueryTable(TableDoc).Filter("Title__icontains", wd)
+	qs := orm.NewOrm().QueryTable(GetTableDocument()).Filter("Title__icontains", wd)
 	if res.Total, _ = qs.Count(); res.Total > 0 {
 		var (
 			docs []Document
@@ -363,7 +293,7 @@ func Search(wd, sourceType, order string, p, listRows, accuracy int) (res Result
 //@param            p           页码
 //@param            listRows    每页显示记录数
 func SearchByMysql(wd, sourceType, order string, p, listRows int) (data []orm.Params, total int64) {
-	tables := []string{TableDocInfo + " i", TableDoc + " d", TableDocStore + " ds"}
+	tables := []string{GetTableDocumentInfo() + " i", GetTableDocument() + " d", GetTableDocumentStore() + " ds"}
 	on := []map[string]string{
 		{"i.Id": "d.Id"},
 		{"i.DsId": "ds.Id"},
@@ -411,12 +341,12 @@ func SearchByMysql(wd, sourceType, order string, p, listRows int) (data []orm.Pa
 	if ExtNum > 0 {
 		cond = cond + " and ds.ExtNum=" + strconv.Itoa(ExtNum)
 	}
-
+	o := orm.NewOrm()
 	//数量统计
 	if sql, err := LeftJoinSqlBuild(tables, on, map[string][]string{"i": []string{"Count"}}, 1, 100000000, nil, []string{"i.DsId"}, cond); err == nil {
 		sql = strings.Replace(sql, "i.Count", "count(d.Id) cnt", -1)
 		var params []orm.Params
-		O.Raw(sql, "%"+wd+"%").Values(&params)
+		o.Raw(sql, "%"+wd+"%").Values(&params)
 		if len(params) > 0 {
 			total, _ = strconv.ParseInt(params[0]["cnt"].(string), 10, 64)
 		}
@@ -430,7 +360,7 @@ func SearchByMysql(wd, sourceType, order string, p, listRows int) (data []orm.Pa
 	//数据查询
 	if sql, err := LeftJoinSqlBuild(tables, on, fields, p, listRows, orderBy, []string{"i.DsId"}, cond); err == nil {
 		helper.Logger.Debug(sql, wd)
-		O.Raw(sql, "%"+wd+"%").Values(&data)
+		o.Raw(sql, "%"+wd+"%").Values(&data)
 	} else {
 		helper.Logger.Error(err.Error())
 		helper.Logger.Debug(sql, wd)
@@ -564,7 +494,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	//compress := beego.AppConfig.DefaultBool("compressSvg", false) //是否压缩svg
 	compress := true                            //强制为true
 	content = helper.ExtractPdfText(file, 1, 5) //提取前5页的PDF文本内容
-	watermarkText := ModelSys.GetByField("Watermark").Watermark
+	watermarkText := NewSys().GetByField("Watermark").Watermark
 	//处理pdf转svg
 	for i := 0; i < totalPage; i++ {
 		num := i + 1
@@ -584,7 +514,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 				}
 				//获取svg的宽高(pt)
 				width, height = helper.ParseSvgWidthAndHeight(svgfile)
-				if _, err := UpdateByField(TableDocStore, map[string]interface{}{"Width": width, "Height": height}, "Md5", md5str); err != nil {
+				if _, err := UpdateByField(GetTableDocumentStore(), map[string]interface{}{"Width": width, "Height": height}, "Md5", md5str); err != nil {
 					helper.Logger.Error(err.Error())
 				}
 			}
@@ -602,7 +532,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 		content = helper.SubStr(content, 0, 4800)
 	}
 	var docText = DocText{Md5: md5str, Content: content}
-	if _, _, err := O.ReadOrCreate(&docText, "Md5"); err != nil {
+	if _, _, err := orm.NewOrm().ReadOrCreate(&docText, "Md5"); err != nil {
 		helper.Logger.Error(err.Error())
 	}
 
@@ -646,14 +576,13 @@ func ReplaceInto(table string, params map[string]interface{}) (err error) {
 		sql    string
 	)
 	if len(params) > 0 {
-		table = GetTable(table)
 		for field, value := range params {
 			fields = append(fields, field)
 			values = append(values, value)
 		}
 		marks := make([]string, len(values)+1)
 		sql = fmt.Sprintf("REPLACE INTO `%v`(`%v`) VALUES (%v)", table, strings.Join(fields, "`,`"), strings.Join(marks, "?"))
-		_, err = O.Raw(sql, values...).Exec()
+		_, err = orm.NewOrm().Raw(sql, values...).Exec()
 	} else {
 		err = errors.New("需要写入的数据不能为空")
 	}
@@ -665,7 +594,7 @@ func ReplaceInto(table string, params map[string]interface{}) (err error) {
 //@param            cond            查询条件
 //@return           cnt             统计的记录数
 func Count(table string, cond *orm.Condition) (cnt int64) {
-	cnt, _ = O.QueryTable(GetTable(table)).SetCond(cond).Count()
+	cnt, _ = orm.NewOrm().QueryTable(table).SetCond(cond).Count()
 	return
 }
 
@@ -733,7 +662,7 @@ func DoesCollect(did, uid int) bool {
 	}
 	var params []orm.Params
 	sql := fmt.Sprintf("select c.Id from %v cf left join %v c on c.cid=cf.id where c.Did=? and cf.Uid=? limit 1", TableCollectFolder, TableCollect)
-	rows, err := O.Raw(sql, did, uid).Values(&params)
+	rows, err := orm.NewOrm().Raw(sql, did, uid).Values(&params)
 	if err != nil {
 		helper.Logger.Error(err.Error())
 	}

@@ -2,9 +2,9 @@ package models
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/TruthHun/DocHub/helper"
+	"github.com/astaxie/beego/orm"
 )
 
 //文档分类
@@ -18,6 +18,14 @@ type Category struct {
 	Status bool   `orm:"default(true);column(Status)"`     //分类或频道状态，0表示关闭，1表示启用
 }
 
+func NewCategory() *Category {
+	return &Category{}
+}
+
+func GetTableCategory() string {
+	return getTable("category")
+}
+
 // 多字段唯一索引
 func (this *Category) TableUnique() [][]string {
 	return [][]string{
@@ -29,8 +37,8 @@ func (this *Category) TableUnique() [][]string {
 //@param                id              主键id
 //@return               title           返回查询的标题名称
 func (this *Category) GetTitleById(id interface{}) (title string) {
-	O.Raw(fmt.Sprintf("select `Title` from `%v` where `Id`=? limit 1", TableCategory), id).QueryRow(&title)
-	return title
+	orm.NewOrm().QueryTable(GetTableCategory()).Filter("Id", id).One(this, "Title")
+	return this.Title
 }
 
 //根据id删除分类
@@ -41,7 +49,7 @@ func (this *Category) Del(id ...interface{}) (err error) {
 		cate     Category
 		affected int64
 	)
-	qs := O.QueryTable(TableCategory)
+	qs := orm.NewOrm().QueryTable(GetTableCategory())
 	if qs.Filter("Pid__in", id...).One(&cate); cate.Id > 0 {
 		return errors.New("删除失败：当前分类存在子分类。")
 	}
@@ -55,8 +63,9 @@ func (this *Category) Del(id ...interface{}) (err error) {
 //@param                id              当前同级分类的id
 //@return               cates           分类列表数据
 func (this *Category) GetSameLevelCategoryById(id interface{}) (cates []Category) {
-	var cate = Category{Id: helper.Interface2Int(id)}
-	O.Read(&cate)
-	O.QueryTable(GetTable("category")).Filter("Pid", cate.Pid).All(&cates)
-	return cates
+	cate := Category{Id: helper.Interface2Int(id)}
+	o := orm.NewOrm()
+	o.Read(&cate)
+	o.QueryTable(GetTableCategory()).Filter("Pid", cate.Pid).All(&cates)
+	return
 }

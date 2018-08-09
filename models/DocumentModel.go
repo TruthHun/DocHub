@@ -12,6 +12,7 @@ import (
 
 	"strconv"
 
+	"github.com/TruthHun/BookStack/models"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -22,6 +23,14 @@ type Document struct {
 	Filename    string `orm:"size(255);default();column(Filename)"`    //文件名[文件的原文件名]
 	Keywords    string `orm:"size(255);default();column(Keywords)"`    //文档标签、关键字
 	Description string `orm:"size(255);default();column(Description)"` //文档摘要
+}
+
+func NewDocument() *Document {
+	return &Document{}
+}
+
+func GetTableDocument() string {
+	return getTable("document")
 }
 
 //文档信息表
@@ -43,6 +52,14 @@ type DocumentInfo struct {
 	Status      int8 `orm:"default(0);column(Status)"`         //文档资源状态，1正常，0文档未转换成功，-1删除，同时把id录入文档回收站id，-2表示删除了文档文件，但是数据库记录还保留。同时后台也看不到该记录
 }
 
+func NewDocumentInfo() *DocumentInfo {
+	return &DocumentInfo{}
+}
+
+func GetTableDocumentInfo() string {
+	return getTable("document_info")
+}
+
 //文档存档表[供预览的文档存储在文档预览的OSS，完整文档存储在存储表]
 type DocumentStore struct {
 	Id          int    `orm:"column(Id)"`
@@ -59,28 +76,44 @@ type DocumentStore struct {
 	Height      int    `orm:"default(0);column(Height)"`               //svg的原始高度
 }
 
+func NewDocumentStore() *DocumentStore {
+	return &DocumentStore{}
+}
+
+func GetTableDocumentStore() string {
+	return getTable("document_store")
+}
+
 //非法文档(侵权或不良信息文档)MD5记录表
 type DocumentIllegal struct {
 	Id  int    `orm:"column(Id)"`                            //文档id
 	Md5 string `orm:"size(32);unique;default();column(Md5)"` //文档md5
 }
 
+func NewDocumentIllegal() *DocumentIllegal {
+	return &DocumentIllegal{}
+}
+
+func GetTableDocumentIllegal() string {
+	return getTable("document_illegal")
+}
+
 //文档录入文档存档表
-//@param            ds              DocumentStore           文档存储结构对象
-//@return                           int64                   存储id
-//@return                           error                   错误
-func (this *Document) InsertDocStore(ds *DocumentStore) (int64, error) {
-	return O.Insert(&ds)
+//@param            ds                   文档存储结构对象
+//@return           id                   存储id
+//@return           err                  错误
+func (this *Document) InsertDocStore(ds *DocumentStore) (id int64, err error) {
+	return orm.NewOrm().Insert(&ds)
 }
 
 //文档存入文档表
 func (this *Document) InsertDoc(doc *Document) (int64, error) {
-	return O.Insert(&doc)
+	return orm.NewOrm().Insert(&doc)
 }
 
 //文档信息录入文档信息表
 func (this *Document) InsertDocInfo(info *DocumentInfo) (int64, error) {
-	return O.Insert(&info)
+	return orm.NewOrm().Insert(&info)
 }
 
 //根据md5判断文档是否是非法文档，如果是非法文档，则返回true
@@ -88,7 +121,7 @@ func (this *Document) InsertDocInfo(info *DocumentInfo) (int64, error) {
 //@return               bool            如果文档存在于非法文档表中，则表示文档非法，否则合法
 func (this *Document) IsIllegal(md5 string) bool {
 	var ilg DocumentIllegal
-	if O.QueryTable(TableDocIllegal).Filter("Md5", md5).One(&ilg); ilg.Id > 0 {
+	if orm.NewOrm().QueryTable(GetTableDocumentIllegal()).Filter("Md5", md5).One(&ilg); ilg.Id > 0 {
 		return true
 	}
 	return false
@@ -99,7 +132,7 @@ func (this *Document) IsIllegal(md5 string) bool {
 //@return               bool            如果文档存在于非法文档表中，则表示文档非法，否则合法
 func (this *Document) IsIllegalById(id interface{}) bool {
 	var ilg DocumentIllegal
-	if O.QueryTable(TableDocIllegal).Filter("Id", id).One(&ilg); ilg.Id > 0 {
+	if orm.NewOrm().QueryTable(GetTableDocumentIllegal()).Filter("Id", id).One(&ilg); ilg.Id > 0 {
 		return true
 	}
 	return false
@@ -112,12 +145,12 @@ func (this *Document) IsIllegalById(id interface{}) bool {
 //@return               err             错误
 func (this *Document) GetById(id interface{}) (params orm.Params, rows int64, err error) {
 	var data []orm.Params
-	tables := []string{TableDocInfo + " info", TableDoc + " doc", TableDocStore + " ds", TableUser + " u"}
+	tables := []string{GetTableDocumentInfo() + " info", GetTableDocument() + " doc", GetTableDocumentStore() + " ds", GetTableUser() + " u"}
 	fields := map[string][]string{
-		"ds":   GetFields(ModelDocStore),
-		"info": GetFields(ModelDocInfo),
+		"ds":   GetFields(NewDocumentStore()),
+		"info": GetFields(NewDocumentInfo()),
 		"u":    {"Username", "Id Uid"},
-		"doc":  GetFields(ModelDoc),
+		"doc":  GetFields(NewDocument()),
 	}
 	on := []map[string]string{
 		{"ds.Id": "info.DsId"},
@@ -125,7 +158,7 @@ func (this *Document) GetById(id interface{}) (params orm.Params, rows int64, er
 		{"u.Id": "info.Uid"},
 	}
 	if sql, err := LeftJoinSqlBuild(tables, on, fields, 1, 1, nil, nil, "info.Id=?"); err == nil {
-		if rows, err = O.Raw(sql, id).Values(&data); len(data) > 0 {
+		if rows, err = orm.NewOrm().Raw(sql, id).Values(&data); len(data) > 0 {
 			params = data[0]
 		}
 	}
@@ -157,8 +190,8 @@ func (this *Document) SimpleList(condition string, limit int, orderField ...stri
 	left join %v ds on ds.Id=di.DsId
 	where %v group by d.Title order by di.%v desc limit %v
 	`
-	sql := fmt.Sprintf(sql_format, fields, TableDoc, TableDocInfo, TableDocStore, condition, order, limit)
-	rows, err = O.Raw(sql).Values(&params)
+	sql := fmt.Sprintf(sql_format, fields, GetTableDocument(), GetTableDocumentInfo(), GetTableDocumentStore(), condition, order, limit)
+	rows, err = orm.NewOrm().Raw(sql).Values(&params)
 	return params, rows, err
 }
 
@@ -167,14 +200,14 @@ func (this *Document) SimpleList(condition string, limit int, orderField ...stri
 //@return               Id                  文档存储表的id
 func (this *Document) IsExistByMd5(md5str string) (Id int) {
 	var ds DocumentStore
-	O.QueryTable(TableDocStore).Filter("Md5", md5str).One(&ds)
+	orm.NewOrm().QueryTable(GetTableDocumentStore()).Filter("Md5", md5str).One(&ds)
 	return ds.Id
 }
 
 //处理已经存在了的文档
 func HandleExistDoc(uid int, form FormUpload) error {
 	var ds DocumentStore
-	err := O.QueryTable(GetTable("document_store")).Filter("Md5", form.Md5).One(&ds)
+	err := orm.NewOrm().QueryTable(GetTableDocumentStore()).Filter("Md5", form.Md5).One(&ds)
 	if err != nil {
 		return err
 	}
@@ -184,7 +217,7 @@ func HandleExistDoc(uid int, form FormUpload) error {
 		Keywords:    form.Tags,
 		Description: form.Intro,
 	}
-	docid, _ := O.Insert(&doc)
+	docid, _ := orm.NewOrm().Insert(&doc)
 	docinfo := DocumentInfo{
 		Uid:         uid,
 		ChanelId:    form.Chanel,
@@ -201,10 +234,10 @@ func HandleExistDoc(uid int, form FormUpload) error {
 	docinfo.Id = int(docid)
 
 	//记录关键字
-	go ModelWord.AddWords(form.Tags, docid)
+	go NewWord().AddWords(form.Tags, docid)
 
 	docinfo.DsId = ds.Id
-	i, err := O.Insert(&docinfo)
+	i, err := orm.NewOrm().Insert(&docinfo)
 	if i > 0 && err == nil {
 		DocCntInre(form.Chanel, form.Pid, form.Cid, uid)
 	}
@@ -216,7 +249,7 @@ func HandleExistDoc(uid int, form FormUpload) error {
 //@param            tmpfile         临时存储的pdf文档
 //@param            form            表单
 func HandlePdf(uid int, tmpfile string, form FormUpload) error {
-	sys, _ := ModelSys.Get()
+	sys, _ := NewSys().Get()
 	//if sys.PreviewPage < 10 {
 	//	sys.PreviewPage = 10
 	//}
@@ -264,16 +297,16 @@ func HandlePdf(uid int, tmpfile string, form FormUpload) error {
 		Price:       form.Price,
 	}
 	//docinfo.Id,docinfo.DsId
-	if _, id, err := O.ReadOrCreate(&ds, "Md5"); err == nil {
+	if _, id, err := orm.NewOrm().ReadOrCreate(&ds, "Md5"); err == nil {
 
-		docid, err := O.Insert(&doc)
+		docid, err := orm.NewOrm().Insert(&doc)
 		docinfo.DsId = int(id)
 		if err == nil {
 			//记录关键字
-			go ModelWord.AddWords(form.Tags, docid)
+			go NewWord().AddWords(form.Tags, docid)
 
 			docinfo.Id = int(docid)
-			_, err = O.Insert(&docinfo)
+			_, err = orm.NewOrm().Insert(&docinfo)
 			if err == nil {
 				//处理pdf文档，转成svg图片，再将svg图片压缩，上传到OSS预览库
 				go func(tmpfile, md5str string, totalPage int) {
@@ -375,14 +408,14 @@ func HandleUnOffice(uid int, tmpfile string, form FormUpload) error {
 	}
 
 	//docinfo.Id,docinfo.DsId
-	if _, id, err := O.ReadOrCreate(&ds, "Md5"); err == nil {
-		docid, err := O.Insert(&doc)
+	if _, id, err := orm.NewOrm().ReadOrCreate(&ds, "Md5"); err == nil {
+		docid, err := orm.NewOrm().Insert(&doc)
 		docinfo.DsId = int(id)
 		if err == nil {
 			//记录关键字
-			go ModelWord.AddWords(form.Tags, docid)
+			go NewWord().AddWords(form.Tags, docid)
 			docinfo.Id = int(docid)
-			_, err = O.Insert(&docinfo)
+			_, err = orm.NewOrm().Insert(&docinfo)
 			if err == nil {
 				//把原文档移动到存档库
 				go NewOss().MoveToOss(tmpfile, form.Md5+"."+form.Ext, false, true)
@@ -402,13 +435,14 @@ func HandleUnOffice(uid int, tmpfile string, form FormUpload) error {
 //@param            cid         文档二级分类
 func DocCntInre(chanel, pid, cid, uid int) {
 	//文档数量和分类+1
-	Regulate(TableCategory, "Cnt", 1, "`Id` in(?,?,?)", chanel, pid, cid)
+	Regulate(GetTableCategory(), "Cnt", 1, "`Id` in(?,?,?)", chanel, pid, cid)
 	//全站文档统计+1
-	Regulate(TableSys, "CntDoc", 1, "Id=1")
+	Regulate(GetTableSys(), "CntDoc", 1, "Id=1")
 	//用户文档数量+1
-	Regulate(TableUserInfo, "Document", 1, "Id=?", uid)
+	Regulate(GetTableUserInfo(), "Document", 1, "Id=?", uid)
 }
 
+//TODO:改成GetDocList
 //获取文档列表，其中status不传时，表示获取全部状态的文档，否则获取指定状态的文档，status:-1已删除，0转码中，1已转码
 //排序order全部按倒叙排序，默认是按id倒叙排序，可选值：Id,Dcnt(下载),Vcnt(浏览),Ccnt(收藏)
 func DocList(uid, chanelid, pid, cid, p, listRows int, order string, status ...int) ([]orm.Params, int64, error) {
@@ -469,16 +503,16 @@ func DocList(uid, chanelid, pid, cid, p, listRows int, order string, status ...i
 		`
 	sql := fmt.Sprintf(sql_format,
 		fields,
-		GetTable("document_info"),
-		GetTable("user"),
-		GetTable("document"),
-		GetTable("category"),
-		GetTable("document_store"),
+		GetTableDocumentInfo(),
+		GetTableUser(),
+		GetTableDocument(),
+		GetTableCategory(),
+		models.TableDocumentStore,
 		condStr,
 		order,
 		(p-1)*listRows, listRows,
 	)
-	rows, err := O.Raw(sql, args...).Values(&data)
+	rows, err := orm.NewOrm().Raw(sql, args...).Values(&data)
 	return data, rows, err
 }
 
@@ -490,8 +524,8 @@ func (this *Document) SoftDel(uid int, isAdmin bool, ids ...interface{}) (err er
 	if len(ids) == 0 {
 		return errors.New("文档id不能为空")
 	}
-	if O.QueryTable(TableDocInfo).Filter("Id__in", ids...).All(&info); len(info) > 0 {
-		O.QueryTable(TableDocInfo).Filter("Id__in", ids...).Update(orm.Params{"Status": -1})
+	if orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).All(&info); len(info) > 0 {
+		orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).Update(orm.Params{"Status": -1})
 	}
 	return nil
 }
@@ -507,7 +541,7 @@ func (this *Document) DocDeepDel(ids ...interface{}) (errs []string) {
 	)
 
 	//查询现有的文档
-	if _, err := O.QueryTable(TableDocInfo).Filter("Id__in", ids...).All(&DocInfo); err != nil {
+	if _, err := orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).All(&DocInfo); err != nil {
 		helper.Logger.Error(err.Error())
 		errs = append(errs, err.Error())
 	}
@@ -521,13 +555,13 @@ func (this *Document) DocDeepDel(ids ...interface{}) (errs []string) {
 	if len(DsId) > 0 {
 
 		//根据DsId查询所有DocumentStore表中的数据
-		if _, err := O.QueryTable(TableDocStore).Filter("Id__in", DsId...).All(&DocStore); err != nil {
+		if _, err := orm.NewOrm().QueryTable(GetTableDocumentStore()).Filter("Id__in", DsId...).All(&DocStore); err != nil {
 			helper.Logger.Error(err.Error())
 			errs = append(errs, err.Error())
 		}
 
 		//清空document_store表中的数据
-		if _, err := O.QueryTable(TableDocStore).Filter("Id__in", DsId...).Delete(); err != nil {
+		if _, err := orm.NewOrm().QueryTable(GetTableDocumentStore()).Filter("Id__in", DsId...).Delete(); err != nil {
 			helper.Logger.Error(err.Error())
 			errs = append(errs, err.Error())
 		}
@@ -536,7 +570,7 @@ func (this *Document) DocDeepDel(ids ...interface{}) (errs []string) {
 	//记录非法的md5
 	for _, store := range DocStore {
 		var docIllegal = DocumentIllegal{Id: 0, Md5: store.Md5}
-		O.Read(&docIllegal, "Md5")
+		orm.NewOrm().Read(&docIllegal, "Md5")
 		if docIllegal.Id == 0 {
 			DocIllegal = append(DocIllegal, docIllegal)
 		}
@@ -560,7 +594,7 @@ func (this *Document) DocDeepDel(ids ...interface{}) (errs []string) {
 	}
 	//录入非法文档表
 	if l := len(DocIllegal); l > 0 {
-		if _, err := O.InsertMulti(l, &DocIllegal); err != nil {
+		if _, err := orm.NewOrm().InsertMulti(l, &DocIllegal); err != nil {
 			helper.Logger.Error(err.Error())
 			errs = append(errs, err.Error())
 		}
@@ -568,28 +602,28 @@ func (this *Document) DocDeepDel(ids ...interface{}) (errs []string) {
 
 	if len(DocId) > 0 {
 		//清空回收站中的这些非法文档
-		if _, err := O.QueryTable(TableDocRecycle).Filter("Id__in", DocId...).Delete(); err != nil {
+		if _, err := orm.NewOrm().QueryTable(GetTableDocumentRecycle()).Filter("Id__in", DocId...).Delete(); err != nil {
 			helper.Logger.Error(err.Error())
 			errs = append(errs, err.Error())
 		}
 		//清空document表中的数据
-		if _, err := O.QueryTable(TableDoc).Filter("Id__in", DocId...).Delete(); err != nil {
+		if _, err := orm.NewOrm().QueryTable(GetTableDocument()).Filter("Id__in", DocId...).Delete(); err != nil {
 			helper.Logger.Error(err.Error())
 			errs = append(errs, err.Error())
 		}
 		//清空document_info表中的数据
-		if _, err := O.QueryTable(TableDocInfo).Filter("Id__in", DocId...).Delete(); err != nil {
+		if _, err := orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", DocId...).Delete(); err != nil {
 			helper.Logger.Error(err.Error())
 			errs = append(errs, err.Error())
 		}
 
 		//删除这些文档的所有评论记录
-		if _, err := O.QueryTable(TableDocComment).Filter("Did__in", DocId...).Delete(); err != nil {
+		if _, err := orm.NewOrm().QueryTable(GetTableDocumentComment()).Filter("Did__in", DocId...).Delete(); err != nil {
 			helper.Logger.Error(err.Error())
 			errs = append(errs, err.Error())
 		}
 		//处理收藏
-		go ModelCollect.DelByDocId(DocId...)
+		go NewCollect().DelByDocId(DocId...)
 	}
 
 	return errs
@@ -598,7 +632,7 @@ func (this *Document) DocDeepDel(ids ...interface{}) (errs []string) {
 //根据document_store表中的id查询document_info表中的数据
 func (this *Document) GetDocInfoByDsId(DsId ...interface{}) (info []DocumentInfo, rows int64, err error) {
 	if l := len(DsId); l > 0 {
-		rows, err = O.QueryTable(GetTable("document_info")).Limit(l).Filter("DsId__in", DsId...).All(&info)
+		rows, err = orm.NewOrm().QueryTable(GetTableDocumentInfo()).Limit(l).Filter("DsId__in", DsId...).All(&info)
 	}
 	return
 }
@@ -606,7 +640,7 @@ func (this *Document) GetDocInfoByDsId(DsId ...interface{}) (info []DocumentInfo
 //根据document_store表中的id查询document_info表中的数据
 func (this *Document) GetDocStoreByDsId(DsId ...interface{}) (store []DocumentStore, rows int64, err error) {
 	if l := len(DsId); l > 0 {
-		rows, err = O.QueryTable(TableDocStore).Limit(l).Filter("Id__in", DsId...).All(&store)
+		rows, err = orm.NewOrm().QueryTable(GetTableDocumentStore()).Limit(l).Filter("Id__in", DsId...).All(&store)
 	}
 	return
 }
@@ -614,7 +648,7 @@ func (this *Document) GetDocStoreByDsId(DsId ...interface{}) (store []DocumentSt
 //根据document_store表中的id查询document_info表中的数据
 func (this *Document) GetDocInfoById(Ids ...interface{}) (info []DocumentInfo, rows int64, err error) {
 	if len(Ids) > 0 {
-		rows, err = O.QueryTable(TableDocInfo).Limit(len(Ids)).Filter("Id__in", Ids...).All(&info)
+		rows, err = orm.NewOrm().QueryTable(GetTableDocumentInfo()).Limit(len(Ids)).Filter("Id__in", Ids...).All(&info)
 	}
 	return
 }
@@ -630,7 +664,7 @@ func (this *Document) SetIllegal(ids ...interface{}) (err error) {
 			did     []interface{} //文档id
 			stores  []DocumentStore
 		)
-		l, err = O.QueryTable(TableDocInfo).Filter("Id__in", ids...).Limit(l).All(&docinfo)
+		l, err = orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).Limit(l).All(&docinfo)
 		if l > 0 {
 			for _, v := range docinfo {
 				dsid = append(dsid, v.DsId)
@@ -640,7 +674,7 @@ func (this *Document) SetIllegal(ids ...interface{}) (err error) {
 					did = append(did, v.Id)
 				}
 				//将文档移入回收站
-				if errs := ModelDocRecycle.RemoveToRecycle(0, false, did...); len(errs) > 0 {
+				if errs := NewDocumentRecycle().RemoveToRecycle(0, false, did...); len(errs) > 0 {
 					helper.Logger.Error(strings.Join(errs, "; "))
 				}
 				//根据dsid查询文档md5，并把md5录入到非法文档表
@@ -649,7 +683,7 @@ func (this *Document) SetIllegal(ids ...interface{}) (err error) {
 						var ilg = DocumentIllegal{
 							Md5: store.Md5,
 						}
-						O.Insert(&ilg)
+						orm.NewOrm().Insert(&ilg)
 					}
 				}
 			}
@@ -663,7 +697,7 @@ func (this *Document) SetIllegal(ids ...interface{}) (err error) {
 //@param                num             记录数量
 func (this *Document) GetDocsByIds(ids interface{}, num ...int) (data []orm.Params) {
 	var values []orm.Params
-	tables := []string{TableDocInfo + " i", TableDoc + " d", TableDocStore + " ds"}
+	tables := []string{GetTableDocumentInfo() + " i", GetTableDocument() + " d", GetTableDocumentStore() + " ds"}
 	on := []map[string]string{
 		{"i.Id": "d.Id"},
 		{"i.DsId": "ds.Id"},
@@ -678,7 +712,7 @@ func (this *Document) GetDocsByIds(ids interface{}, num ...int) (data []orm.Para
 		listRows = num[0]
 	}
 	if sql, err := LeftJoinSqlBuild(tables, on, fields, 1, listRows, nil, nil, fmt.Sprintf("i.Status>=0 and i.Id in(%v)", ids)); err == nil {
-		O.Raw(sql).Values(&values)
+		orm.NewOrm().Raw(sql).Values(&values)
 	} else {
 		helper.Logger.Error(err.Error())
 	}
@@ -707,7 +741,7 @@ func (this *Document) GetDocForElasticSearch(id ...int) (es []ElasticSearchData,
 		params []orm.Params
 		num    int64
 	)
-	tables := []string{TableDocInfo + " i", TableDoc + " d", TableDocStore + " ds"}
+	tables := []string{GetTableDocumentInfo() + " i", GetTableDocument() + " d", GetTableDocumentStore() + " ds"}
 	on := []map[string]string{
 		{"i.Id": "d.Id"},
 		{"i.DsId": "ds.Id"},
@@ -727,7 +761,7 @@ func (this *Document) GetDocForElasticSearch(id ...int) (es []ElasticSearchData,
 		idSlice = append(idSlice, strconv.Itoa(v))
 	}
 	if sql, err = LeftJoinSqlBuild(tables, on, fields, 1, listRows, nil, nil, fmt.Sprintf("i.Status>=0 and i.Id in(%v)", strings.Join(idSlice, ","))); err == nil {
-		if num, err = O.Raw(sql).Values(&params); num > 0 {
+		if num, err = orm.NewOrm().Raw(sql).Values(&params); num > 0 {
 			for _, param := range params {
 				es = append(es, ElasticSearchData{
 					Id:          helper.Interface2Int(param["Id"]),
@@ -763,6 +797,6 @@ func (this *Document) GetDocInfoForElasticSearch(page, pageSize int, startTime i
 	if len(fields) == 0 {
 		fields = append(fields, "Id")
 	}
-	rows, err = O.QueryTable(TableDocInfo).Filter("Status__gte", 0).Filter("TimeUpdate__gte", startTime).Limit(pageSize).Offset((page-1)*pageSize).All(&infos, fields...)
+	rows, err = orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Status__gte", 0).Filter("TimeUpdate__gte", startTime).Limit(pageSize).Offset((page-1)*pageSize).All(&infos, fields...)
 	return
 }

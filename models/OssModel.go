@@ -100,7 +100,7 @@ func (this *Oss) IsObjectExist(object string, isBucketPreview bool) (err error) 
 //@param                style               图片处理风格
 //@param                ext                 图片扩展名，如果图片文件参数(picture)的值为md5时，需要加上后缀扩展名
 //@return               url                 图片url链接
-func (this *Oss) DefaultPicture(picture, style string, ext ...string) (url string) {
+func (*Oss) DefaultPicture(picture, style string, ext ...string) (url string) {
 	if len(ext) > 0 {
 		picture = picture + "." + ext[0]
 	} else if !strings.Contains(picture, ".") && len(picture) > 0 {
@@ -110,9 +110,9 @@ func (this *Oss) DefaultPicture(picture, style string, ext ...string) (url strin
 	style = strings.ToLower(style)
 	switch style {
 	case "avatar", "cover", "banner":
-		return this.PreviewUrl + picture + "/" + style
+		return NewOss().PreviewUrl + picture + "/" + style
 	}
-	return this.PreviewUrl + picture //返回默认图片
+	return NewOss().PreviewUrl + picture //返回默认图片
 }
 
 //文件移动到OSS进行存储
@@ -122,7 +122,6 @@ func (this *Oss) DefaultPicture(picture, style string, ext ...string) (url strin
 //@param            IsDel            文件上传后，是否删除本地文件
 //@param            IsGzip           是否做gzip压缩，做gzip压缩的话，需要修改oss中对象的响应头，设置gzip响应
 func (this *Oss) MoveToOss(local, save string, IsPreview, IsDel bool, IsGzip ...bool) error {
-
 	bucket, err := this.NewBucket(IsPreview)
 	if err != nil {
 		helper.Logger.Error("OSS Bucket初始化错误：%v", err.Error())

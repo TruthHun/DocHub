@@ -37,6 +37,14 @@ type Config struct {
 	Category    string `orm:"column(Category);default();index;size(30)"` //分类，如oss、email、redis等
 }
 
+func NewConfig() *Config {
+	return &Config{}
+}
+
+func GetTableConfig() string {
+	return getTable("config")
+}
+
 // 多字段唯一键
 func (this *Config) TableUnique() [][]string {
 	return [][]string{
@@ -45,8 +53,9 @@ func (this *Config) TableUnique() [][]string {
 }
 
 //获取全部配置文件
+//@return           configs         所有配置
 func (this *Config) All() (configs []Config) {
-	O.QueryTable(TableConfig).All(&configs)
+	orm.NewOrm().QueryTable(GetTableConfig()).All(&configs)
 	return
 }
 
@@ -56,12 +65,18 @@ func (this *Config) UpdateGlobal() {
 		for _, cfg := range cfgs {
 			helper.GlobalConfigMap.Store(fmt.Sprintf("%v.%v", cfg.Category, cfg.Key), cfg.Value)
 		}
+	} else {
+		helper.Logger.Error("查询全局配置失败，config表中全局配置信息为空")
 	}
 }
 
 //根据key更新配置
+//@param            cate            配置分类
+//@param            key             配置项
+//@param            val             配置项的值
+//@return           err             错误
 func (this *Config) UpdateByKey(cate ConfigCate, key, val string) (err error) {
-	_, err = O.QueryTable(TableConfig).Filter("Category", cate).Filter("Key", key).Update(orm.Params{
+	_, err = orm.NewOrm().QueryTable(GetTableConfig()).Filter("Category", cate).Filter("Key", key).Update(orm.Params{
 		"Value": val,
 	})
 	return

@@ -12,6 +12,7 @@ import (
 
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/gotil/sitemap"
+	"github.com/astaxie/beego/orm"
 )
 
 //SEO配置表
@@ -23,6 +24,14 @@ type Seo struct {
 	Title       string `orm:"column(Title);default({title})"`             //SEO标题
 	Keywords    string `orm:"column(Keywords);default({keywords})"`       //SEO关键字
 	Description string `orm:"column(Description);default({description})"` //SEO摘要
+}
+
+func NewSeo() *Seo {
+	return &Seo{}
+}
+
+func GetTableSeo() string {
+	return getTable("seo")
 }
 
 //获取SEO
@@ -53,7 +62,7 @@ func (this *Seo) GetByPage(page string, defaultTitle, defaultKeywords, defaultDe
 		}
 		return item
 	}
-	O.QueryTable(TableSeo).Filter("Page", page).One(&seoStruct)
+	orm.NewOrm().QueryTable(GetTableSeo()).Filter("Page", page).One(&seoStruct)
 	if seoStruct.Id > 0 {
 		seo["Title"] = replaceFunc(seoStruct.Title, defSeo)
 		seo["Keywords"] = replaceFunc(seoStruct.Keywords, defSeo)
@@ -77,14 +86,15 @@ func (this *Seo) BuildSitemap() {
 		si      []sitemap.SitemapIndex
 		count   int64
 		limit   = 10000 //每个sitemap文件，限制10000个链接
-		domain  = strings.ToLower(ModelSys.GetByField("DomainPc").DomainPc)
+		domain  = strings.ToLower(NewSys().GetByField("DomainPc").DomainPc)
+		o       = orm.NewOrm()
 	)
 	if !(strings.HasPrefix(domain, "https://") || strings.HasPrefix(domain, "http://")) {
 		domain = "http://" + domain
 	}
 	domain = strings.TrimRight(domain, "/")
 	//文档总数
-	count, _ = O.QueryTable(TableDocInfo).Filter("Status__gt", -1).Count()
+	count, _ = o.QueryTable(GetTableDocumentInfo()).Filter("Status__gt", -1).Count()
 	cnt := int(count)
 	if fileNum = cnt / limit; cnt%limit > 0 {
 		fileNum = fileNum + 1
@@ -93,7 +103,7 @@ func (this *Seo) BuildSitemap() {
 	os.MkdirAll("sitemap", os.ModePerm)
 	for i := 0; i < fileNum; i++ {
 		var docs []DocumentInfo
-		O.QueryTable(TableDocInfo).Filter("Status__gt", -1).Limit(limit).Offset(i*limit).All(&docs, "Id", "TimeCreate")
+		o.QueryTable(GetTableDocumentInfo()).Filter("Status__gt", -1).Limit(limit).Offset(i*limit).All(&docs, "Id", "TimeCreate")
 		if len(docs) > 0 {
 			//文件
 			file := "sitemap/doc-" + strconv.Itoa(i) + ".xml"

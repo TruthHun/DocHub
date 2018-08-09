@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/TruthHun/DocHub/helper"
+	"github.com/astaxie/beego/orm"
 )
 
 //文档备注，用于侵权文档等的部分内容的预览展示，并在文档预览页面挂上跳转购买正版的导购链接；同时对于一些开源书籍，也可以一面提供站内文档的下载，一面引导用户购买正版。
@@ -16,6 +17,14 @@ type DocumentRemark struct {
 	AllowDownload bool   `orm:"column(AllowDownload);default(true)"`  //是否允许下载文档
 	Status        bool   `orm:"column(Status);default(true)"`         //备注状态，true表示显示，false表示隐藏
 	TimeCreate    int    `orm:"column(TimeCreate);default(0)"`        //创建时间
+}
+
+func NewDocumentRemark() *DocumentRemark {
+	return &DocumentRemark{}
+}
+
+func GetTableDocumentRemark() string {
+	return getTable("document_remark")
 }
 
 //注意：这里处理GetParseContentByDocId，其他基本上是模板内容的形式
@@ -31,7 +40,7 @@ type DocumentRemark struct {
 //@return           rm              文档备注
 //@return           err             文档错误
 func (this *DocumentRemark) GetParseContentByDocId(docid interface{}) (rm DocumentRemark, err error) {
-	err = O.QueryTable(TableDocRemark).Filter("Id", docid).One(&rm)
+	err = orm.NewOrm().QueryTable(GetTableDocumentRemark()).Filter("Id", docid).One(&rm)
 	return
 }
 
@@ -40,7 +49,7 @@ func (this *DocumentRemark) GetParseContentByDocId(docid interface{}) (rm Docume
 //@return           rm              生成的文档备注模板
 func (this *DocumentRemark) GetContentTplByDsId(DsId int) (rm DocumentRemark) {
 	rm.Id = DsId
-	if err := O.Read(&rm); err != nil || rm.Id == 0 {
+	if err := orm.NewOrm().Read(&rm); err != nil || rm.Id == 0 {
 		return this.GetDefaultTpl(DsId)
 	}
 	return rm
@@ -66,7 +75,7 @@ func (this *DocumentRemark) GetDefaultTpl(DsId int) (rm DocumentRemark) {
 func (this *DocumentRemark) IsRemark(dsid interface{}) bool {
 	var rm = DocumentRemark{Id: helper.Interface2Int(dsid)}
 	if rm.Id > 0 {
-		if O.Read(&rm); rm.TimeCreate > 0 {
+		if orm.NewOrm().Read(&rm); rm.TimeCreate > 0 {
 			return true
 		}
 	}
@@ -79,9 +88,9 @@ func (this *DocumentRemark) IsRemark(dsid interface{}) bool {
 func (this *DocumentRemark) Insert(rm DocumentRemark) (err error) {
 	if rm.TimeCreate == 0 {
 		rm.TimeCreate = int(time.Now().Unix())
-		_, err = O.Insert(&rm)
+		_, err = orm.NewOrm().Insert(&rm)
 	} else {
-		_, err = O.Update(&rm)
+		_, err = orm.NewOrm().Update(&rm)
 	}
 	return err
 }

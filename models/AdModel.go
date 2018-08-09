@@ -20,3 +20,15 @@ type Ad struct {
 	TimeEnd    int    `orm:"column(TimeEnd);default(0)"`        //广告截止时间
 	TimeCreate int    `orm:"column(TimeCreate);default(0)"`     //广告添加时间
 }
+
+func NewAdPosition() *AdPosition {
+	return &AdPosition{}
+}
+
+func NewAd() *Ad {
+	return &Ad{}
+}
+
+func GetTableAdPosition() string {
+	return getTable("ad_position")
+}

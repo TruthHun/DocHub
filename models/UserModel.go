@@ -20,6 +20,14 @@ type User struct {
 	Avatar   string `orm:"size(50);default();column(Avatar)"`        //会员头像
 }
 
+func NewUser() *User {
+	return &User{}
+}
+
+func GetTableUser() string {
+	return getTable("user")
+}
+
 //用户信息表
 type UserInfo struct {
 	Id         int  `orm:"auto;pk;column(Id)"`                //主键，也就是User表的Id
@@ -30,6 +38,13 @@ type UserInfo struct {
 	Status     bool `orm:"column(Status);default(true)"`      //用户信息状态，false(即0)表示被禁用
 }
 
+func NewUserInfo() *UserInfo {
+	return &UserInfo{}
+}
+func GetTableUserInfo() string {
+	return getTable("user_info")
+}
+
 //根据条件查询用户信息，比如用户登录、用户列表等的获取也可以使用这个函数
 //@param            p           int         页码
 //@param            listRows    int         每页显示记录数
@@ -38,7 +53,7 @@ type UserInfo struct {
 //@param            cond        string      查询条件
 //@param            args        ...interface{}  查询条件参数
 func (u *User) UserList(p, listRows int, orderby, fields, cond string, args ...interface{}) (params []orm.Params, totalRows int, err error) {
-
+	o := orm.NewOrm()
 	if len(orderby) == 0 || orderby == "" {
 		orderby = "i.Id desc"
 	}
@@ -50,17 +65,17 @@ func (u *User) UserList(p, listRows int, orderby, fields, cond string, args ...i
 	}
 
 	sql_count := fmt.Sprintf("select count(i.Id) cnt from %v u left join %v i on u.Id=i.Id %v limit 1",
-		TableUser, TableUserInfo, cond,
+		GetTableUser(), GetTableUserInfo(), cond,
 	)
 	var one []orm.Params
-	if rows, err := O.Raw(sql_count, args...).Values(&one); err == nil && rows > 0 {
+	if rows, err := o.Raw(sql_count, args...).Values(&one); err == nil && rows > 0 {
 		totalRows = helper.Interface2Int(one[0]["cnt"])
 	}
 
 	sql := fmt.Sprintf("select %v from %v u left join %v i on u.Id=i.Id %v order by %v limit %v offset %v",
-		fields, TableUser, TableUserInfo, cond, orderby, listRows, (p-1)*listRows,
+		fields, GetTableUser(), GetTableUserInfo(), cond, orderby, listRows, (p-1)*listRows,
 	)
-	_, err = O.Raw(sql, args...).Values(&params)
+	_, err = o.Raw(sql, args...).Values(&params)
 	return params, totalRows, err
 }
 
@@ -83,16 +98,15 @@ func (u *User) Fields() map[string]string {
 //@return           UserInfo                        用户信息
 func (u *User) UserInfo(uid interface{}) UserInfo {
 	var info UserInfo
-	O.QueryTable(GetTable("user_info")).Filter("id", uid).One(&info)
+	orm.NewOrm().QueryTable(GetTableUserInfo()).Filter("id", uid).One(&info)
 	return info
 }
 
 //根据查询条件查询User表
 //@param            cond            *orm.Condition          查询条件
 //@return                           User                    返回查询到的User数据
-func (u *User) GetUserField(cond *orm.Condition) User {
-	var user User
-	O.QueryTable(GetTable("user")).SetCond(cond).One(&user)
+func (u *User) GetUserField(cond *orm.Condition) (user User) {
+	orm.NewOrm().QueryTable(GetTableUser()).SetCond(cond).One(&user)
 	return user
 }
 
@@ -105,12 +119,16 @@ func (u *User) GetUserField(cond *orm.Condition) User {
 //@return                           error           错误
 //@return                           int             注册成功时返回注册id
 func (u *User) Reg(email, username, password, repassword, intro string) (error, int) {
-	var user User
+	var (
+		user User
+		o    = orm.NewOrm()
+	)
+
 	l := strings.Count(username, "") - 1
 	if l < 2 || l > 16 {
 		return errors.New("用户名长度限制在2-16个字符"), 0
 	}
-	if O.QueryTable(GetTable("user")).Filter("Username", username).One(&user); user.Id > 0 {
+	if o.QueryTable(GetTableUser()).Filter("Username", username).One(&user); user.Id > 0 {
 		return errors.New("用户名已被注册，请更换新的用户名"), 0
 	}
 	pwd := helper.MyMD5(password)
@@ -118,12 +136,12 @@ func (u *User) Reg(email, username, password, repassword, intro string) (error, 
 		return errors.New("密码和确认密码不一致"), 0
 	}
 	user = User{Email: email, Username: username, Password: pwd, Intro: intro}
-	_, err := O.Insert(&user)
+	_, err := o.Insert(&user)
 	if user.Id > 0 {
 		//coin := beego.AppConfig.DefaultInt("coinreg", 10)
-		coin := ModelSys.GetByField("CoinReg").CoinReg
+		coin := NewSys().GetByField("CoinReg").CoinReg
 		var userinfo = UserInfo{Id: user.Id, Status: true, Coin: coin}
-		_, err = O.Insert(&userinfo)
+		_, err = o.Insert(&userinfo)
 	}
 	return err, user.Id
 }
@@ -135,16 +153,16 @@ func (u *User) Reg(email, username, password, repassword, intro string) (error, 
 //@return               err             错误
 func (this *User) GetById(id interface{}) (params orm.Params, rows int64, err error) {
 	var data []orm.Params
-	tables := []string{TableUser + " u", TableUserInfo + " ui"}
+	tables := []string{GetTableUser() + " u", GetTableUserInfo() + " ui"}
 	on := []map[string]string{
 		{"u.Id": "ui.Id"},
 	}
 	fields := map[string][]string{
-		"u":  GetFields(ModelUser),
-		"ui": GetFields(ModelUserInfo),
+		"u":  GetFields(NewUser()),
+		"ui": GetFields(NewUserInfo()),
 	}
 	if sql, err := LeftJoinSqlBuild(tables, on, fields, 1, 1, nil, nil, "u.Id=?"); err == nil {
-		if rows, err = O.Raw(sql, id).Values(&data); err == nil && len(data) > 0 {
+		if rows, err = orm.NewOrm().Raw(sql, id).Values(&data); err == nil && len(data) > 0 {
 			params = data[0]
 		}
 	}

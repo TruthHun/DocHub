@@ -5,6 +5,7 @@ import (
 
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 )
 
 func install() {
@@ -30,7 +31,7 @@ func installAdmin() {
 		Code:     "芝麻开门",
 	}
 	beego.Info("初始化管理员数据")
-	if _, _, err := O.ReadOrCreate(&admin, "Id"); err != nil {
+	if _, _, err := orm.NewOrm().ReadOrCreate(&admin, "Id"); err != nil {
 		helper.Logger.Error("初始化管理员数据失败：" + err.Error())
 	}
 }
@@ -73,13 +74,13 @@ func installSys() {
 6:骚扰他人`, //举报原因
 		Watermark: "DocHub", //文档水印
 	}
-	O.ReadOrCreate(&sys, "Id")
+	orm.NewOrm().ReadOrCreate(&sys, "Id")
 }
 
 //安装友链初始数据
 func installFriendlinks() {
 	var friend = new(Friend)
-	if O.QueryTable(friend).Filter("id__gt", 0).One(friend); friend.Id > 0 {
+	if orm.NewOrm().QueryTable(friend).Filter("id__gt", 0).One(friend); friend.Id > 0 {
 		return
 	}
 
@@ -118,7 +119,7 @@ func installFriendlinks() {
 			TimeCreate: now,
 		},
 	}
-	if _, err := O.InsertMulti(len(friends), friends); err != nil {
+	if _, err := orm.NewOrm().InsertMulti(len(friends), friends); err != nil {
 		helper.Logger.Error("初始化友链数据失败：" + err.Error())
 	}
 }
@@ -128,7 +129,7 @@ func installFriendlinks() {
 func installPages() {
 	//存在单页了，则表明已经初始化过数据
 	var page = new(Pages)
-	if O.QueryTable(page).Filter("id__gt", 0).One(page); page.Id > 0 {
+	if orm.NewOrm().QueryTable(page).Filter("id__gt", 0).One(page); page.Id > 0 {
 		return
 	}
 
@@ -185,14 +186,14 @@ func installPages() {
 			Status:      true,
 		},
 	}
-	O.InsertMulti(len(pages), &pages)
+	orm.NewOrm().InsertMulti(len(pages), &pages)
 }
 
 //安装SEO初始数据
 //存在唯一索引Page字段，已存在数据，不会继续写入
 func installSeo() {
 	seo := new(Seo)
-	if O.QueryTable(seo).Filter("id__gt", 0).One(seo); seo.Id > 0 {
+	if orm.NewOrm().QueryTable(seo).Filter("id__gt", 0).One(seo); seo.Id > 0 {
 		return
 	}
 	var seos = []Seo{
@@ -281,7 +282,7 @@ func installSeo() {
 			Description: "{description}",
 		},
 	}
-	O.InsertMulti(len(seos), &seos)
+	orm.NewOrm().InsertMulti(len(seos), &seos)
 }
 
 //安装分类初始数据
@@ -289,7 +290,8 @@ func installSeo() {
 func installCategory() {
 	//存在分类了，则表明已经初始化过数据
 	var cate = new(Category)
-	if O.QueryTable(cate).Filter("id__gt", 0).One(cate); cate.Id > 0 {
+	o := orm.NewOrm()
+	if o.QueryTable(cate).Filter("id__gt", 0).One(cate); cate.Id > 0 {
 		return
 	}
 
@@ -625,7 +627,7 @@ func installCategory() {
 		(333, 332, '其它', 0, 0, '', 1),
 		(334, 10, '高考', 0, 0, '', 1);
 `
-	O.Raw(sql).Exec()
+	o.Raw(sql).Exec()
 }
 
 //初始化配置项
@@ -873,8 +875,9 @@ func installCfg() {
 	configs = append(configs, cfgES...)
 	//注意：这里使用逐项写入，以便有升级的时候，存在了的配置项不再写入，不存在的则写入
 	//O.InsertMulti(len(configs), &configs)
+	o := orm.NewOrm()
 	for _, cfg := range configs {
-		O.Insert(&cfg)
+		o.Insert(&cfg)
 	}
 	//全局变量赋值
 	ModelConfig.UpdateGlobal() //配置文件全局变量更新

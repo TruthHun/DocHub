@@ -1,5 +1,7 @@
 package models
 
+import "github.com/astaxie/beego/orm"
+
 //单页
 type Pages struct {
 	Id          int    `orm:"column(Id)"`
@@ -15,19 +17,27 @@ type Pages struct {
 	Status      bool   `orm:"column(Status);default(true)"`  //单页状态，true显示，false不显示
 }
 
+func NewPages() *Pages {
+	return &Pages{}
+}
+
+func GetTablePages() string {
+	return getTable("pages")
+}
+
 //查询单页列表
 func (this *Pages) List(listRows int, status ...int) (pages []Pages, rows int64, err error) {
-	qs := O.QueryTable(GetTable("pages"))
+	qs := orm.NewOrm().QueryTable(GetTablePages())
 	if len(status) > 0 {
 		qs = qs.Filter("Status", status[0])
 	}
 	cols := []string{"Name", "Alias", "Title", "Keywords", "Description", "Id", "TimeCreate", "Sort", "Vcnt", "Status"}
 	rows, err = qs.OrderBy("sort").Limit(listRows).All(&pages, cols...)
-	return pages, rows, err
+	return
 }
 
 //查询单页内容
 func (this *Pages) One(alias string) (page Pages, err error) {
-	err = O.QueryTable(GetTable("pages")).Filter("Alias", alias).One(&page)
+	err = orm.NewOrm().QueryTable(GetTablePages()).Filter("Alias", alias).One(&page)
 	return page, err
 }

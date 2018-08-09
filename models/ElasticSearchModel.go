@@ -47,6 +47,7 @@ type ElasticSearchData struct {
 	TimeCreate  int    `json:"TimeCreate"`  //文档创建时间
 }
 
+//统计信息结构
 type ElasticSearchCount struct {
 	Shards struct {
 		Failed     int `json:"failed"`
@@ -57,6 +58,7 @@ type ElasticSearchCount struct {
 	Count int `json:"count"`
 }
 
+//搜索结果结构
 type ElasticSearchResult struct {
 	Shards struct {
 		Failed     int `json:"failed"`
@@ -192,33 +194,6 @@ func (this *ElasticSearchClient) Init() (err error) {
 	return
 }
 
-//{
-//"query": {
-//"bool":{
-//"must":{
-//"multi_match" : {
-//"query":    "文库",
-//"fields": [ "Title", "Keywords","Description" ]
-//}
-//},
-//"filter":{
-//"term":{"DsId":5}
-//}
-//}
-//},
-//"from":0,
-//"size":10,
-//"sort":[
-//{"Page":"desc"}
-//],
-//"highlight": {
-//"fields" : {
-//"Title" : {},
-//"Description" : {}
-//}
-//}
-//}
-
 //搜索内容
 //@param            wd          搜索关键字
 //@param            sourceType  搜索的资源类型，可选择：doc、ppt、xls、pdf、txt、other、all
@@ -304,10 +279,7 @@ func (this *ElasticSearchClient) Search(wd, sourceType, order string, p, listRow
 		err = errResp
 	} else {
 		b, _ := ioutil.ReadAll(resp.Body)
-		json.Unmarshal(b, &result)
-		fmt.Println("=======")
-		beego.Info(string(b))
-		fmt.Println("=======")
+		err = json.Unmarshal(b, &result)
 	}
 	return
 }

@@ -19,12 +19,21 @@ type DocumentRecycle struct {
 	Self bool `orm:"default(false);column(Self)"` //是否是文档上传用户删除的，默认为false。如果是文档上传者删除的，设置为true
 }
 
+func NewDocumentRecycle() *DocumentRecycle {
+	return &DocumentRecycle{}
+}
+
+func GetTableDocumentRecycle() string {
+	return getTable("document_recycle")
+}
+
 //将文档从回收站中恢复过来，文档的状态必须是-1才可以
 //@param            ids             文档id
 //@return           err             返回错误，nil表示恢复成功，否则恢复失败
 func (this *DocumentRecycle) RecoverFromRecycle(ids ...interface{}) (err error) {
+	o := orm.NewOrm()
 	if len(ids) > 0 {
-		qs := O.QueryTable(TableDocInfo).Filter("Id__in", ids...).Filter("Status", -1)
+		qs := o.QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).Filter("Status", -1)
 		var docinfo []DocumentInfo
 		qs.All(&docinfo)
 		if affectedRows, err := qs.Update(orm.Params{"Status": 1}); affectedRows > 0 {
@@ -34,17 +43,17 @@ func (this *DocumentRecycle) RecoverFromRecycle(ids ...interface{}) (err error) 
 			if len(docinfo) > 0 {
 				for _, v := range docinfo {
 					//该用户的文档数量+1
-					if err := Regulate(TableUserInfo, "Document", 1, "Id=?", v.Uid); err != nil {
+					if err := Regulate(GetTableUserInfo(), "Document", 1, "Id=?", v.Uid); err != nil {
 						helper.Logger.Error(err.Error())
 					}
 					//该分类下的文档数量+1
-					Regulate(TableCategory, "Cnt", 1, fmt.Sprintf("`Id` in(%v,%v,%v)", v.ChanelId, v.Cid, v.Pid))
+					Regulate(GetTableCategory(), "Cnt", 1, fmt.Sprintf("`Id` in(%v,%v,%v)", v.ChanelId, v.Cid, v.Pid))
 				}
 			}
 			//从回收站中删除记录
-			O.QueryTable(TableDocRecycle).Filter("Id__in", ids...).Delete()
+			o.QueryTable(GetTableDocumentRecycle()).Filter("Id__in", ids...).Delete()
 			//从非法文档中将文档移除
-			O.QueryTable(TableDocIllegal).Filter("Id__in", ids...).Delete()
+			o.QueryTable(GetTableDocumentIllegal()).Filter("Id__in", ids...).Delete()
 			return nil
 		} else if err != nil {
 			return err

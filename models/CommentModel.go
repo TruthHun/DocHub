@@ -13,6 +13,14 @@ type DocumentComment struct {
 	Status     bool   `orm:"column(Status);default(true)"`        //评论是否正常
 }
 
+func NewDocumentComment() *DocumentComment {
+	return &DocumentComment{}
+}
+
+func GetTableDocumentComment() string {
+	return getTable("document_comment")
+}
+
 // 文档评分记录表多字段唯一索引
 func (this *DocumentComment) TableUnique() [][]string {
 	return [][]string{
@@ -28,7 +36,7 @@ func (this *DocumentComment) TableUnique() [][]string {
 //@return           rows            返回的数据记录数
 //@return           err             返回错误
 func (this *DocumentComment) GetCommentList(did, p, listRows int) (params []orm.Params, rows int64, err error) {
-	tables := []string{TableDocComment + " c", TableUser + " u"}
+	tables := []string{GetTableDocumentComment() + " c", GetTableUser() + " u"}
 	on := []map[string]string{
 		{"c.Uid": "u.Id"},
 	}
@@ -37,7 +45,7 @@ func (this *DocumentComment) GetCommentList(did, p, listRows int) (params []orm.
 		"u": {"Username", "Avatar"},
 	}
 	if sql, err := LeftJoinSqlBuild(tables, on, fields, p, listRows, []string{"c.Id desc"}, nil, "c.Did=?"); err == nil {
-		rows, err = O.Raw(sql, did).Values(&params)
+		rows, err = orm.NewOrm().Raw(sql, did).Values(&params)
 	}
 	return params, rows, err
 }
@@ -47,7 +55,7 @@ func (this *DocumentComment) GetCommentList(did, p, listRows int) (params []orm.
 //@return               err             错误，nil表示删除成功
 func (this *DocumentComment) DelCommentByDocId(ids ...interface{}) (err error) {
 	if len(ids) > 0 {
-		_, err = O.QueryTable(TableDocComment).Filter("Did__in", ids...).Delete()
+		_, err = orm.NewOrm().QueryTable(GetTableDocumentComment()).Filter("Did__in", ids...).Delete()
 	}
 	return err
 }

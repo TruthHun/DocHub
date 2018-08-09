@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/TruthHun/DocHub/helper"
+	"github.com/astaxie/beego/orm"
 )
 
 //关键字记录表，后期用这个来做相关资源功能
@@ -16,12 +17,21 @@ type Word struct {
 	Status bool   `orm:"column(Status);default(true)"`     //bool值，默认该关键字合法，否则存在该关键字的都是不合法文档
 }
 
+func NewWord() *Word {
+	return &Word{}
+}
+
+func GetTableWord() string {
+	return getTable("word")
+}
+
 //添加关键字，多个关键字用英文逗号分隔
 func (this *Word) AddWords(wds string, id interface{}) {
 	var (
 		wdMap   = make(map[string]string) //词汇map
 		wdSlice []interface{}             //词汇切片
 		wdData  []Word                    //词汇数据
+		o       = orm.NewOrm()
 	)
 	slice := strings.Split(wds, ",")
 	if len(slice) > 0 {
@@ -33,11 +43,11 @@ func (this *Word) AddWords(wds string, id interface{}) {
 				wdSlice = append(wdSlice, wd)
 			}
 		}
-		O.QueryTable(TableWord).Filter("Wd__in", wdSlice...).All(&wdData)
+		o.QueryTable(GetTableWord()).Filter("Wd__in", wdSlice...).All(&wdData)
 		for _, w := range wdData { //存在数据，则更新
 			w.Cnt = w.Cnt + 1
 			w.Ids = fmt.Sprintf("%v,%v", w.Ids, id)
-			if _, err := O.Update(&w, "Ids", "Cnt"); err == nil { //更新分词数据
+			if _, err := o.Update(&w, "Ids", "Cnt"); err == nil { //更新分词数据
 				//删除map
 				delete(wdMap, w.Wd)
 			} else {
@@ -55,7 +65,7 @@ func (this *Word) AddWords(wds string, id interface{}) {
 				})
 			}
 			if len(wdDataAdd) > 0 {
-				if _, err := O.InsertMulti(len(wdDataAdd), wdDataAdd); err != nil {
+				if _, err := o.InsertMulti(len(wdDataAdd), wdDataAdd); err != nil {
 					helper.Logger.Error(err.Error())
 				}
 			}
