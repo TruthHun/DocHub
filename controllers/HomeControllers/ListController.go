@@ -78,11 +78,11 @@ func (this *ListController) Get() {
 	//热门文档，根据当前所属分类去获取
 	TimeStart := int(time.Now().Unix()) - this.Sys.TimeExpireHotspot
 	if cid > 0 {
-		this.Data["Hots"], _, _ = models.ModelDoc.SimpleList(fmt.Sprintf("di.Cid=%v and di.TimeCreate>%v", cid, TimeStart), 10, "vcnt")
+		this.Data["Hots"], _, _ = models.NewDocument().SimpleList(fmt.Sprintf("di.Cid=%v and di.TimeCreate>%v", cid, TimeStart), 10, "vcnt")
 	} else if pid > 0 {
-		this.Data["Hots"], _, _ = models.ModelDoc.SimpleList(fmt.Sprintf("di.Pid=%v and di.TimeCreate>%v", pid, TimeStart), 10, "vcnt")
+		this.Data["Hots"], _, _ = models.NewDocument().SimpleList(fmt.Sprintf("di.Pid=%v and di.TimeCreate>%v", pid, TimeStart), 10, "vcnt")
 	} else {
-		this.Data["Hots"], _, _ = models.ModelDoc.SimpleList(fmt.Sprintf("di.ChanelId=%v and di.TimeCreate>%v", chanels[0]["Id"], TimeStart), 10, "vcnt")
+		this.Data["Hots"], _, _ = models.NewDocument().SimpleList(fmt.Sprintf("di.ChanelId=%v and di.TimeCreate>%v", chanels[0]["Id"], TimeStart), 10, "vcnt")
 	}
 
 	lists, rows, err := models.DocList(0, helper.Interface2Int(chanels[0]["Id"]), pid, cid, p, listRows, "Id", 0, 1)
@@ -93,7 +93,7 @@ func (this *ListController) Get() {
 	this.Data["CurPid"] = pid
 	this.Data["CurCid"] = cid
 	this.Data["Lists"] = lists
-	this.Data["Seo"] = models.ModelSeo.GetByPage("PC-List", strings.Join(seostr, "-"), strings.Join(seostr, ","), strings.Join(seostr, "-"), this.Sys.Site)
+	this.Data["Seo"] = models.NewSeo().GetByPage("PC-List", strings.Join(seostr, "-"), strings.Join(seostr, ","), strings.Join(seostr, "-"), this.Sys.Site)
 	this.Data["Page"] = helper.Paginations(6, totalRows, listRows, p, fmt.Sprintf("/list/%v", chanel), "pid", pid, "cid", cid)
 	this.Data["Parents"], _, _ = models.GetList("category", 1, 20, orm.NewCondition().And("Pid", chanels[0]["Id"]), orderby...)
 	this.Data["PageId"] = "wenku-list"

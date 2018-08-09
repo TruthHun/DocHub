@@ -53,7 +53,7 @@ func (this *BaseController) Prepare() {
 	if helper.Debug { //debug模式下，每次更新js
 		version = fmt.Sprintf("%v.%v", version, time.Now().Unix())
 	}
-	this.Sys, _ = models.ModelSys.Get()
+	this.Sys, _ = models.NewSys().Get()
 	this.Data["Version"] = version
 	this.Data["Sys"] = this.Sys
 	//this.Data["PreviewDomain"] = beego.AppConfig.String("oss::PreviewUrl")
@@ -101,7 +101,7 @@ func (this *BaseController) checkCookieLogin() {
 		uid, ok := this.Ctx.GetSecureCookie(secret+timestamp, "token")
 		if ok && len(uid) > 0 {
 			if this.IsLogin = helper.Interface2Int(uid); this.IsLogin > 0 {
-				if info := models.ModelUser.UserInfo(this.IsLogin); info.Status == false {
+				if info := models.NewUser().UserInfo(this.IsLogin); info.Status == false {
 					//被封禁的账号，重置cookie
 					this.ResetCookie()
 				}
@@ -175,7 +175,7 @@ func (this *BaseController) Chanels() []orm.Params {
 
 //校验文档是否已经存在
 func (this *BaseController) DocExist() {
-	if models.ModelDoc.IsExistByMd5(this.GetString("md5")) > 0 {
+	if models.NewDocument().IsExistByMd5(this.GetString("md5")) > 0 {
 		this.ResponseJson(1, "文档存在")
 	} else {
 		this.ResponseJson(0, "文档不存在")
@@ -196,7 +196,7 @@ func (this *BaseController) ResponseJson(status int, msg string, data ...interfa
 //单页
 func (this *BaseController) Pages() {
 	alias := this.GetString(":page")
-	page, err := models.ModelPages.One(alias)
+	page, err := models.NewPages().One(alias)
 	if err != nil {
 		helper.Logger.Error(err.Error())
 		this.Abort("404")
@@ -204,13 +204,13 @@ func (this *BaseController) Pages() {
 	if page.Id == 0 || page.Status == false {
 		this.Abort("404")
 	}
-	this.Data["Seo"] = models.ModelSeo.GetByPage("PC-Pages", page.Title, page.Keywords, page.Description, this.Sys.Site)
+	this.Data["Seo"] = models.NewSeo().GetByPage("PC-Pages", page.Title, page.Keywords, page.Description, this.Sys.Site)
 	page.Vcnt += 1
-	models.O.Update(&page, "Vcnt")
+	orm.NewOrm().Update(&page, "Vcnt")
 	page.Content = models.NewOss().HandleContent(page.Content, true)
 
 	this.Data["Page"] = page
-	this.Data["Lists"], _, _ = models.ModelPages.List(20, 1)
+	this.Data["Lists"], _, _ = models.NewPages().List(20, 1)
 	this.Data["PageId"] = "wenku-content"
 	this.TplName = "pages.html"
 }

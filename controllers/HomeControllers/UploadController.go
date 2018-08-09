@@ -38,12 +38,12 @@ func (this *UploadController) Get() {
 	cond := orm.NewCondition().And("status", 1)
 	data, _, _ := models.GetList("category", 1, 2000, cond, "Sort", "Title")
 	this.Xsrf()
-	this.Data["Seo"] = models.ModelSeo.GetByPage("PC-Upload", "文档上传-文档分享", "文档上传,文档分享", "文档上传-文档分享", this.Sys.Site)
+	this.Data["Seo"] = models.NewSeo().GetByPage("PC-Upload", "文档上传-文档分享", "文档上传,文档分享", "文档上传-文档分享", this.Sys.Site)
 	this.Data["Cates"], _ = conv.InterfaceToJson(data)
 	this.Data["json"] = data
 	this.Data["IsUpload"] = true
 	this.Data["PageId"] = "wenku-upload"
-	this.Data["MaxSize"] = models.ModelSys.GetByField("MaxFile").MaxFile
+	this.Data["MaxSize"] = models.NewSys().GetByField("MaxFile").MaxFile
 	this.TplName = "index.html"
 }
 
@@ -86,7 +86,7 @@ func (this *UploadController) Post() {
 	//文件在文档存档表中已存在，则不接收文档处理
 
 	//非法文件，提示不允许上传，这里检测一次
-	if models.ModelDoc.IsIllegal(form.Md5) {
+	if models.NewDocument().IsIllegal(form.Md5) {
 		this.ResponseJson(0, "您上传的文档已被站点标记为不符合要求的文档，暂时不允许上传分享。")
 	}
 
@@ -117,12 +117,12 @@ func (this *UploadController) Post() {
 		form.Filename = fh.Filename
 
 		//非法文件，提示不允许上传。这里再检测一次，同时删除文档
-		if models.ModelDoc.IsIllegal(form.Md5) {
+		if models.NewDocument().IsIllegal(form.Md5) {
 			this.ResponseJson(0, "您上传的文档已被站点标记为不符合要求的文档，暂时不允许上传分享。")
 		}
 
 		//如果文档已经存在，则直接调用处理
-		if models.ModelDoc.IsExistByMd5(form.Md5) > 0 {
+		if models.NewDocument().IsExistByMd5(form.Md5) > 0 {
 			models.HandleExistDoc(this.IsLogin, form)
 			this.ResponseJson(1, "文档上传成功")
 		}
@@ -160,10 +160,10 @@ func (this *UploadController) Post() {
 			log.Log = fmt.Sprintf("于%v成功分享了一篇未分享过的文档，获得 %v 个金币奖励", time.Now().Format("2006-01-02 15:04:05"), price)
 		}
 		log.Coin = price //金币变更
-		if err := models.ModelCoinLog.LogRecord(log); err != nil {
+		if err := models.NewCoinLog().LogRecord(log); err != nil {
 			helper.Logger.Error(err.Error())
 		}
-		models.Regulate(models.TableUserInfo, "Coin", price, "Id=?", this.IsLogin)
+		models.Regulate(models.GetTableUserInfo(), "Coin", price, "Id=?", this.IsLogin)
 		this.ResponseJson(1, "^.^ 恭喜您，成功分享了一篇文档。")
 	} else {
 		this.ResponseJson(0, "啊哦，文档上传失败...重试一下吧。")

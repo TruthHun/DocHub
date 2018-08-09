@@ -7,6 +7,7 @@ import (
 
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
+	"github.com/astaxie/beego/orm"
 )
 
 type ReportController struct {
@@ -29,7 +30,7 @@ func (this *ReportController) Get() {
 			report.TimeUpdate = t
 			report.Uid = this.IsLogin
 			report.Reason = reason
-			rows, err := models.O.Insert(&report)
+			rows, err := orm.NewOrm().Insert(&report)
 			if err != nil {
 				helper.Logger.Error("SQL执行失败：%v", err.Error())
 			}

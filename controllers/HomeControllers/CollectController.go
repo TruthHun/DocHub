@@ -3,9 +3,9 @@ package HomeControllers
 import (
 	"fmt"
 
-	"github.com/astaxie/beego/orm"
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
+	"github.com/astaxie/beego/orm"
 )
 
 type CollectController struct {
@@ -23,16 +23,16 @@ func (this *CollectController) Get() {
 			var collect models.Collect
 			collect.Did = did
 			collect.Cid = cid
-			rows, err := models.O.Insert(&collect)
+			rows, err := orm.NewOrm().Insert(&collect)
 			if err != nil {
 				helper.Logger.Error("SQL执行失败：%v", err.Error())
 			}
 			if err == nil && rows > 0 {
 				//文档被收藏的数量+1
-				models.Regulate(models.TableDocInfo, "Ccnt", 1, fmt.Sprintf("`Id`=%v", did))
+				models.Regulate(models.GetTableDocumentInfo(), "Ccnt", 1, fmt.Sprintf("`Id`=%v", did))
 
 				//收藏夹的文档+1
-				models.Regulate(models.TableCollectFolder, "Cnt", 1, fmt.Sprintf("`Id`=%v", cid))
+				models.Regulate(models.GetTableCollectFolder(), "Cnt", 1, fmt.Sprintf("`Id`=%v", cid))
 
 				this.ResponseJson(1, "恭喜您，文档收藏成功。")
 			} else {
@@ -73,12 +73,12 @@ func (this *CollectController) CollectCancel() {
 		cid, _ := this.GetInt("Cid")
 		did, _ := this.GetInt("Did")
 		if cid > 0 && did > 0 {
-			if err := models.ModelCollect.Cancel(did, cid, this.IsLogin); err == nil {
+			if err := models.NewCollect().Cancel(did, cid, this.IsLogin); err == nil {
 				//文档被收藏的数量-1
-				models.Regulate(models.TableDocInfo, "Ccnt", -1, "`Id`=?", did)
+				models.Regulate(models.GetTableDocumentInfo(), "Ccnt", -1, "`Id`=?", did)
 
 				//收藏夹的文档-1
-				models.Regulate(models.TableCollectFolder, "Cnt", -1, "`Id`=?", cid)
+				models.Regulate(models.GetTableCollectFolder(), "Cnt", -1, "`Id`=?", cid)
 
 				this.ResponseJson(1, "恭喜您，删除收藏文档成功")
 			} else {

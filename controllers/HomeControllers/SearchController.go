@@ -70,19 +70,19 @@ func (this *SearchController) Get() {
 			}
 		}
 		if insert {
-			models.ReplaceInto(models.TableSearchLog, map[string]interface{}{"Wd": params["wd"]})
+			models.ReplaceInto(models.GetTableSearchLog(), map[string]interface{}{"Wd": params["wd"]})
 		}
 	}
 	end := time.Now().UnixNano()
 	res.Time = float64(end-start) / 1000000000
 
-	this.Data["Seo"] = models.ModelSeo.GetByPage("PC-Search", params["wd"], "文档搜索,"+params["wd"], "文档搜索,"+params["wd"], this.Sys.Site)
+	this.Data["Seo"] = models.NewSeo().GetByPage("PC-Search", params["wd"], "文档搜索,"+params["wd"], "文档搜索,"+params["wd"], this.Sys.Site)
 	this.Data["Page"] = helper.Paginations(6, int(res.Total), listRows, p, "/search/", "type", params["type"], "sort", params["sort"], "p", p, "wd", params["wd"])
 	this.Data["Params"] = params
 	this.Data["Result"] = res
 	this.Data["ListRows"] = listRows
 	this.Data["WordLen"] = len(res.Word) //分词的个数
-	this.Data["SearchLog"] = models.ModelSearchLog.List(1, 10)
+	this.Data["SearchLog"] = models.NewSearchLog().List(1, 10)
 	this.Layout = ""
 	this.Data["PageId"] = "wenku-search"
 	this.TplName = "index.html"

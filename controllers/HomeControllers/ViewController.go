@@ -23,7 +23,7 @@ func (this *ViewController) Get() {
 		return
 	}
 
-	doc, rows, err := models.ModelDoc.GetById(id)
+	doc, rows, err := models.NewDocument().GetById(id)
 	if err != nil || rows != 1 {
 		this.Abort("404")
 	}
@@ -49,14 +49,14 @@ func (this *ViewController) Get() {
 			//热门文档，根据当前所属分类去获取
 			TimeStart := int(time.Now().Unix()) - this.Sys.TimeExpireHotspot
 			//热门文档
-			this.Data["Hots"], _, _ = models.ModelDoc.SimpleList(fmt.Sprintf("di.Cid=%v and di.TimeCreate>%v", doc["Cid"], TimeStart), 10, "Dcnt")
+			this.Data["Hots"], _, _ = models.NewDocument().SimpleList(fmt.Sprintf("di.Cid=%v and di.TimeCreate>%v", doc["Cid"], TimeStart), 10, "Dcnt")
 			//最新文档
-			this.Data["News"], _, _ = models.ModelDoc.SimpleList(fmt.Sprintf("di.Cid=%v", doc["Cid"]), 10, "Id")
+			this.Data["News"], _, _ = models.NewDocument().SimpleList(fmt.Sprintf("di.Cid=%v", doc["Cid"]), 10, "Id")
 			this.Data["CrumbChildren"] = v
 		}
 	}
 
-	models.Regulate(models.TableDocInfo, "Vcnt", 1, "`Id`=?", id)
+	models.Regulate(models.GetTableDocumentInfo(), "Vcnt", 1, "`Id`=?", id)
 	this.Data["PageId"] = "wenku-content"
 	this.Data["Doc"] = doc
 	pages := helper.Interface2Int(doc["Page"])
@@ -68,16 +68,16 @@ func (this *ViewController) Get() {
 	}
 	this.Data["TotalPages"] = pages
 	this.Data["PageShow"] = PageShow
-	if this.Data["Comments"], _, err = models.ModelDocComment.GetCommentList(id, 1, 10); err != nil {
+	if this.Data["Comments"], _, err = models.NewDocumentComment().GetCommentList(id, 1, 10); err != nil {
 		helper.Logger.Error(err.Error())
 	}
 	seoTitle := fmt.Sprintf("[%v·%v·%v] ", chanelTitle, parentTitle, childrenTitle) + doc["Title"].(string)
 	seoKeywords := fmt.Sprintf("%v,%v,%v,", chanelTitle, parentTitle, childrenTitle) + doc["Keywords"].(string)
 	seoDesc := doc["Description"].(string)
-	this.Data["Seo"] = models.ModelSeo.GetByPage("PC-View", seoTitle, seoKeywords, seoDesc, this.Sys.Site)
+	this.Data["Seo"] = models.NewSeo().GetByPage("PC-View", seoTitle, seoKeywords, seoDesc, this.Sys.Site)
 	this.Xsrf()
 	ext := fmt.Sprintf("%v", doc["Ext"])
-	this.Data["Reasons"] = models.ModelSys.GetReportReasons()
+	this.Data["Reasons"] = models.NewSys().GetReportReasons()
 	if pages == 0 && (ext == "txt" || ext == "chm" || ext == "umd" || ext == "epub" || ext == "mobi") {
 		this.Data["OnlyCover"] = true
 		//不能预览的文档
@@ -93,7 +93,7 @@ func (this *ViewController) Download() {
 	id, _ := this.GetInt(":id")
 	if id > 0 {
 		if this.IsLogin > 0 {
-			info, rows, err := models.ModelDoc.GetById(id)
+			info, rows, err := models.NewDocument().GetById(id)
 			if err != nil {
 				helper.Logger.Error(err.Error())
 			}
@@ -101,29 +101,29 @@ func (this *ViewController) Download() {
 				if helper.Interface2Int(info["Status"]) != -1 { //文档未被删除
 					//下载需要的金币[注意：price的值是负值，表示扣除金币]
 					price := -helper.Interface2Int(info["Price"])
-					free := models.ModelFreeDown.IsFreeDown(this.IsLogin, id)
+					free := models.NewFreeDown().IsFreeDown(this.IsLogin, id)
 					if free.Id > 0 {
 						if free.TimeCreate > int(time.Now().Unix())-this.Sys.FreeDay*24*3600 { //免费下载期限内
 							price = 0
 						}
 					}
-					if userinfo := models.ModelUser.UserInfo(this.IsLogin); userinfo.Coin >= price {
+					if userinfo := models.NewUser().UserInfo(this.IsLogin); userinfo.Coin >= price {
 						//扣除金币
-						models.Regulate(models.TableUserInfo, "Coin", price, fmt.Sprintf("Id=%v", info["Uid"]))
+						models.Regulate(models.GetTableUserInfo(), "Coin", price, fmt.Sprintf("Id=%v", info["Uid"]))
 						logs := models.CoinLog{
 							Uid:  this.IsLogin,
 							Coin: price,
 							Log:  fmt.Sprintf("下载文档(%v)，消耗 %v 个金币", info["Title"], price),
 						}
-						models.ModelCoinLog.LogRecord(logs)
+						models.NewCoinLog().LogRecord(logs)
 						if price < 0 { //分享文档的用户金币增加
-							models.Regulate(models.TableUserInfo, "Coin", -price, fmt.Sprintf("Id=%v", info["Uid"]))
+							models.Regulate(models.GetTableUserInfo(), "Coin", -price, fmt.Sprintf("Id=%v", info["Uid"]))
 							logs = models.CoinLog{
 								Uid:  helper.Interface2Int(info["Uid"]),
 								Coin: -price,
 								Log:  fmt.Sprintf("文档(%v)被下载，获得 %v 个金币", info["Title"], -price),
 							}
-							models.ModelCoinLog.LogRecord(logs)
+							models.NewCoinLog().LogRecord(logs)
 						}
 
 						file := fmt.Sprintf("%v.%v", info["Md5"], info["Ext"])
@@ -132,13 +132,13 @@ func (this *ViewController) Download() {
 						//链接签名
 						url := models.NewOss().BuildSign(file)
 						//文档下载次数+1
-						models.Regulate(models.TableDocInfo, "Dcnt", 1, fmt.Sprintf("Id=%v", info["Id"]))
+						models.Regulate(models.GetTableDocumentInfo(), "Dcnt", 1, fmt.Sprintf("Id=%v", info["Id"]))
 						if price < 0 { //扣除了金币，则下载可以免费下载
 							if free.Id > 0 { //上次已经下载过该文档，但是过了免费期限了
-								models.UpdateByIds(models.TableFreeDown, "TimeCreate", time.Now().Unix(), free.Id) //更新
+								models.UpdateByIds(models.GetTableFreeDown(), "TimeCreate", time.Now().Unix(), free.Id) //更新
 							} else { //插入
 								var freedoc = models.FreeDown{Uid: this.IsLogin, Did: id, TimeCreate: int(time.Now().Unix())}
-								models.O.Insert(&freedoc)
+								orm.NewOrm().Insert(&freedoc)
 							}
 						}
 
@@ -165,7 +165,7 @@ func (this *ViewController) Download() {
 func (this *ViewController) DownFree() {
 	if this.IsLogin > 0 {
 		did, _ := this.GetInt("id")
-		if free := models.ModelFreeDown.IsFreeDown(this.IsLogin, did); free.Id > 0 && free.TimeCreate > int(time.Now().Unix())-this.Sys.FreeDay*24*3600 {
+		if free := models.NewFreeDown().IsFreeDown(this.IsLogin, did); free.Id > 0 && free.TimeCreate > int(time.Now().Unix())-this.Sys.FreeDay*24*3600 {
 			this.ResponseJson(1, fmt.Sprintf("您上次下载过当前文档，且仍在免费下载有效期(%v天)内，本次下载免费", this.Sys.FreeDay))
 		}
 	}
@@ -197,13 +197,13 @@ func (this *ViewController) Comment() {
 				if cnt > 255 || cnt < 8 {
 					this.ResponseJson(0, "评论内容限8-255个字符")
 				} else {
-					_, err := models.O.Insert(&comment)
+					_, err := orm.NewOrm().Insert(&comment)
 					if err != nil {
 						this.ResponseJson(0, "发表评论失败：每人仅限给每个文档点评一次")
 					} else {
 						//文档评论人数增加
-						sql := fmt.Sprintf("UPDATE `%v` SET `Score`=(`Score`*`ScorePeople`+%v)/(`ScorePeople`+1),`ScorePeople`=`ScorePeople`+1 WHERE Id=%v", models.GetTable("document_info"), comment.Score, comment.Did)
-						_, err := models.O.Raw(sql).Exec()
+						sql := fmt.Sprintf("UPDATE `%v` SET `Score`=(`Score`*`ScorePeople`+%v)/(`ScorePeople`+1),`ScorePeople`=`ScorePeople`+1 WHERE Id=%v", models.GetTableDocumentInfo(), comment.Score, comment.Did)
+						_, err := orm.NewOrm().Raw(sql).Exec()
 						if err != nil {
 							helper.Logger.Error(err.Error())
 						}
@@ -224,7 +224,7 @@ func (this *ViewController) GetComment() {
 	p, _ := this.GetInt("p", 1)
 	did, _ := this.GetInt("did")
 	if p > 0 && did > 0 {
-		if rows, _, err := models.ModelDocComment.GetCommentList(did, p, 10); err != nil {
+		if rows, _, err := models.NewDocumentComment().GetCommentList(did, p, 10); err != nil {
 			helper.Logger.Error(err.Error())
 			this.ResponseJson(0, "评论列表获取失败")
 		} else {

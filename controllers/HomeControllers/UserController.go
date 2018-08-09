@@ -80,7 +80,7 @@ func (this *UserController) Get() {
 	this.Data["Uid"] = uid
 	if uid > 0 {
 		listRows := 16
-		user, rows, err := models.ModelUser.GetById(uid)
+		user, rows, err := models.NewUser().GetById(uid)
 		if err != nil {
 			helper.Logger.Error(err.Error())
 		}
@@ -91,9 +91,9 @@ func (this *UserController) Get() {
 
 		ModelUser := models.User{}
 		if cid > 0 {
-			sql := fmt.Sprintf("select Title,Cnt from %v where Id=? limit 1", models.GetTable("collect_folder"))
+			sql := fmt.Sprintf("select Title,Cnt from %v where Id=? limit 1", models.GetTableCollectFolder())
 			var params []orm.Params
-			models.O.Raw(sql, cid).Values(&params)
+			orm.NewOrm().Raw(sql, cid).Values(&params)
 			if len(params) > 0 {
 				this.Data["Folder"] = params[0]
 				fields := "di.Id,di.`Uid`, di.`Cid`, di.`TimeCreate`, di.`Dcnt`, di.`Vcnt`, di.`Ccnt`, di.`Score`, di.`Status`, di.`ChanelId`, di.`Pid`,c.Title Category,u.Username,d.Title,ds.`Md5`, ds.`Ext`, ds.`ExtCate`, ds.`ExtNum`, ds.`Page`, ds.`Size`"
@@ -107,18 +107,18 @@ func (this *UserController) Get() {
 							`
 				sql = fmt.Sprintf(sql_format,
 					fields,
-					models.GetTable("document_info"),
-					models.GetTable("user"),
-					models.GetTable("collect"),
-					models.GetTable("document"),
-					models.GetTable("category"),
-					models.GetTable("document_store"),
+					models.GetTableDocumentInfo(),
+					models.GetTableUser(),
+					models.GetTableCollect(),
+					models.GetTableDocument(),
+					models.GetGetTableCategory()(),
+					models.GetTableDocumentStore(),
 					fmt.Sprintf("clt.Cid=%v", cid),
 					"clt.Id desc",
 					(p-1)*listRows, listRows,
 				)
 				var data []orm.Params
-				models.O.Raw(sql).Values(&data)
+				orm.NewOrm().Raw(sql).Values(&data)
 				this.Data["Lists"] = data
 				this.Data["Page"] = helper.Paginations(6, helper.Interface2Int(params[0]["Cnt"]), listRows, p, fmt.Sprintf("/user/%v/doc/cid/%v", user["Id"], cid), "sort", sort, "style", style)
 			} else {
@@ -135,7 +135,7 @@ func (this *UserController) Get() {
 		this.Data["Sort"] = sort
 		this.Data["Style"] = style
 		this.Data["P"] = p
-		this.Data["Seo"] = models.ModelSeo.GetByPage("PC-Ucenter-Doc", "文档列表-会员中心-"+user["Username"].(string), "会员中心,文档列表,"+user["Username"].(string), "文档列表-会员中心-"+user["Username"].(string), this.Sys.Site)
+		this.Data["Seo"] = models.NewSeo().GetByPage("PC-Ucenter-Doc", "文档列表-会员中心-"+user["Username"].(string), "会员中心,文档列表,"+user["Username"].(string), "文档列表-会员中心-"+user["Username"].(string), this.Sys.Site)
 		this.Data["Ranks"], _, err = ModelUser.UserList(1, 8, "i.Document desc", "u.Id,u.Username,u.Avatar,u.Intro,i.Document", "i.Status=1")
 		if err != nil {
 			helper.Logger.Error(err.Error())
@@ -165,7 +165,7 @@ func (this *UserController) Coin() {
 		if p > 1 {
 			this.ResponseJson(1, "数据获取成功", lists)
 		} else {
-			user, rows, err := models.ModelUser.GetById(uid)
+			user, rows, err := models.NewUser().GetById(uid)
 			if err != nil {
 				helper.Logger.Error(err.Error())
 			}
@@ -182,7 +182,7 @@ func (this *UserController) Coin() {
 			if err != nil {
 				helper.Logger.Error(err.Error())
 			}
-			this.Data["Seo"] = models.ModelSeo.GetByPage("PC-Ucenter-Coin", "财富记录—会员中心-"+user["Username"].(string), "会员中心,财富记录,"+user["Username"].(string), "财富记录—会员中心-"+user["Username"].(string), this.Sys.Site)
+			this.Data["Seo"] = models.NewSeo().GetByPage("PC-Ucenter-Coin", "财富记录—会员中心-"+user["Username"].(string), "会员中心,财富记录,"+user["Username"].(string), "财富记录—会员中心-"+user["Username"].(string), this.Sys.Site)
 			this.TplName = "coin.html"
 		}
 	} else {
@@ -209,7 +209,7 @@ func (this *UserController) Collect() {
 		if p > 1 {
 			this.ResponseJson(1, "数据获取成功", lists)
 		} else {
-			user, rows, err := models.ModelUser.GetById(uid)
+			user, rows, err := models.NewUser().GetById(uid)
 			if err != nil {
 				helper.Logger.Error(err.Error())
 			}
@@ -227,7 +227,7 @@ func (this *UserController) Collect() {
 				helper.Logger.Error(err.Error())
 			}
 			this.TplName = "collect.html"
-			this.Data["Seo"] = models.ModelSeo.GetByPage("PC-Ucenter-Folder", "收藏夹—会员中心-"+user["Username"].(string), "会员中心,收藏夹,"+user["Username"].(string), "收藏夹—会员中心-"+user["Username"].(string), this.Sys.Site)
+			this.Data["Seo"] = models.NewSeo().GetByPage("PC-Ucenter-Folder", "收藏夹—会员中心-"+user["Username"].(string), "会员中心,收藏夹,"+user["Username"].(string), "收藏夹—会员中心-"+user["Username"].(string), this.Sys.Site)
 			if action == "edit" {
 				this.Data["Edit"] = true
 			} else {
@@ -257,7 +257,7 @@ func (this *UserController) Login() {
 		valid := validation.Validation{}
 		res := valid.Email(post.Email, "Email")
 		if res.Ok {
-			ModelUser := models.ModelUser
+			ModelUser := models.NewUser()
 			users, rows, err := ModelUser.UserList(1, 1, "", "", "u.`email`=? and u.`password`=?", post.Email, helper.MyMD5(post.Password))
 			if rows > 0 && err == nil {
 
@@ -287,7 +287,7 @@ func (this *UserController) Login() {
 		this.Data["json"] = ret
 		this.ServeJSON()
 	}
-	this.Data["Seo"] = models.ModelSeo.GetByPage("PC-Login", "会员登录", "会员登录", "会员登录", this.Sys.Site)
+	this.Data["Seo"] = models.NewSeo().GetByPage("PC-Login", "会员登录", "会员登录", "会员登录", this.Sys.Site)
 	this.Data["IsUser"] = true
 	this.Data["PageId"] = "wenku-reg"
 	this.TplName = "login.html"
@@ -332,7 +332,7 @@ func (this *UserController) Reg() {
 			if err == nil && uid > 0 {
 
 				//站点用户数量增加
-				models.Regulate(models.TableSys, "CntUser", 1, "Id=1")
+				models.Regulate(models.GetTableSys(), "CntUser", 1, "Id=1")
 				this.IsLogin = uid
 				this.SetCookieLogin(uid)
 				ret["status"] = 1
@@ -344,7 +344,7 @@ func (this *UserController) Reg() {
 		this.Data["json"] = ret
 		this.ServeJSON()
 	}
-	this.Data["Seo"] = models.ModelSeo.GetByPage("PC-Login", "会员注册", "会员注册", "会员注册", this.Sys.Site)
+	this.Data["Seo"] = models.NewSeo().GetByPage("PC-Login", "会员注册", "会员注册", "会员注册", this.Sys.Site)
 	this.Data["PageId"] = "wenku-reg"
 	if this.Sys.IsCloseReg {
 		this.TplName = "regclose.html"
@@ -422,17 +422,17 @@ func (this *UserController) Sign() {
 			Uid:  this.IsLogin,
 			Date: time.Now().Format("20060102"),
 		}
-		_, err := models.O.Insert(&data)
+		_, err := orm.NewOrm().Insert(&data)
 		if err != nil {
 			this.ResponseJson(0, "签到失败，您今天已签到")
 		} else {
-			if err := models.Regulate(models.TableUserInfo, "Coin", this.Sys.Sign, fmt.Sprintf("Id=%v", this.IsLogin)); err == nil {
+			if err := models.Regulate(models.GetGetTableUserInfo()(), "Coin", this.Sys.Sign, fmt.Sprintf("Id=%v", this.IsLogin)); err == nil {
 				log := models.CoinLog{
 					Uid:  this.IsLogin,
 					Coin: this.Sys.Sign,
 					Log:  fmt.Sprintf("于%v签到成功，增加 %v 个金币", time.Now().Format("2006-01-02 15:04:05"), this.Sys.Sign),
 				}
-				models.ModelCoinLog.LogRecord(log)
+				models.NewCoinLog().LogRecord(log)
 			}
 			this.ResponseJson(1, fmt.Sprintf("恭喜您，今日签到成功，领取了 %v 个金币", this.Sys.Sign))
 		}
@@ -495,11 +495,11 @@ func (this *UserController) CreateCollectFolder() {
 			if len(cover) > 0 {
 				cols = append(cols, "Cover")
 			}
-			_, err = models.O.Update(&folder, cols...)
+			_, err = orm.NewOrm().Update(&folder, cols...)
 		} else {
-			if _, err = models.O.Insert(&folder); err == nil {
+			if _, err = orm.NewOrm().Insert(&folder); err == nil {
 				//收藏夹数量+1
-				models.Regulate(models.TableUserInfo, "Collect", 1, "Id=?", this.IsLogin)
+				models.Regulate(models.GetTableUserInfo(), "Collect", 1, "Id=?", this.IsLogin)
 			}
 		}
 
@@ -509,7 +509,7 @@ func (this *UserController) CreateCollectFolder() {
 		}
 
 		if folder.Id == 0 {
-			models.Regulate(models.TableUserInfo, "Collect", 1, fmt.Sprintf("Id=%v", this.IsLogin))
+			models.Regulate(models.GetTableUserInfo(), "Collect", 1, fmt.Sprintf("Id=%v", this.IsLogin))
 			this.ResponseJson(1, "收藏夹创建成功")
 		} else {
 			this.ResponseJson(1, "收藏夹编辑成功")
@@ -579,7 +579,7 @@ func (this *UserController) FindPwd() {
 			this.ResponseJson(0, "重置密码失败，用户名与邮箱不匹配")
 		}
 	} else {
-		this.Data["Seo"] = models.ModelSeo.GetByPage("PC-Findpwd", "找回密码", "找回密码", "找回密码", this.Sys.Site)
+		this.Data["Seo"] = models.NewSeo().GetByPage("PC-Findpwd", "找回密码", "找回密码", "找回密码", this.Sys.Site)
 		this.Data["IsUser"] = true
 		this.Data["PageId"] = "wenku-reg"
 		this.TplName = "findpwd.html"
@@ -591,7 +591,7 @@ func (this *UserController) DocDel() {
 	docid, _ := this.GetInt(":doc")
 	if this.IsLogin > 0 {
 		if docid > 0 {
-			errs := models.ModelDocRecycle.RemoveToRecycle(this.IsLogin, true, docid)
+			errs := models.NewDocumentRecycle().RemoveToRecycle(this.IsLogin, true, docid)
 			if len(errs) > 0 {
 				helper.Logger.Error("删除失败：%v", strings.Join(errs, "; "))
 				this.ResponseJson(0, "删除失败，文档不存在")
@@ -600,14 +600,14 @@ func (this *UserController) DocDel() {
 			}
 
 			//var doc = models.DocumentInfo{Id: docid}
-			//err := models.O.Read(&doc)
+			//err := orm.NewOrm().Read(&doc)
 			//if err != nil {
 			//	helper.Logger.Error(err.Error())
 			//	this.ResponseJson(0, "删除失败，文档不存在")
 			//} else {
 			//	if doc.Uid == this.IsLogin {
 			//		doc.Status = -1
-			//		_, err := models.O.Update(&doc)
+			//		_, err := orm.NewOrm().Update(&doc)
 			//		if err == nil {
 			//			//总文档数量-1
 			//			models.SetDecr("sys", "CntDoc", "Id=1")
@@ -640,7 +640,7 @@ func (this *UserController) DocEdit() {
 	if this.IsLogin > 0 {
 		if docid > 0 {
 			var info = models.DocumentInfo{Id: docid}
-			err := models.O.Read(&info)
+			err := orm.NewOrm().Read(&info)
 			if err != nil {
 				helper.Logger.Error(err.Error())
 				this.Redirect("/user", 302)
@@ -669,23 +669,23 @@ func (this *UserController) DocEdit() {
 						info.Cid = params["Cid"].(int)
 						info.ChanelId = params["Chanel"].(int)
 						info.Price = params["Price"].(int)
-						models.O.Update(&doc, "Title", "Keywords", "Description")
-						models.O.Update(&info, "Pid", "Cid", "ChanelId", "Price")
+						orm.NewOrm().Update(&doc, "Title", "Keywords", "Description")
+						orm.NewOrm().Update(&info, "Pid", "Cid", "ChanelId", "Price")
 						//原分类-1
-						models.Regulate(models.TableCategory, "Cnt", -1, fmt.Sprintf("Id in(%v,%v,%v)", info.ChanelId, info.Cid, info.Pid))
+						models.Regulate(models.GetTableCategory(), "Cnt", -1, fmt.Sprintf("Id in(%v,%v,%v)", info.ChanelId, info.Cid, info.Pid))
 						//新分类+1
-						models.Regulate(models.TableCategory, "Cnt", 1, fmt.Sprintf("Id in(%v,%v,%v)", params["Chanel"], params["Cid"], params["Pid"]))
+						models.Regulate(models.GetTableCategory(), "Cnt", 1, fmt.Sprintf("Id in(%v,%v,%v)", params["Chanel"], params["Cid"], params["Pid"]))
 						this.ResponseJson(1, "文档编辑成功")
 					} else {
 
-						err := models.O.Read(&doc)
+						err := orm.NewOrm().Read(&doc)
 						if err != nil {
 							helper.Logger.Error(err.Error())
 							this.Redirect("/user", 302)
 						}
 						cond := orm.NewCondition().And("status", 1)
 						data, _, _ := models.GetList("category", 1, 2000, cond, "sort")
-						this.Data["User"], _, _ = models.ModelUser.GetById(this.IsLogin)
+						this.Data["User"], _, _ = models.NewUser().GetById(this.IsLogin)
 						ModelUser := models.User{}
 						this.Data["Ranks"], _, err = ModelUser.UserList(1, 8, "i.Document desc", "u.Id,u.Username,u.Avatar,u.Intro,i.Document", "i.Status=1")
 						//cates := models.ToTree(data, "Pid", 0)
@@ -713,7 +713,7 @@ func (this *UserController) DocEdit() {
 func (this *UserController) CollectFolderDel() {
 	cid, _ := this.GetInt(":cid")
 	if cid > 0 && this.IsLogin > 0 {
-		err := models.ModelCollect.DelFolder(cid, this.IsLogin)
+		err := models.NewCollect().DelFolder(cid, this.IsLogin)
 		if err != nil {
 			helper.Logger.Error(err.Error())
 			this.ResponseJson(0, err.Error())
@@ -729,7 +729,7 @@ func (this *UserController) CollectFolderDel() {
 func (this *UserController) CollectCancel() {
 	cid, _ := this.GetInt(":cid")
 	did, _ := this.GetInt(":did")
-	if err := models.ModelCollect.Cancel(did, cid, this.IsLogin); err != nil {
+	if err := models.NewCollect().Cancel(did, cid, this.IsLogin); err != nil {
 		helper.Logger.Error(err.Error())
 		this.ResponseJson(0, "移除收藏失败，可能您为收藏该文档")
 	}
@@ -767,13 +767,13 @@ func (this *UserController) Avatar() {
 		}
 		//查询数据库用户数据
 		var user = models.User{Id: this.IsLogin}
-		models.O.Read(&user)
+		orm.NewOrm().Read(&user)
 		if len(user.Avatar) > 0 {
 			//删除原头像图片
 			go models.NewOss().DelFromOss(true, user.Avatar)
 		}
 		user.Avatar = savefile
-		rows, err := models.O.Update(&user, "Avatar")
+		rows, err := orm.NewOrm().Update(&user, "Avatar")
 		if rows > 0 && err == nil {
 			this.ResponseJson(1, "头像更新成功")
 		}
@@ -802,7 +802,7 @@ func (this *UserController) Edit() {
 			this.ResponseJson(0, "参数不正确")
 		}
 		var user = models.User{Id: this.IsLogin}
-		models.O.Read(&user)
+		orm.NewOrm().Read(&user)
 		if len(params["OldPassword"].(string)) > 0 || len(params["NewPassword"].(string)) > 0 || len(params["RePassword"].(string)) > 0 {
 			if len(params["NewPassword"].(string)) < 6 || len(params["RePassword"].(string)) < 6 {
 				this.ResponseJson(0, "密码长度必须至少6个字符")
@@ -824,7 +824,7 @@ func (this *UserController) Edit() {
 			changepwd = true
 		}
 		user.Intro = params["Intro"].(string)
-		rows, err := models.O.Update(&user, cols...)
+		rows, err := orm.NewOrm().Update(&user, cols...)
 		if err != nil {
 			helper.Logger.Error(err.Error())
 			this.ResponseJson(0, "设置失败，请刷新页面重试")
