@@ -5,6 +5,13 @@ import (
 
 	"fmt"
 
+	"io/ioutil"
+	"time"
+
+	"path/filepath"
+
+	"os"
+
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
@@ -12,6 +19,12 @@ import (
 
 type SysController struct {
 	BaseController
+}
+
+type logFile struct {
+	Path    string
+	ModTime time.Time
+	Size    int
 }
 
 //系统配置管理
@@ -62,11 +75,49 @@ func (this *SysController) Get() {
 				if errES != nil {
 					this.Data["ErrES"] = errES.Error()
 				}
+			} else if tab == "logs" {
+				var logs []logFile
+				if files, _ := ioutil.ReadDir("logs"); len(files) > 0 {
+					for _, file := range files {
+						if !file.IsDir() {
+							logs = append(logs, logFile{
+								Path:    "logs/" + file.Name(),
+								ModTime: file.ModTime(),
+								Size:    int(file.Size()),
+							})
+						}
+					}
+				}
+				this.Data["Logs"] = logs
 			}
 		}
 		this.TplName = "index.html"
 	}
+}
 
+//下载或者删除日志文件
+func (this *SysController) HandleLogs() {
+	file := this.GetString("file")
+	action := this.GetString("action")
+	if action == "del" { //删除
+		if ext := filepath.Ext(file); ext == ".log" {
+			if file == "logs/dochub.log" {
+				this.Response(map[string]interface{}{"status": 0, "msg": "日志文件删除失败：logs/dochub.log日志文件禁止删除，否则程序无法写入日志"})
+			}
+			if err := os.Remove(file); err != nil {
+				this.Response(map[string]interface{}{"status": 0, "msg": "日志文件删除失败：" + err.Error()})
+			}
+		}
+		this.Response(map[string]interface{}{"status": 1, "msg": "删除成功"})
+	} else { //下载
+		if b, err := ioutil.ReadFile(file); err != nil {
+			helper.Logger.Error(err.Error())
+			this.Abort("404")
+		} else {
+			this.Ctx.ResponseWriter.Header().Add("Content-disposition", "attachment; filename="+filepath.Base(file))
+			this.Ctx.ResponseWriter.Write(b)
+		}
+	}
 }
 
 //重建全量索引

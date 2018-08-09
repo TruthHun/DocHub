@@ -84,6 +84,7 @@ func back() {
 	beego.Router("/admin/doc/remark", &AdminControllers.DocController{}, "get,post:RemarkTpl")
 	beego.Router("/admin/doc/list/*", &AdminControllers.DocController{}, "get:List")
 	beego.Router("/admin/sys", &AdminControllers.SysController{}, "get,post:Get")
+	beego.Router("/admin/sys/handle-logs", &AdminControllers.SysController{}, "get:HandleLogs") //下载或者删除日志文件
 	beego.Router("/admin/seo", &AdminControllers.SeoController{})
 	beego.Router("/admin/seo/sitemap", &AdminControllers.SeoController{}, "get:UpdateSitemap") //更新站点地图
 	beego.Router("/admin/ad", &AdminControllers.AdController{})

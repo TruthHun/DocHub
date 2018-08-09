@@ -196,7 +196,40 @@
                         {{end}}
 
                     {{else}}
-                        <form action="" class="wenku-ajax-form" data-redirect="" method="post">
+
+                    {{if eq .Tab "logs"}}
+                        <div class="col-xs-12 col-sm-7">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-condensed table-hover">
+                                    <caption>日志文件管理</caption>
+                                    <thead>
+                                    <tr>
+                                        <th>文件</th>
+                                        <th>大小</th>
+                                        <th>时间</th>
+                                        <th>操作</th></tr>
+                                    </thead>
+                                    <tbody>
+                                    {{range .Logs}}
+                                        <tr>
+                                            <td>{{.Path}}</td>
+                                            <td>{{FormatByte .Size}}</td>
+                                            <td>{{dateformat .ModTime "2006-01-02 15:04:05"}}</td>
+                                            <td>
+                                                <a href="/admin/sys/handle-logs?action=download&file={{.Path}}" class="wenku-tooltip" title="下载日志"><i class="fa fa-cloud-download"></i></a>
+                                                {{/*logs/dochub.log日志文件禁止删除，否则程序无法写入日志*/}}
+                                                {{if ne .Path "logs/dochub.log"}}|
+                                                <a href="/admin/sys/handle-logs?action=del&file={{.Path}}" class="wenku-tooltip wenku-ajax-get wenku-confirm" title="删除日志"><i class="fa fa-recycle"></i></a>
+                                                {{end}}
+                                            </td>
+                                        </tr>
+                                    {{end}}
+                                </table>
+                        </div>
+                        </div>
+                    {{end}}
+
+                        <form action="" class="wenku-ajax-form {{if eq .Tab "logs"}}col-xs-12 col-sm-5{{end}}" data-redirect="" method="post">
                             {{range .Configs}}
                                 {{if eq $.Tab .Category}}
                                     <div class="form-group">
@@ -240,6 +273,9 @@
                                     </div>
                             {{end}}
                         </form>
+
+
+
                     {{end}}
 
 

@@ -322,7 +322,7 @@ func FormatByte(size int) string {
 
 	num := fmt.Sprintf("%.2f", fsize)
 
-	return string(num) + units[i]
+	return string(num) + " " + units[i]
 }
 
 //获取文档扩展名分类以及扩展名分类对应的catenum数字
