@@ -661,7 +661,7 @@ func DoesCollect(did, uid int) bool {
 		return false
 	}
 	var params []orm.Params
-	sql := fmt.Sprintf("select c.Id from %v cf left join %v c on c.cid=cf.id where c.Did=? and cf.Uid=? limit 1", TableCollectFolder, TableCollect)
+	sql := fmt.Sprintf("select c.Id from %v cf left join %v c on c.cid=cf.id where c.Did=? and cf.Uid=? limit 1", GetTableCollectFolder(), GetTableCollect())
 	rows, err := orm.NewOrm().Raw(sql, did, uid).Values(&params)
 	if err != nil {
 		helper.Logger.Error(err.Error())

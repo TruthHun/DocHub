@@ -294,7 +294,7 @@ func (this *ElasticSearchClient) RebuildAllIndex() {
 	pageSize := 1000
 	maxPage := 1000000
 	for page := 1; page < maxPage; page++ {
-		if infos, rows, err := ModelDoc.GetDocInfoForElasticSearch(page, pageSize, 0); err != nil || rows == 0 {
+		if infos, rows, err := NewDocument().GetDocInfoForElasticSearch(page, pageSize, 0); err != nil || rows == 0 {
 			if err != nil && err != orm.ErrNoRows {
 				helper.Logger.Error(err.Error())
 			}
@@ -305,7 +305,7 @@ func (this *ElasticSearchClient) RebuildAllIndex() {
 				ids = append(ids, info.Id)
 			}
 			timeStart := time.Now().Unix()
-			if data, err := ModelDoc.GetDocForElasticSearch(ids...); err != nil {
+			if data, err := NewDocument().GetDocForElasticSearch(ids...); err != nil {
 				helper.Logger.Error("批量生成索引失败：" + err.Error())
 			} else {
 				if err := this.BuildIndexByBuck(data); err != nil {
@@ -324,7 +324,7 @@ func (this *ElasticSearchClient) RebuildAllIndex() {
 
 //根据id查询文档，并创建索引
 func (this *ElasticSearchClient) BuildIndexById(id int) (err error) {
-	if es, errES := ModelDoc.GetDocForElasticSearch(id); errES != nil {
+	if es, errES := NewDocument().GetDocForElasticSearch(id); errES != nil {
 		err = errES
 	} else {
 		//基本只会有一项

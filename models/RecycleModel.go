@@ -38,7 +38,7 @@ func (this *DocumentRecycle) RecoverFromRecycle(ids ...interface{}) (err error) 
 		qs.All(&docinfo)
 		if affectedRows, err := qs.Update(orm.Params{"Status": 1}); affectedRows > 0 {
 			//总文档数量增加
-			Regulate(TableSys, "CntDoc", int(affectedRows), "Id=1")
+			Regulate(GetTableSys(), "CntDoc", int(affectedRows), "Id=1")
 			beego.Debug("查询到的文档", docinfo)
 			if len(docinfo) > 0 {
 				for _, v := range docinfo {
@@ -65,7 +65,7 @@ func (this *DocumentRecycle) RecoverFromRecycle(ids ...interface{}) (err error) 
 //回收站文档列表
 func (this *DocumentRecycle) RecycleList(p, listRows int) (params []orm.Params, rows int64, err error) {
 	var sql string
-	tables := []string{TableDocRecycle + " dr", TableDoc + " d", TableDocInfo + " di", TableUser + " u", TableDocStore + " ds"}
+	tables := []string{GetTableDocumentRecycle() + " dr", GetTableDocument() + " d", GetTableDocumentInfo() + " di", GetTableUser() + " u", GetTableDocumentStore() + " ds"}
 	on := []map[string]string{
 		{"dr.Id": "d.Id"},
 		{"d.Id": "di.Id"},
@@ -79,7 +79,7 @@ func (this *DocumentRecycle) RecycleList(p, listRows int) (params []orm.Params, 
 		"u":  {"Username", "Id Uid"},
 	}
 	if sql, err = LeftJoinSqlBuild(tables, on, fields, p, listRows, []string{"dr.Date desc"}, nil, "dr.Id>0"); err == nil {
-		rows, err = O.Raw(sql).Values(&params)
+		rows, err = orm.NewOrm().Raw(sql).Values(&params)
 	}
 	return
 }
@@ -102,21 +102,21 @@ func (this *DocumentRecycle) RemoveToRecycle(uid interface{}, self bool, ids ...
 		docinfo []DocumentInfo
 	)
 	if len(ids) > 0 {
-		O.QueryTable(TableDocInfo).Filter("Id__in", ids...).All(&docinfo)
+		orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).All(&docinfo)
 		//总文档记录减少
-		Regulate(TableSys, "CntDoc", -len(docinfo), "Id=1")
+		Regulate(GetTableSys(), "CntDoc", -len(docinfo), "Id=1")
 		for _, info := range docinfo {
 			//文档分类统计数量减少
-			if err := Regulate(TableCategory, "Cnt", -1, "Id in(?,?,?)", info.ChanelId, info.Pid, info.Cid); err != nil {
+			if err := Regulate(GetTableCategory(), "Cnt", -1, "Id in(?,?,?)", info.ChanelId, info.Pid, info.Cid); err != nil {
 				helper.Logger.Error(err.Error())
 			}
 			//用户文档统计数量减少
-			if err := Regulate(TableUserInfo, "Document", -1, "Id=?", info.Uid); err != nil {
+			if err := Regulate(GetTableUserInfo(), "Document", -1, "Id=?", info.Uid); err != nil {
 				helper.Logger.Error(err.Error())
 			}
 		}
 		//变更文档状态
-		if _, err := UpdateByIds(TableDocInfo, "Status", -1, ids...); err != nil {
+		if _, err := UpdateByIds(GetTableDocumentInfo(), "Status", -1, ids...); err != nil {
 			helper.Logger.Error(err.Error())
 			errs = append(errs, err.Error())
 		}
@@ -127,7 +127,7 @@ func (this *DocumentRecycle) RemoveToRecycle(uid interface{}, self bool, ids ...
 			rc.Uid = helper.Interface2Int(uid)
 			rc.Date = int(time.Now().Unix())
 			rc.Self = self
-			if _, err := O.Insert(&rc); err != nil {
+			if _, err := orm.NewOrm().Insert(&rc); err != nil {
 				helper.Logger.Error(err.Error())
 			}
 		}

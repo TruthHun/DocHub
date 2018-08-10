@@ -18,7 +18,7 @@ func install() {
 	installSys()
 	installCfg()
 
-	ModelSys.UpdateGlobal() //更新系统配置的全局变量
+	NewSys().UpdateGlobal() //更新系统配置的全局变量
 }
 
 //安装管理员初始数据
@@ -880,5 +880,5 @@ func installCfg() {
 		o.Insert(&cfg)
 	}
 	//全局变量赋值
-	ModelConfig.UpdateGlobal() //配置文件全局变量更新
+	NewConfig().UpdateGlobal() //配置文件全局变量更新
 }

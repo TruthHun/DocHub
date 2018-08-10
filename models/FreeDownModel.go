@@ -22,7 +22,7 @@ func GetTableFreeDown() string {
 //@param            uid         用户id
 //@param            did         文档id，document id
 //@return           isFree      是否免费
-func (this *FreeDown) IsFreeDown(uid, did interface{}) (isFree bool) {
-	orm.NewOrm().QueryTable(GetTableFreeDown()).Filter("Uid", uid).Filter("Did", did).One(this)
-	return this.Id > 0
+func (this *FreeDown) IsFreeDown(uid, did interface{}) (free FreeDown) {
+	orm.NewOrm().QueryTable(GetTableFreeDown()).Filter("Uid", uid).Filter("Did", did).One(&free)
+	return
 }

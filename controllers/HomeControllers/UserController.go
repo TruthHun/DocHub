@@ -111,7 +111,7 @@ func (this *UserController) Get() {
 					models.GetTableUser(),
 					models.GetTableCollect(),
 					models.GetTableDocument(),
-					models.GetGetTableCategory()(),
+					models.GetTableCategory(),
 					models.GetTableDocumentStore(),
 					fmt.Sprintf("clt.Cid=%v", cid),
 					"clt.Id desc",
@@ -426,7 +426,7 @@ func (this *UserController) Sign() {
 		if err != nil {
 			this.ResponseJson(0, "签到失败，您今天已签到")
 		} else {
-			if err := models.Regulate(models.GetGetTableUserInfo()(), "Coin", this.Sys.Sign, fmt.Sprintf("Id=%v", this.IsLogin)); err == nil {
+			if err := models.Regulate(models.GetTableUserInfo(), "Coin", this.Sys.Sign, fmt.Sprintf("Id=%v", this.IsLogin)); err == nil {
 				log := models.CoinLog{
 					Uid:  this.IsLogin,
 					Coin: this.Sys.Sign,

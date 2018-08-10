@@ -12,7 +12,6 @@ import (
 
 	"strconv"
 
-	"github.com/TruthHun/BookStack/models"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -507,7 +506,7 @@ func DocList(uid, chanelid, pid, cid, p, listRows int, order string, status ...i
 		GetTableUser(),
 		GetTableDocument(),
 		GetTableCategory(),
-		models.TableDocumentStore,
+		GetTableDocumentStore(),
 		condStr,
 		order,
 		(p-1)*listRows, listRows,

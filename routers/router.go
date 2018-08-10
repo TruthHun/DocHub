@@ -103,6 +103,4 @@ func back() {
 	beego.Router("/admin/elasticsearch/rebuild", &AdminControllers.SysController{}, "get:RebuildAllIndex") //重建全量索引
 	beego.Router("/admin/test/send-email", &AdminControllers.SysController{}, "get:TestForSendingEmail")
 	beego.Router("/admin/test/ping-oss", &AdminControllers.SysController{}, "get:TestOSS")
-	//beego.Router("/admin/crawl", &AdminControllers.CrawlController{})
-	//beego.Router("/admin/psGitbook", &AdminControllers.CrawlController{}, "get:PublishGitbook")
 }

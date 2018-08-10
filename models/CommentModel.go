@@ -41,7 +41,7 @@ func (this *DocumentComment) GetCommentList(did, p, listRows int) (params []orm.
 		{"c.Uid": "u.Id"},
 	}
 	fields := map[string][]string{
-		"c": GetFields(ModelDocComment),
+		"c": GetFields(NewDocumentComment()),
 		"u": {"Username", "Avatar"},
 	}
 	if sql, err := LeftJoinSqlBuild(tables, on, fields, p, listRows, []string{"c.Id desc"}, nil, "c.Did=?"); err == nil {
