@@ -1,6 +1,9 @@
 package models
 
-import "github.com/astaxie/beego/orm"
+import (
+	"github.com/TruthHun/DocHub/helper"
+	"github.com/astaxie/beego/orm"
+)
 
 //管理员数据表
 type Admin struct {
@@ -25,7 +28,7 @@ func GetTableAdmin() string {
 //@return           admin               管理员数据结构，如果登录成功，管理员id大于0
 //@return           err                 SQL查询过程中出现的错误
 func (this *Admin) Login(username, password, code string) (admin Admin, err error) {
-	admin = Admin{Username: username, Password: password, Code: code}
+	admin = Admin{Username: username, Password: helper.MyMD5(password), Code: code}
 	err = orm.NewOrm().Read(&admin, "Username", "Password", "Code")
 	return
 }

@@ -736,14 +736,14 @@ func installCfg() {
 		},
 		Config{
 			Title:       "预览链接",
-			Description: "如：http://dochub-public.oss-cn-hongkong.aliyuncs.com",
+			Description: "如：https://dochub-public.oss-cn-hongkong.aliyuncs.com",
 			Key:         "preview_url",
 			Value:       "",
 			Category:    cateOss,
 		},
 		Config{
 			Title:       "下载链接",
-			Description: "如：http://dochub-private.oss-cn-hongkong.aliyuncs.com",
+			Description: "如：https://dochub-private.oss-cn-hongkong.aliyuncs.com",
 			Key:         "download_url",
 			Value:       "",
 			Category:    cateOss,
