@@ -5,8 +5,8 @@ $(function(){
 		e.preventDefault();
 		var _this=$(this);
 		if(_this.hasClass("disabled")) return false;
+		_this.addClass("disabled");
 		if (_this.hasClass("wenku-confirm")) {
-
 		        var title=_this.attr("title") || _this.attr("data-original-title") || _this.text();
                     confirm_text="您确定要 "+title+" 吗？"
 
