@@ -140,7 +140,10 @@ func RegisterDB() {
 //@param            table               数据表
 func getTable(table string) string {
 	prefix := beego.AppConfig.DefaultString("db::prefix", "hc_")
-	return prefix + strings.TrimPrefix(table, prefix)
+	if !strings.HasPrefix(table, prefix) {
+		table = prefix + table
+	}
+	return table
 }
 
 //根据指定的表和id删除指定的记录，如果在删除记录的时候也删除记录中记录的文件，则不能调用该方法
@@ -149,7 +152,7 @@ func getTable(table string) string {
 //@return           affected                影响的记录数
 //@return           err                     错误
 func DelByIds(table string, id ...interface{}) (affected int64, err error) {
-	return orm.NewOrm().QueryTable(table).Filter("Id__in", id...).Delete()
+	return orm.NewOrm().QueryTable(getTable(table)).Filter("Id__in", id...).Delete()
 }
 
 //根据指定的表和id条件更新表字段，不支持批量更新
@@ -160,7 +163,7 @@ func DelByIds(table string, id ...interface{}) (affected int64, err error) {
 //@return           affected                影响的记录数
 //@return           err                     错误
 func UpdateByIds(table string, field string, value interface{}, id ...interface{}) (affected int64, err error) {
-	return orm.NewOrm().QueryTable(table).Filter("Id__in", id...).Update(orm.Params{
+	return orm.NewOrm().QueryTable(getTable(table)).Filter("Id__in", id...).Update(orm.Params{
 		field: value,
 	})
 }
@@ -173,7 +176,7 @@ func UpdateByIds(table string, field string, value interface{}, id ...interface{
 //@return           affected                影响的记录数
 //@return           err                     错误
 func UpdateByField(table string, data map[string]interface{}, filter string, filterValue ...interface{}) (affected int64, err error) {
-	return orm.NewOrm().QueryTable(table).Filter(filter, filterValue...).Update(data)
+	return orm.NewOrm().QueryTable(getTable(table)).Filter(filter, filterValue...).Update(data)
 }
 
 //设置字段值减小
@@ -189,7 +192,7 @@ func Regulate(table, field string, step int, condition string, conditionArgs ...
 		step = -step
 		mark = "-"
 	}
-	sql := fmt.Sprintf("update %v set %v=%v%v? where %v", table, field, field, mark, condition)
+	sql := fmt.Sprintf("update %v set %v=%v%v? where %v", getTable(table), field, field, mark, condition)
 	if len(conditionArgs) > 0 {
 		_, err = orm.NewOrm().Raw(sql, step, conditionArgs[0:]).Exec()
 	} else {
@@ -208,7 +211,7 @@ func Regulate(table, field string, step int, condition string, conditionArgs ...
 //@return           rows            返回的记录数
 //@return           err             错误
 func GetList(table string, p, listRows int, condition *orm.Condition, orderby ...string) (params []orm.Params, rows int64, err error) {
-	rows, err = orm.NewOrm().QueryTable(table).SetCond(condition).Limit(listRows).Offset((p - 1) * listRows).OrderBy(orderby...).Values(&params)
+	rows, err = orm.NewOrm().QueryTable(getTable(table)).SetCond(condition).Limit(listRows).Offset((p - 1) * listRows).OrderBy(orderby...).Values(&params)
 	return params, rows, err
 }
 
@@ -575,6 +578,7 @@ func ReplaceInto(table string, params map[string]interface{}) (err error) {
 		values []interface{}
 		sql    string
 	)
+	table = getTable(table)
 	if len(params) > 0 {
 		for field, value := range params {
 			fields = append(fields, field)
@@ -594,7 +598,7 @@ func ReplaceInto(table string, params map[string]interface{}) (err error) {
 //@param            cond            查询条件
 //@return           cnt             统计的记录数
 func Count(table string, cond *orm.Condition) (cnt int64) {
-	cnt, _ = orm.NewOrm().QueryTable(table).SetCond(cond).Count()
+	cnt, _ = orm.NewOrm().QueryTable(getTable(table)).SetCond(cond).Count()
 	return
 }
 
