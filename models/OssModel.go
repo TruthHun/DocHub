@@ -216,8 +216,8 @@ func (this *Oss) BuildSignDaily(object string) (url string) {
 	slice := strings.Split(this.EndpointOuter, ".")
 	client := oss2.NewOSSClient(oss2.Region(slice[0]), false, this.AccessKeyId, this.AccessKeySecret, true)
 	bucket := client.Bucket(this.BucketStore)
-	time_format := "2006-01-02 00:00:00"
-	t, _ := time.Parse(time_format, time.Now().Format(time_format))
+	layout := "2006-01-02 00:00:00"
+	t, _ := time.Parse(layout, time.Now().Format(layout))
 	//创建有效期为
 	return bucket.SignedURL(object, t.Add(24*time.Hour))
 }

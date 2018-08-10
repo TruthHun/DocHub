@@ -106,25 +106,25 @@ func RegisterDB() {
 		NewConfig(),
 	}
 	orm.RegisterModelWithPrefix(beego.AppConfig.DefaultString("db::prefix", "hc_"), models...)
-	db_user := beego.AppConfig.String("db::user")
-	db_password := beego.AppConfig.String("db::password")
+	dbUser := beego.AppConfig.String("db::user")
+	dbPassword := beego.AppConfig.String("db::password")
 	if envpass := os.Getenv("MYSQL_PASSWORD"); envpass != "" {
-		db_password = envpass
+		dbPassword = envpass
 	}
-	db_database := beego.AppConfig.String("db::database")
+	dbDatabase := beego.AppConfig.String("db::database")
 	if envdatabase := os.Getenv("MYSQL_DATABASE"); envdatabase != "" {
-		db_database = envdatabase
+		dbDatabase = envdatabase
 	}
-	db_charset := beego.AppConfig.String("db::charset")
-	db_host := beego.AppConfig.String("db::host")
+	dbCharset := beego.AppConfig.String("db::charset")
+	dbHost := beego.AppConfig.String("db::host")
 	if envhost := os.Getenv("MYSQL_HOST"); envhost != "" {
-		db_host = envhost
+		dbHost = envhost
 	}
-	db_port := beego.AppConfig.String("db::port")
+	dbPort := beego.AppConfig.String("db::port")
 	if envport := os.Getenv("MYSQL_PORT"); envport != "" {
-		db_port = envport
+		dbPort = envport
 	}
-	dblink := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=%v", db_user, db_password, db_host, db_port, db_database, db_charset, "Asia%2FShanghai")
+	dblink := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=%v", dbUser, dbPassword, dbHost, dbPort, dbDatabase, dbCharset, "Asia%2FShanghai")
 	//下面两个参数后面要放到app.conf提供用户配置使用
 	// (可选)设置最大空闲连接
 	maxIdle := beego.AppConfig.DefaultInt("db::maxIdle", 50)

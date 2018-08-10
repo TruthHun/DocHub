@@ -33,9 +33,9 @@ func BuildRequest(method, url, referrer, cookie, os string, iscn, isjson bool, h
 		req.Header("Cookie", cookie)
 	}
 	//设置host
-	host_slice := strings.Split(url, "://")
-	if len(host_slice) > 1 {
-		host := strings.Split(host_slice[1], "/")[0]
+	hostSlice := strings.Split(url, "://")
+	if len(hostSlice) > 1 {
+		host := strings.Split(hostSlice[1], "/")[0]
 		req.SetHost(host)
 	}
 	//压缩

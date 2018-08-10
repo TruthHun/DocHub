@@ -184,12 +184,12 @@ func (this *Document) SimpleList(condition string, limit int, orderField ...stri
 		}
 	}
 	fields := "d.Title,d.Id,ds.Ext,ds.ExtCate"
-	sql_format := `
+	sqlFormat := `
 	select %v from %v d left join %v di on di.Id=d.Id
 	left join %v ds on ds.Id=di.DsId
 	where %v group by d.Title order by di.%v desc limit %v
 	`
-	sql := fmt.Sprintf(sql_format, fields, GetTableDocument(), GetTableDocumentInfo(), GetTableDocumentStore(), condition, order, limit)
+	sql := fmt.Sprintf(sqlFormat, fields, GetTableDocument(), GetTableDocumentInfo(), GetTableDocumentStore(), condition, order, limit)
 	rows, err = orm.NewOrm().Raw(sql).Values(&params)
 	return params, rows, err
 }
@@ -493,14 +493,14 @@ func DocList(uid, chanelid, pid, cid, p, listRows int, order string, status ...i
 		condStr = strings.Join(condQues, " and ")
 	}
 	fields := "di.Id,di.`Uid`, di.`Cid`, di.`TimeCreate`, di.`Dcnt`, di.`Vcnt`, di.`Ccnt`, di.`Score`, di.`Status`, di.`ChanelId`, di.`Pid`,c.Title Category,u.Username,d.Title,ds.`Md5`, ds.Id DsId,ds.`Ext`, ds.`ExtCate`, ds.`ExtNum`, ds.`Page`, ds.`Size`"
-	sql_format := `
+	sqlFormat := `
 		select %v from %v di left join %v u on di.Uid=u.Id
 		left join %v d on d.Id=di.Id
 		left join %v c on c.Id=di.cid
 		left join %v ds on ds.Id=di.DsId
 		where %v order by %v limit %v,%v
 		`
-	sql := fmt.Sprintf(sql_format,
+	sql := fmt.Sprintf(sqlFormat,
 		fields,
 		GetTableDocumentInfo(),
 		GetTableUser(),

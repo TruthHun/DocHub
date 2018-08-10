@@ -97,7 +97,7 @@ func (this *UserController) Get() {
 			if len(params) > 0 {
 				this.Data["Folder"] = params[0]
 				fields := "di.Id,di.`Uid`, di.`Cid`, di.`TimeCreate`, di.`Dcnt`, di.`Vcnt`, di.`Ccnt`, di.`Score`, di.`Status`, di.`ChanelId`, di.`Pid`,c.Title Category,u.Username,d.Title,ds.`Md5`, ds.`Ext`, ds.`ExtCate`, ds.`ExtNum`, ds.`Page`, ds.`Size`"
-				sql_format := `
+				sqlFormat := `
 							select %v from %v di left join %v u on di.Uid=u.Id
 							left join %v clt on clt.Did=di.Id
 							left join %v d on d.Id=di.Id
@@ -105,7 +105,7 @@ func (this *UserController) Get() {
 							left join %v ds on ds.Id=di.DsId
 							where %v order by %v limit %v,%v
 							`
-				sql = fmt.Sprintf(sql_format,
+				sql = fmt.Sprintf(sqlFormat,
 					fields,
 					models.GetTableDocumentInfo(),
 					models.GetTableUser(),
@@ -318,9 +318,9 @@ func (this *UserController) Reg() {
 		//先验证邮箱验证码是否正确
 		email := this.GetString("email")
 		code := this.GetString("code")
-		sess_email := fmt.Sprintf("%v", this.GetSession("RegMail"))
-		sess_code := fmt.Sprintf("%v", this.GetSession("RegCode"))
-		if sess_email == email && sess_code == code {
+		sessEmail := fmt.Sprintf("%v", this.GetSession("RegMail"))
+		sessCode := fmt.Sprintf("%v", this.GetSession("RegCode"))
+		if sessEmail == email && sessCode == code {
 			ModelUser := models.User{}
 			err, uid := ModelUser.Reg(
 				email,

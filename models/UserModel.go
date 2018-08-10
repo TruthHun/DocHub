@@ -64,11 +64,11 @@ func (u *User) UserList(p, listRows int, orderby, fields, cond string, args ...i
 		cond = "where " + cond
 	}
 
-	sql_count := fmt.Sprintf("select count(i.Id) cnt from %v u left join %v i on u.Id=i.Id %v limit 1",
+	sqlCount := fmt.Sprintf("select count(i.Id) cnt from %v u left join %v i on u.Id=i.Id %v limit 1",
 		GetTableUser(), GetTableUserInfo(), cond,
 	)
 	var one []orm.Params
-	if rows, err := o.Raw(sql_count, args...).Values(&one); err == nil && rows > 0 {
+	if rows, err := o.Raw(sqlCount, args...).Values(&one); err == nil && rows > 0 {
 		totalRows = helper.Interface2Int(one[0]["cnt"])
 	}
 

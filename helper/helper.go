@@ -263,10 +263,10 @@ func Default(val, defVal interface{}, preventZero ...bool) string {
 //@return           string                      返回生成的随机字符串
 func RandStr(size int, kind int) string {
 	ikind, kinds, result := kind, [][]int{[]int{10, 48}, []int{26, 97}, []int{26, 65}}, make([]byte, size)
-	is_all := kind > 2 || kind < 0
+	isAll := kind > 2 || kind < 0
 	rand.Seed(time.Now().UnixNano())
 	for i := 0; i < size; i++ {
-		if is_all { // random ikind
+		if isAll { // random ikind
 			ikind = rand.Intn(3)
 		}
 		scope, base := kinds[ikind][0], kinds[ikind][1]

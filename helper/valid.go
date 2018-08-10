@@ -120,10 +120,10 @@ func Valid(params url.Values, rules map[string][]string) (map[string]interface{}
 			if param, ok := params[key]; ok {
 				v := param[0]
 				//数据验证
-				for _, r := range slice {
+				for _, item := range slice {
 					//规则切分，如range:1:10
-					r_slice := strings.Split(r, ":")
-					err = execValid(v, r_slice[0], r_slice[1:]...)
+					itemSlice := strings.Split(item, ":")
+					err = execValid(v, itemSlice[0], itemSlice[1:]...)
 					if err == nil {
 						data[key] = v
 					} else {
@@ -132,12 +132,12 @@ func Valid(params url.Values, rules map[string][]string) (map[string]interface{}
 				}
 
 				//类型转换
-				for _, r := range slice {
+				for _, item := range slice {
 					//规则切分，如range:1:10
-					r_slice := strings.Split(r, ":")
+					itemSlice := strings.Split(item, ":")
 
-					if strings.Contains(typeConvertStr, r_slice[0]) {
-						data[key], err = execConvert(v, r_slice[0])
+					if strings.Contains(typeConvertStr, itemSlice[0]) {
+						data[key], err = execConvert(v, itemSlice[0])
 						if err != nil {
 							errs = append(errs, err.Error())
 						}
@@ -202,13 +202,13 @@ func execValid(val, rule string, args ...string) error {
 	case "min", "max":
 		if len(args) > 0 {
 			num, _ := strconv.ParseFloat(args[0], 64)
-			val_num, _ := strconv.ParseFloat(val, 64)
+			parseVal, _ := strconv.ParseFloat(val, 64)
 			if rule == "min" {
-				if val_num < num {
+				if parseVal < num {
 					return errors.New(fmt.Sprintf("最小值不能小于%v", num))
 				}
 			} else {
-				if val_num > num {
+				if parseVal > num {
 					return errors.New(fmt.Sprintf("最大值不能大于%v", num))
 				}
 			}
@@ -216,32 +216,32 @@ func execValid(val, rule string, args ...string) error {
 	case "gt":
 		if len(args) > 0 {
 			num, _ := strconv.ParseFloat(args[0], 64)
-			val_num, _ := strconv.ParseFloat(val, 64)
-			if val_num <= num {
+			parseVal, _ := strconv.ParseFloat(val, 64)
+			if parseVal <= num {
 				return errors.New(fmt.Sprintf("值必须大于%v", num))
 			}
 		}
 	case "lt":
 		if len(args) > 0 {
 			num, _ := strconv.ParseFloat(args[0], 64)
-			val_num, _ := strconv.ParseFloat(val, 64)
-			if val_num >= num {
+			parseVal, _ := strconv.ParseFloat(val, 64)
+			if parseVal >= num {
 				return errors.New(fmt.Sprintf("值必须小于%v", num))
 			}
 		}
 	case "gte":
 		if len(args) > 0 {
 			num, _ := strconv.ParseFloat(args[0], 64)
-			val_num, _ := strconv.ParseFloat(val, 64)
-			if val_num < num {
+			parseVal, _ := strconv.ParseFloat(val, 64)
+			if parseVal < num {
 				return errors.New(fmt.Sprintf("值必须大于或等于%v", num))
 			}
 		}
 	case "lte":
 		if len(args) > 0 {
 			num, _ := strconv.ParseFloat(args[0], 64)
-			val_num, _ := strconv.ParseFloat(val, 64)
-			if val_num > num {
+			parseVal, _ := strconv.ParseFloat(val, 64)
+			if parseVal > num {
 				return errors.New(fmt.Sprintf("值必须小于或等于%v", num))
 			}
 		}
@@ -284,8 +284,8 @@ func execValid(val, rule string, args ...string) error {
 		if len(args) == 2 {
 			min, _ := strconv.ParseFloat(args[0], 64)
 			max, _ := strconv.ParseFloat(args[1], 64)
-			val_num, _ := strconv.ParseFloat(val, 64)
-			if val_num < min || val_num > max {
+			parseVal, _ := strconv.ParseFloat(val, 64)
+			if parseVal < min || parseVal > max {
 				return errors.New(fmt.Sprintf("超出指定数值范围：%v-%v", args[0], args[1]))
 			}
 		}
