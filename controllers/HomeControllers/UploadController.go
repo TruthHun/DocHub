@@ -36,7 +36,7 @@ func (this *UploadController) SegWord() {
 //文档上传页面
 func (this *UploadController) Get() {
 	cond := orm.NewCondition().And("status", 1)
-	data, _, _ := models.GetList("category", 1, 2000, cond, "Sort", "Title")
+	data, _, _ := models.GetList(models.GetTableCategory(), 1, 2000, cond, "Sort", "Title")
 	this.Xsrf()
 	this.Data["Seo"] = models.NewSeo().GetByPage("PC-Upload", "文档上传-文档分享", "文档上传,文档分享", "文档上传-文档分享", this.Sys.Site)
 	this.Data["Cates"], _ = conv.InterfaceToJson(data)

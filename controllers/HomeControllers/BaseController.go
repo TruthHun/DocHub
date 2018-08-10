@@ -166,7 +166,7 @@ func (this *BaseController) Chanels() []orm.Params {
 	if fc, ok := cache.([]orm.Params); ok && err == nil && len(fc) > 0 {
 		return fc
 	}
-	params, rows, _ := models.GetList("category", 1, 6, orm.NewCondition().And("Pid", 0), "Sort")
+	params, rows, _ := models.GetList(models.GetTableCategory(), 1, 6, orm.NewCondition().And("Pid", 0), "Sort")
 	if rows > 0 {
 		helper.CacheSet(key, params, 10*time.Second)
 	}

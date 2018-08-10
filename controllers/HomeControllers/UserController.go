@@ -161,7 +161,7 @@ func (this *UserController) Coin() {
 
 	if uid > 0 {
 		listRows := 16
-		lists, _, _ := models.GetList("coin_log", p, listRows, orm.NewCondition().And("Uid", uid), "-Id")
+		lists, _, _ := models.GetList(models.GetTableCoinLog(), p, listRows, orm.NewCondition().And("Uid", uid), "-Id")
 		if p > 1 {
 			this.ResponseJson(1, "数据获取成功", lists)
 		} else {
@@ -205,7 +205,7 @@ func (this *UserController) Collect() {
 	this.Data["Uid"] = uid
 	if uid > 0 {
 		listRows := 100
-		lists, _, _ := models.GetList("collect_folder", p, listRows, orm.NewCondition().And("Uid", uid), "-Id")
+		lists, _, _ := models.GetList(models.GetTableCollectFolder(), p, listRows, orm.NewCondition().And("Uid", uid), "-Id")
 		if p > 1 {
 			this.ResponseJson(1, "数据获取成功", lists)
 		} else {
@@ -684,7 +684,7 @@ func (this *UserController) DocEdit() {
 							this.Redirect("/user", 302)
 						}
 						cond := orm.NewCondition().And("status", 1)
-						data, _, _ := models.GetList("category", 1, 2000, cond, "sort")
+						data, _, _ := models.GetList(models.GetTableCategory(), 1, 2000, cond, "sort")
 						this.Data["User"], _, _ = models.NewUser().GetById(this.IsLogin)
 						ModelUser := models.User{}
 						this.Data["Ranks"], _, err = ModelUser.UserList(1, 8, "i.Document desc", "u.Id,u.Username,u.Avatar,u.Intro,i.Document", "i.Status=1")

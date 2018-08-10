@@ -34,7 +34,7 @@ func (this *ViewController) Get() {
 
 	var chanelTitle, parentTitle, childrenTitle interface{}
 
-	breadcrumb, _, _ := models.GetList("category", 1, 3, orm.NewCondition().And("Id__in", doc["Cid"], doc["ChanelId"], doc["Pid"]))
+	breadcrumb, _, _ := models.GetList(models.GetTableCategory(), 1, 3, orm.NewCondition().And("Id__in", doc["Cid"], doc["ChanelId"], doc["Pid"]))
 	for _, v := range breadcrumb {
 		switch fmt.Sprintf("%v", v["Id"]) {
 		case fmt.Sprintf("%v", doc["ChanelId"]):

@@ -19,7 +19,7 @@ type IndexController struct {
 func (this *IndexController) Get() {
 
 	//获取横幅
-	this.Data["Banners"], _, _ = models.GetList("banner", 1, 100, orm.NewCondition().And("status", 1), "Sort")
+	this.Data["Banners"], _, _ = models.GetList(models.GetTableBanner(), 1, 100, orm.NewCondition().And("status", 1), "Sort")
 
 	//判断用户是否已登录，如果已登录，则返回用户信息
 	if this.IsLogin > 0 {
@@ -60,11 +60,11 @@ func (this *IndexController) GetHomeCates(catesId string) interface{} {
 		return fc
 	}
 	catesIdSlice := strings.Split(catesId, ",")
-	chanels, _, err := models.GetList("category", 1, 23, orm.NewCondition().And("Id__in", catesIdSlice), "sort")
+	chanels, _, err := models.GetList(models.GetTableCategory(), 1, 23, orm.NewCondition().And("Id__in", catesIdSlice), "sort")
 	for _, v := range catesIdSlice {
 		for _, chanel := range chanels {
 			if fmt.Sprintf("%v", v) == fmt.Sprintf("%v", chanel["Id"]) {
-				chanel["child"], _, _ = models.GetList("category", 1, 8, orm.NewCondition().And("Pid", chanel["Id"]), "sort")
+				chanel["child"], _, _ = models.GetList(models.GetTableCategory(), 1, 8, orm.NewCondition().And("Pid", chanel["Id"]), "sort")
 			}
 		}
 	}

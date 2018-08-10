@@ -30,7 +30,7 @@ func (this *ListController) Get() {
 	}
 	chanel := this.GetString(":chanel")
 	params := conv.Path2Map(this.GetString(":splat"))
-	chanels, rows, err := models.GetList("category", 1, 1, orm.NewCondition().And("Alias", chanel))
+	chanels, rows, err := models.GetList(models.GetTableCategory(), 1, 1, orm.NewCondition().And("Alias", chanel))
 	if rows == 0 {
 		this.Redirect("/", 302)
 	}
@@ -52,8 +52,8 @@ func (this *ListController) Get() {
 	seostr = append(seostr, chanels[0]["Title"].(string))
 	if pid > 0 {
 		totalRows = 0
-		this.Data["Children"], _, _ = models.GetList("category", 1, 50, orm.NewCondition().And("Pid", pid), orderby...)
-		if curParent, rows, err := models.GetList("category", 1, 1, orm.NewCondition().And("Id", pid), orderby...); err != nil {
+		this.Data["Children"], _, _ = models.GetList(models.GetTableCategory(), 1, 50, orm.NewCondition().And("Pid", pid), orderby...)
+		if curParent, rows, err := models.GetList(models.GetTableCategory(), 1, 1, orm.NewCondition().And("Id", pid), orderby...); err != nil {
 			helper.Logger.Error(err.Error())
 		} else if rows > 0 {
 			this.Data["CurParent"] = curParent[0]
@@ -64,7 +64,7 @@ func (this *ListController) Get() {
 
 	if cid > 0 {
 		totalRows = 0
-		if curChildren, rows, err := models.GetList("category", 1, 1, orm.NewCondition().And("Id", cid), orderby...); err != nil {
+		if curChildren, rows, err := models.GetList(models.GetTableCategory(), 1, 1, orm.NewCondition().And("Id", cid), orderby...); err != nil {
 			helper.Logger.Error(err.Error())
 		} else if rows > 0 {
 			this.Data["CurChildren"] = curChildren[0]
@@ -95,7 +95,7 @@ func (this *ListController) Get() {
 	this.Data["Lists"] = lists
 	this.Data["Seo"] = models.NewSeo().GetByPage("PC-List", strings.Join(seostr, "-"), strings.Join(seostr, ","), strings.Join(seostr, "-"), this.Sys.Site)
 	this.Data["Page"] = helper.Paginations(6, totalRows, listRows, p, fmt.Sprintf("/list/%v", chanel), "pid", pid, "cid", cid)
-	this.Data["Parents"], _, _ = models.GetList("category", 1, 20, orm.NewCondition().And("Pid", chanels[0]["Id"]), orderby...)
+	this.Data["Parents"], _, _ = models.GetList(models.GetTableCategory(), 1, 20, orm.NewCondition().And("Pid", chanels[0]["Id"]), orderby...)
 	this.Data["PageId"] = "wenku-list"
 	this.TplName = "index.html"
 }

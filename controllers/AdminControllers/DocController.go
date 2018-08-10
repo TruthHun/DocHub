@@ -21,7 +21,7 @@ func (this *DocController) Prepare() {
 	this.BaseController.Prepare()
 	this.Data["IsDoc"] = true
 	cond := orm.NewCondition().And("pid", 0)
-	if data, _, err := models.GetList("category", 1, 20, cond, "sort", "-id"); err != nil {
+	if data, _, err := models.GetList(models.GetTableCategory(), 1, 20, cond, "sort", "-id"); err != nil {
 		helper.Logger.Error(err.Error())
 	} else {
 		this.Data["Chanels"] = data
@@ -37,7 +37,7 @@ func (this *DocController) Get() {
 //文档分类管理
 func (this *DocController) Category() {
 	cond := orm.NewCondition().And("id__gt", 0)
-	data, _, _ := models.GetList("category", 1, 2000, cond, "pid", "sort", "-id")
+	data, _, _ := models.GetList(models.GetTableCategory(), 1, 2000, cond, "pid", "sort", "-id")
 	cates := models.ToTree(data, "Pid", 0)
 	this.Data["Cates"] = cates
 	this.Data["Tab"] = "cate"

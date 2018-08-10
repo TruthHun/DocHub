@@ -51,7 +51,7 @@ func (this *CollectController) FolderList() {
 		uid = this.IsLogin
 	}
 	if uid > 0 {
-		lists, rows, err := models.GetList("collect_folder", 1, 100, orm.NewCondition().And("Uid", uid), "-Id")
+		lists, rows, err := models.GetList(models.GetTableCollectFolder(), 1, 100, orm.NewCondition().And("Uid", uid), "-Id")
 		if err != nil {
 			helper.Logger.Error(err.Error())
 		}
