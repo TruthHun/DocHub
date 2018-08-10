@@ -85,7 +85,7 @@ func (this *DocController) List() {
 		sort.Ints(slice)
 		CurId = slice[len(slice)-1]
 	}
-	cates := models.ModelCategory.GetSameLevelCategoryById(CurId)
+	cates := models.NewCategory().GetSameLevelCategoryById(CurId)
 	for _, cate := range cates {
 		if cate.Id == CurId {
 			totalRows = cate.Cnt
@@ -110,7 +110,7 @@ func (this *DocController) Recycle() {
 	//页码处理
 	p = helper.NumberRange(p, 1, 10000)
 	listRows := this.Sys.ListRows
-	this.Data["Lists"], _, _ = models.ModelDocRecycle.RecycleList(p, listRows)
+	this.Data["Lists"], _, _ = models.NewDocumentRecycle().RecycleList(p, listRows)
 	fmt.Println(this.Data["Lists"])
 	this.Data["Tab"] = "recycle"
 	this.TplName = "recycle.html"
@@ -122,7 +122,7 @@ func (this *DocController) AddChanel() {
 	this.ParseForm(&cate)
 	if len(cate.Title) > 0 && len(cate.Alias) > 0 {
 		cate.Status = true
-		models.O.Insert(&cate)
+		orm.NewOrm().Insert(&cate)
 		this.ResponseJson(1, "频道新增成功")
 	} else {
 		this.ResponseJson(0, "名称和别名均不能为空")
@@ -133,7 +133,7 @@ func (this *DocController) AddChanel() {
 func (this *DocController) GetCateByCid() {
 	cid, _ := this.GetInt("Cid")
 	if cid > 0 {
-		if data, _, err := models.GetList(models.TableCategory, 1, 100, orm.NewCondition().And("Pid", cid).And("Status", 1), "sort", "-id"); err != nil {
+		if data, _, err := models.GetList(models.GetTableCategory(), 1, 100, orm.NewCondition().And("Pid", cid).And("Status", 1), "sort", "-id"); err != nil {
 			this.ResponseJson(0, err.Error())
 		} else {
 			this.ResponseJson(1, "数据获取成功", data)
@@ -167,7 +167,7 @@ func (this *DocController) AddCate() {
 		}
 	}
 	if l := len(cates); l > 0 {
-		if _, err := models.O.InsertMulti(l, &cates); err != nil {
+		if _, err := orm.NewOrm().InsertMulti(l, &cates); err != nil {
 			this.ResponseJson(0, err.Error())
 		} else {
 			this.ResponseJson(1, "分类添加成功")
@@ -179,7 +179,7 @@ func (this *DocController) AddCate() {
 //删除分类
 func (this *DocController) DelCate() {
 	id, _ := this.GetInt("id")
-	if err := models.ModelCategory.Del(id); err != nil {
+	if err := models.NewCategory().Del(id); err != nil {
 		this.ResponseJson(0, err.Error())
 	}
 	this.ResponseJson(1, "删除成功")
@@ -194,28 +194,28 @@ func (this *DocController) Action() {
 	switch ActionType {
 	case "deepdel": //深度删除，删除文档记录和文档
 	case "recover": //恢复文档，只有文档状态是-1时，才可以进行恢复【OK】
-		if err := models.ModelDocRecycle.RecoverFromRecycle(ids...); err != nil {
+		if err := models.NewDocumentRecycle().RecoverFromRecycle(ids...); err != nil {
 			errs = append(errs, err.Error())
 		}
 	case "illegal": //将文档标记为非法文档
-		if err := models.ModelDoc.SetIllegal(ids...); err != nil {
+		if err := models.NewDocument().SetIllegal(ids...); err != nil {
 			errs = append(errs, err.Error())
 		}
 	case "remove": //将文档移入回收站【OK】
-		errs = models.ModelDocRecycle.RemoveToRecycle(this.AdminId, false, ids...)
+		errs = models.NewDocumentRecycle().RemoveToRecycle(this.AdminId, false, ids...)
 	case "clear": //清空用户的分享文档。注意：这时的ids表示的是用户id
 		//先查询用户的分享文档
 		var (
 			docinfo []models.DocumentInfo
 			dids    []interface{}
 		)
-		if _, err := models.O.QueryTable("document_info").Filter("Id__in", ids...).All(&docinfo); err != nil {
+		if _, err := orm.NewOrm().QueryTable("document_info").Filter("Id__in", ids...).All(&docinfo); err != nil {
 			helper.Logger.Error(err.Error())
 		}
 		for _, info := range docinfo {
 			dids = append(dids, info.Id)
 		}
-		errs = models.ModelDocRecycle.RemoveToRecycle(this.AdminId, false, dids...)
+		errs = models.NewDocumentRecycle().RemoveToRecycle(this.AdminId, false, dids...)
 		//case "illegal": //先将文档移入回收站，然后再将文档进行深度删除
 		//	if errs = models.RemoveToRecycle(this.AdminId, false, ids...); len(errs) == 0 {
 		//		errs = models.DocDeepDel(ids...)
@@ -233,7 +233,7 @@ func (this *DocController) RemarkTpl() {
 	if this.Ctx.Request.Method == "GET" {
 		DsId, _ := this.GetInt("dsid")
 		if DsId > 0 {
-			remark := models.ModelDocRemark.GetContentTplByDsId(DsId)
+			remark := models.NewDocumentRemark().GetContentTplByDsId(DsId)
 			this.ResponseJson(1, "获取成功", remark)
 		} else {
 			this.ResponseJson(0, "DsId不能为空")
@@ -241,7 +241,7 @@ func (this *DocController) RemarkTpl() {
 	} else {
 		var rm models.DocumentRemark
 		this.ParseForm(&rm)
-		if err := models.ModelDocRemark.Insert(rm); err != nil {
+		if err := models.NewDocumentRemark().Insert(rm); err != nil {
 			this.ResponseJson(0, fmt.Sprintf("操作失败：%v", err.Error()))
 		} else {
 			this.ResponseJson(1, "操作成功")

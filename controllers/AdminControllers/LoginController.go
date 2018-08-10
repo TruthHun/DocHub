@@ -7,6 +7,7 @@ import (
 
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
+	"github.com/astaxie/beego/orm"
 )
 
 type LoginController struct {
@@ -27,7 +28,7 @@ func (this *LoginController) Prepare() {
 //登录后台
 func (this *LoginController) Login() {
 	this.EnableXSRF = true
-	this.Data["Sys"], _ = models.ModelSys.Get()
+	this.Data["Sys"], _ = models.NewSys().Get()
 	if this.Ctx.Request.Method == "GET" {
 		this.Xsrf()
 		this.TplName = "index.html"
@@ -37,7 +38,7 @@ func (this *LoginController) Login() {
 			admin models.Admin
 		)
 		this.ParseForm(&admin)
-		if admin, err := models.ModelAdmin.Login(admin.Username, admin.Password, admin.Code); err == nil && admin.Id > 0 {
+		if admin, err := models.NewAdmin().Login(admin.Username, admin.Password, admin.Code); err == nil && admin.Id > 0 {
 			this.SetSession("AdminId", admin.Id)
 			this.ResponseJson(1, "登录成功")
 		} else {
@@ -56,9 +57,9 @@ func (this *LoginController) UpdatePwd() {
 			this.ResponseJson(0, "新密码不能与原密码相同，且确认密码必须与新密码一致")
 		} else {
 			var admin = models.Admin{Password: helper.MyMD5(PwdOld)}
-			if models.O.Read(&admin, "Password"); admin.Id > 0 {
+			if orm.NewOrm().Read(&admin, "Password"); admin.Id > 0 {
 				admin.Password = helper.MyMD5(PwdNew)
-				if rows, err := models.O.Update(&admin); rows > 0 {
+				if rows, err := orm.NewOrm().Update(&admin); rows > 0 {
 					this.ResponseJson(1, "密码更新成功")
 				} else {
 					this.ResponseJson(0, "密码更新失败："+err.Error())

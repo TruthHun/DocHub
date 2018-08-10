@@ -15,6 +15,7 @@ import (
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/astaxie/beego/orm"
 )
 
 type SysController struct {
@@ -39,8 +40,8 @@ func (this *SysController) Get() {
 		if tab == "default" {
 			var sys models.Sys
 			this.ParseForm(&sys)
-			if i, err := models.O.Update(&sys); i > 0 && err == nil {
-				models.ModelSys.UpdateGlobal() //更新全局变量
+			if i, err := orm.NewOrm().Update(&sys); i > 0 && err == nil {
+				models.NewSys().UpdateGlobal() //更新全局变量
 			} else {
 				if err != nil {
 					helper.Logger.Error(err.Error())
@@ -52,13 +53,13 @@ func (this *SysController) Get() {
 			for k, v := range this.Ctx.Request.Form {
 				modelCfg.UpdateByKey(models.ConfigCate(tab), k, v[0])
 			}
-			//最后更新全局配置
-			modelCfg.UpdateGlobal()
 			if tab == models.CONFIG_ELASTICSEARCH {
 				if err := models.NewElasticSearchClient().Init(); err != nil {
 					this.ResponseJson(0, "ElasticSearch初始化失败："+err.Error())
 				}
 			}
+			//最后更新全局配置
+			modelCfg.UpdateGlobal()
 		}
 		this.ResponseJson(1, "更新成功")
 	} else {
@@ -66,7 +67,7 @@ func (this *SysController) Get() {
 		this.Data["Title"] = "系统管理"
 		this.Data["IsSys"] = true
 		if tab == "default" {
-			this.Data["Sys"], _ = models.ModelSys.Get()
+			this.Data["Sys"], _ = models.NewSys().Get()
 		} else {
 			this.Data["Configs"] = new(models.Config).All()
 			if tab == models.CONFIG_ELASTICSEARCH {

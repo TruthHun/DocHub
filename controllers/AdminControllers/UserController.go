@@ -64,7 +64,7 @@ func (this *UserController) List() {
 		this.Data["Username"] = username
 	}
 
-	data, totalRows, err := models.ModelUser.UserList(p, listRows, "", "*", strings.Join(condition, " and "))
+	data, totalRows, err := models.NewUser().UserList(p, listRows, "", "*", strings.Join(condition, " and "))
 	if err != nil {
 		this.Ctx.WriteString(err.Error())
 		return

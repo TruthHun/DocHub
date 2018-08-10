@@ -11,6 +11,7 @@ import (
 
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
+	"github.com/astaxie/beego/orm"
 )
 
 //IT文库注册会员管理
@@ -22,7 +23,7 @@ type BannerController struct {
 //横幅列表
 func (this *BannerController) Get() {
 	var err error
-	if this.Data["Banners"], _, err = models.ModelBanner.List(1, 100); err != nil {
+	if this.Data["Banners"], _, err = models.NewBanner().List(1, 100); err != nil {
 		helper.Logger.Error(err.Error())
 	}
 	this.Data["IsBanner"] = true
@@ -49,7 +50,7 @@ func (this *BannerController) Add() {
 					banner.Picture = save
 					banner.TimeCreate = int(time.Now().Unix())
 					banner.Status = true
-					_, err = models.O.Insert(&banner)
+					_, err = orm.NewOrm().Insert(&banner)
 				}
 			}
 		}
@@ -68,7 +69,7 @@ func (this *BannerController) Del() {
 	ids := strings.Split(id, ",")
 	if len(ids) > 0 {
 		//之所以这么做，是因为如果没有第一个参数，则参数编程了[]string，而不是[]interface{},有疑问可以自己验证试下
-		if _, err = models.ModelBanner.Del(ids[0], ids[1:]); err != nil {
+		if _, err = models.NewBanner().Del(ids[0], ids[1:]); err != nil {
 			helper.Logger.Error(err.Error())
 			this.ResponseJson(0, err.Error())
 		}

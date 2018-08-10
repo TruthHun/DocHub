@@ -7,12 +7,12 @@ type SeoController struct {
 }
 
 func (this *SeoController) Get() {
-	this.Data["Data"], _, _ = models.GetList(models.TableSeo, 1, 50, nil, "-IsMobile")
+	this.Data["Data"], _, _ = models.GetList(models.GetTableSeo(), 1, 50, nil, "-IsMobile")
 	this.Data["IsSeo"] = true
 	this.TplName = "index.html"
 }
 
 func (this *SeoController) UpdateSitemap() {
-	go models.ModelSeo.BuildSitemap()
+	go models.NewSeo().BuildSitemap()
 	this.ResponseJson(1, "Sitemap更新已提交后台执行，请耐心等待")
 }

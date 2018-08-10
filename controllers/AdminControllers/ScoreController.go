@@ -12,9 +12,9 @@ func (this *ScoreController) Get() {
 	log.Uid, _ = this.GetInt("uid")
 	log.Coin, _ = this.GetInt("score")
 	log.Log = this.GetString("log")
-	err := models.Regulate(models.TableUserInfo, "Coin", log.Coin, "Id=?", log.Uid)
+	err := models.Regulate(models.GetTableUserInfo(), "Coin", log.Coin, "Id=?", log.Uid)
 	if err == nil {
-		err = models.ModelCoinLog.LogRecord(log)
+		err = models.NewCoinLog().LogRecord(log)
 	}
 	if err != nil {
 		this.ResponseJson(0, err.Error())

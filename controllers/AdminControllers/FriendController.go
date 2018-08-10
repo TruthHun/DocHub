@@ -6,6 +6,7 @@ import (
 	"github.com/TruthHun/DocHub/helper"
 
 	"github.com/TruthHun/DocHub/models"
+	"github.com/astaxie/beego/orm"
 )
 
 type FriendController struct {
@@ -19,7 +20,7 @@ func (this *FriendController) Get() {
 		this.ParseForm(&fr)
 		fr.Status = true
 		fr.TimeCreate = int(time.Now().Unix())
-		if i, err := models.O.Insert(&fr); i > 0 && err == nil {
+		if i, err := orm.NewOrm().Insert(&fr); i > 0 && err == nil {
 			this.ResponseJson(1, "友链添加成功")
 		} else {
 			if err != nil {
@@ -29,7 +30,7 @@ func (this *FriendController) Get() {
 		}
 	} else {
 		this.Data["IsFriend"] = true
-		this.Data["Friends"], _, _ = models.ModelFriend.GetListByStatus(-1)
+		this.Data["Friends"], _, _ = models.NewFriend().GetListByStatus(-1)
 		this.TplName = "index.html"
 	}
 }
