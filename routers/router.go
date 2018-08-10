@@ -93,7 +93,7 @@ func back() {
 	beego.Router("/admin/del", &AdminControllers.BaseController{}, "get,post:Del")
 	beego.Router("/admin/single", &AdminControllers.SingleController{})
 	beego.Router("/admin/single/:alias", &AdminControllers.SingleController{}, "get,post:Edit")
-	beego.Router("/admin/singledel/:alias", &AdminControllers.SingleController{}, "get:Del")
+	//beego.Router("/admin/singledel/:alias", &AdminControllers.SingleController{}, "get:Del")
 	beego.Router("/admin/kindeditor/upload", &AdminControllers.KindEditorController{}, "post:Upload")
 	beego.Router("/admin/score", &AdminControllers.ScoreController{})
 	beego.Router("/admin/banner", &AdminControllers.BannerController{})
