@@ -288,8 +288,8 @@ func (this *ElasticSearchClient) Search(wd, sourceType, order string, p, listRow
 //采用批量重建索引的方式进行
 //每次操作100条数据
 func (this *ElasticSearchClient) RebuildAllIndex() {
-	helper.GlobalConfigMap.Store("indexing", true)
-	defer helper.GlobalConfigMap.Store("indexing", false)
+	helper.ConfigMap.Store("indexing", true)
+	defer helper.ConfigMap.Store("indexing", false)
 	//假设有10个亿的文档...
 	pageSize := 1000
 	maxPage := 1000000

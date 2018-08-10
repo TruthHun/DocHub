@@ -19,7 +19,7 @@ import (
 //@param			def				default，即默认值
 //@return           val             值
 func GetConfig(cate string, key string, def ...string) string {
-	if val, ok := GlobalConfigMap.Load(fmt.Sprintf("%v.%v", cate, key)); ok {
+	if val, ok := ConfigMap.Load(fmt.Sprintf("%v.%v", cate, key)); ok {
 		return val.(string)
 	}
 	if len(def) > 0 {
@@ -81,8 +81,8 @@ func setDefaultConfig() {
 		beego.BConfig.WebConfig.Session.SessionProviderConfig = "cache/session"
 
 		//DIY配置
-		GlobalConfigMap.Store("CookieSecret", RandStr(16, 3))
-		GlobalConfigMap.Store("StaticExt", DEFAULT_STATIC_EXT)
+		ConfigMap.Store("CookieSecret", RandStr(16, 3))
+		ConfigMap.Store("StaticExt", DEFAULT_STATIC_EXT)
 	}
 }
 
@@ -167,8 +167,8 @@ maxConn= 300
 
 ############ 数据库配置 end ############
 `
-		cs, _ := GlobalConfigMap.Load("CookieSecret")
-		se, _ := GlobalConfigMap.Load("StaticExt")
+		cs, _ := ConfigMap.Load("CookieSecret")
+		se, _ := ConfigMap.Load("StaticExt")
 		//配置项配置
 		fileContent = fmt.Sprintf(
 			fileContent,

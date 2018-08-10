@@ -63,7 +63,7 @@ func (this *Config) All() (configs []Config) {
 func (this *Config) UpdateGlobal() {
 	if cfgs := this.All(); len(cfgs) > 0 {
 		for _, cfg := range cfgs {
-			helper.GlobalConfigMap.Store(fmt.Sprintf("%v.%v", cfg.Category, cfg.Key), cfg.Value)
+			helper.ConfigMap.Store(fmt.Sprintf("%v.%v", cfg.Category, cfg.Key), cfg.Value)
 		}
 	} else {
 		helper.Logger.Error("查询全局配置失败，config表中全局配置信息为空")

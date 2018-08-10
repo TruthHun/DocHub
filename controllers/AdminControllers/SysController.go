@@ -133,7 +133,7 @@ func (this *SysController) RebuildAllIndex() {
 		} else {
 			//索引是否正在进行，如果正在进行，则不再执行全量索引
 			exist := false
-			if indexing, ok := helper.GlobalConfigMap.Load("indexing"); ok {
+			if indexing, ok := helper.ConfigMap.Load("indexing"); ok {
 				if b, ok := indexing.(bool); b && ok { //索引正在重建
 					exist = true
 				} else {

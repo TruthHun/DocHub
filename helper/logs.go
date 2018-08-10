@@ -19,7 +19,7 @@ func InitLogs() {
 		os.Mkdir("logs", os.ModePerm)
 	}
 	var level = 7
-	if !Debug {
+	if Debug {
 		level = 4
 	}
 	maxLines := GetConfigInt64("logs", "max_lines")

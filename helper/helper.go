@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"math/rand"
-	"sync"
 
 	"crypto/md5"
 
@@ -40,40 +39,6 @@ import (
 	"github.com/astaxie/beego/cache"
 	"github.com/huichen/sego"
 	"rsc.io/pdf"
-)
-
-const (
-	//DocHub Version
-	VERSION = "v1.2"
-	//Cache Config
-	CACHE_CONF = `{"CachePath":"./cache/runtime","FileSuffix":".cache","DirectoryLevel":2,"EmbedExpiry":120}`
-
-	DEFAULT_STATIC_EXT    = ".txt,.html,.ico,.jpeg,.png,.gif,.xml"
-	DEFAULT_COOKIE_SECRET = "dochub"
-
-	//	扩展名
-	EXT_CATE_WORD  = "word"
-	EXT_NUM_WORD   = 1
-	EXT_CATE_PPT   = "ppt"
-	EXT_NUM_PPT    = 2
-	EXT_CATE_EXCEL = "excel"
-	EXT_NUM_EXCEL  = 3
-	EXT_CATE_PDF   = "pdf"
-	EXT_NUM_PDF    = 4
-	EXT_CATE_TEXT  = "text"
-	EXT_NUM_TEXT   = 5
-	EXT_CATE_OTHER = "other"
-	EXT_NUM_OTHER  = 6
-)
-
-var (
-	//develop mode
-	Debug           = beego.AppConfig.String("runmode") == "dev"
-	StaticExt       = make(map[string]bool)
-	Segmenter       sego.Segmenter
-	GlobalConfigMap sync.Map //配置文件的全局map
-	//程序是否已经安装
-	IsInstalled = false
 )
 
 func init() {
