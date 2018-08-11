@@ -41,6 +41,7 @@ func (this *DocumentRecycle) RecoverFromRecycle(ids ...interface{}) (err error) 
 			Regulate(GetTableSys(), "CntDoc", int(affectedRows), "Id=1")
 			beego.Debug("查询到的文档", docinfo)
 			if len(docinfo) > 0 {
+				client := NewElasticSearchClient()
 				for _, v := range docinfo {
 					//该用户的文档数量+1
 					if err := Regulate(GetTableUserInfo(), "Document", 1, "Id=?", v.Uid); err != nil {
@@ -48,6 +49,9 @@ func (this *DocumentRecycle) RecoverFromRecycle(ids ...interface{}) (err error) 
 					}
 					//该分类下的文档数量+1
 					Regulate(GetTableCategory(), "Cnt", 1, fmt.Sprintf("`Id` in(%v,%v,%v)", v.ChanelId, v.Cid, v.Pid))
+
+					//新增索引
+					client.BuildIndexById(v.Id)
 				}
 			}
 			//从回收站中删除记录
@@ -121,6 +125,7 @@ func (this *DocumentRecycle) RemoveToRecycle(uid interface{}, self bool, ids ...
 			errs = append(errs, err.Error())
 		}
 		//移入回收站
+		client := NewElasticSearchClient()
 		for _, id := range ids {
 			var rc DocumentRecycle
 			rc.Id = helper.Interface2Int(id)
@@ -129,6 +134,9 @@ func (this *DocumentRecycle) RemoveToRecycle(uid interface{}, self bool, ids ...
 			rc.Self = self
 			if _, err := orm.NewOrm().Insert(&rc); err != nil {
 				helper.Logger.Error(err.Error())
+			} else {
+				//删除索引
+				client.DeleteIndex(rc.Id)
 			}
 		}
 	} else {
