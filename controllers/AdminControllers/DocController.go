@@ -94,7 +94,7 @@ func (this *DocController) List() {
 	this.Data["Cates"] = cates
 	this.Data["CurId"] = CurId
 	this.Data["Level"] = level
-	lists, _, err := models.DocList(uid, chanelid, pid, cid, p, listRows, "Id", 0, 1)
+	lists, _, err := models.GetDocList(uid, chanelid, pid, cid, p, listRows, "Id", 0, 1)
 	if err != nil {
 		helper.Logger.Error("SQL语句执行错误：%v", err.Error())
 	}

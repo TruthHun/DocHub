@@ -292,7 +292,7 @@ func (this *ElasticSearchClient) RebuildAllIndex() {
 	defer helper.ConfigMap.Store("indexing", false)
 	//假设有10个亿的文档...
 	pageSize := 1000
-	maxPage := 1000000
+	maxPage := int(1e7)
 	for page := 1; page < maxPage; page++ {
 		if infos, rows, err := NewDocument().GetDocInfoForElasticSearch(page, pageSize, 0); err != nil || rows == 0 {
 			if err != nil && err != orm.ErrNoRows {

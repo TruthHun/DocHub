@@ -85,7 +85,7 @@ func (this *ListController) Get() {
 		this.Data["Hots"], _, _ = models.NewDocument().SimpleList(fmt.Sprintf("di.ChanelId=%v and di.TimeCreate>%v", chanels[0]["Id"], TimeStart), 10, "vcnt")
 	}
 
-	lists, rows, err := models.DocList(0, helper.Interface2Int(chanels[0]["Id"]), pid, cid, p, listRows, "Id", 0, 1)
+	lists, rows, err := models.GetDocList(0, helper.Interface2Int(chanels[0]["Id"]), pid, cid, p, listRows, "Id", 0, 1)
 
 	this.Data["PageId"] = "wenku-list"
 	this.Data["Chanel"] = strings.ToLower(chanel)

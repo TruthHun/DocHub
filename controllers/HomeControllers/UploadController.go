@@ -75,8 +75,6 @@ func (this *UploadController) Post() {
 	if len(form.Title) == 0 || form.Chanel*form.Pid*form.Cid == 0 {
 		this.ResponseJson(0, "文档名称、频道、一级文档分类、二级文档分类均不能为空")
 	}
-	//允许上传的文档格式
-	allowedExt := ",doc,docx,rtf,wps,odt,ppt,pptx,pps,ppsx,dps,odp,pot,xls,xlsx,et,ods,txt,pdf,chm,epub,umd,mobi,"
 
 	//写死的范围，0-20，即文档收费范围
 	form.Price = helper.NumberRange(form.Price, 0, 20)
@@ -102,7 +100,7 @@ func (this *UploadController) Post() {
 		//判断文档格式是否被允许
 
 		ext = strings.TrimLeft(strings.ToLower(filepath.Ext(fh.Filename)), ".")
-		if !strings.Contains(allowedExt, fmt.Sprintf(",%v,", ext)) {
+		if !strings.Contains(helper.AllowedUploadExt, fmt.Sprintf(",%v,", ext)) {
 			this.ResponseJson(0, "您上传的文档格式不正确，请上传正确格式的文档")
 		}
 		//获取文件MD5
@@ -138,10 +136,7 @@ func (this *UploadController) Post() {
 		}
 		switch ext {
 		case "pdf": //处理pdf文档
-			err = models.HandlePdf(this.IsLogin, tmpfile, form)
-			if err != nil {
-				helper.Logger.Error(err.Error())
-			}
+			go models.HandlePdf(this.IsLogin, tmpfile, form)
 		case "umd", "epub", "chm", "txt", "mobi": //处理无法转码实现在线浏览的文档
 			go models.HandleUnOffice(this.IsLogin, tmpfile, form)
 		default: //处理office文档
