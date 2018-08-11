@@ -319,6 +319,28 @@ func GetExtCate(ext string) (extCate string, extNum int) {
 	return
 }
 
+//获取文档扩展名分类以及扩展名分类对应的catenum数字
+//@param            ext         扩展名
+//@return           extCate     文档类型(字符串)
+//@return           extNum      文档类型(整型)
+func GetExtCateByExtNum(num int) (extCate string) {
+	switch num {
+	case EXT_NUM_WORD:
+		extCate = EXT_CATE_WORD
+	case EXT_NUM_PPT:
+		extCate = EXT_CATE_PPT
+	case EXT_NUM_EXCEL:
+		extCate = EXT_CATE_EXCEL
+	case EXT_NUM_PDF:
+		extCate = EXT_CATE_PDF
+	case EXT_NUM_TEXT:
+		extCate = EXT_CATE_TEXT
+	case EXT_NUM_OTHER:
+		extCate = EXT_CATE_OTHER
+	}
+	return
+}
+
 //PdfProcedure专用
 type PdfRet struct {
 	Cover   string //封面路径文件

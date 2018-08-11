@@ -84,6 +84,8 @@ type ElasticSearchResult struct {
 				Size        int    `json:"Size"`
 				Title       string `json:"Title"`
 				Vcnt        int    `json:"Vcnt"`
+				Price       int    `json:"Price"`
+				TimeCreate  int    `json:"TimeCreate"`
 			} `json:"_source"`
 			Type      string `json:"_type"`
 			Highlight struct {
@@ -237,7 +239,7 @@ func (this *ElasticSearchClient) Search(wd, sourceType, order string, p, listRow
 	case "score":
 		field = "Score"
 	case "size":
-		field = "size"
+		field = "Size"
 	case "collect":
 		field = "Ccnt"
 	case "view":

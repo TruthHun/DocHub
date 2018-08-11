@@ -70,7 +70,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                     <div class="help-block">
-                        <a href="https://www.baidu.com/s?ie=UTF-8&wd={{.Sys.Site}}" target="_blank" title="{{.Sys.Site}}">{{.Sys.Site}}</a> 本次搜索耗时<span class="text-danger">{{.Result.Time}}</span>秒，在 <span class="text-primary">{{.Sys.CntDoc}}</span> 篇文档中为您找到相关结果约 <span class="text-success">{{.Result.TotalFound}}</span> 个.
+                        <a href="https://www.baidu.com/s?ie=UTF-8&wd={{.Sys.Site}}" rel="noreferrer" target="_blank" title="{{.Sys.Site}}">{{.Sys.Site}}</a> 本次搜索耗时<span class="text-danger">{{.Result.Time}}</span>秒，在 <span class="text-primary">{{.Sys.CntDoc}}</span> 篇文档中为您找到相关结果约 <span class="text-success">{{.Result.TotalFound}}</span> 个.
                     </div>
                     <ul class="wenku-result">
 
@@ -84,7 +84,7 @@
                             <div class="wenku-desc help-block">{{GetDescByDid .Id 120}}</div>
                             <div class="help-block wenku-info">
                                 <div class="text-muted">
-                                    <i class="wenku-star star-{{StarVal (Interface2Int .Score) false}}"></i>{{StarVal (Interface2Int .Score) true}}分 <span class="pull-right">{{.Price}}金币 | {{.Page}}页 | {{FormatByte (Interface2Int .Size)}} | {{TimestampFormat (Interface2Int .TimeCreate) "2006-01-02 15:04"}}</span>
+                                    <i class="wenku-star star-{{StarVal (Interface2Int .Score) false}}"></i>{{StarVal (Interface2Int .Score) true}} 分 <span class="pull-right">{{.Price}} 金币 | {{.Page}} 页 | {{FormatByte (Interface2Int .Size)}} | {{TimestampFormat (Interface2Int .TimeCreate) "2006-01-02 15:04"}}</span>
                                 </div>
                             </div>
                         </li>

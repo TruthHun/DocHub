@@ -318,7 +318,7 @@ func SearchByMysql(wd, sourceType, order string, p, listRows int) (data []orm.Pa
 	case "score":
 		orderBy = []string{"i.Score desc"}
 	case "size":
-		orderBy = []string{"s.Size desc"}
+		orderBy = []string{"ds.Size desc"}
 	case "collect":
 		orderBy = []string{"i.Ccnt desc"}
 	case "view":

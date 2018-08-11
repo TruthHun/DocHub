@@ -325,6 +325,7 @@ textarea{resize: none;}
 #wenku-search .wenku-title a:hover{text-decoration: underline;}
 #wenku-search .wenku-word a{font-size: 14px;margin:5px;}
 #wenku-search .wenku-desc{text-indent: 2em;}
+#wenku-search .wenku-result em{color: red;font-style: normal;}
 
 /*wenku page search [end]*/
 
