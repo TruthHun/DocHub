@@ -138,17 +138,17 @@ func (this *ElasticSearchClient) Init() (err error) {
 		"Title": {
 			"type": "text",
 			"analyzer": "ik_max_word",
-			"search_analyzer": "ik_max_word"
+			"search_analyzer": "ik_smart"
 		},
 		"Keywords": {
 			"type": "text",
 			"analyzer": "ik_max_word",
-			"search_analyzer": "ik_max_word"
+			"search_analyzer": "ik_smart"
 		},
 		"Description": {
 			"type": "text",
 			"analyzer": "ik_max_word",
-			"search_analyzer": "ik_max_word"
+			"search_analyzer": "ik_smart"
 		},
 		"Vcnt": {
 			"type": "integer"
