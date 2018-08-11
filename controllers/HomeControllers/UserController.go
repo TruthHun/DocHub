@@ -645,6 +645,7 @@ func (this *UserController) DocEdit() {
 						info.Cid = params["Cid"].(int)
 						info.ChanelId = params["Chanel"].(int)
 						info.Price = params["Price"].(int)
+						info.TimeUpdate = int(time.Now().Unix())
 						orm.NewOrm().Update(&doc, "Title", "Keywords", "Description")
 						orm.NewOrm().Update(&info, "Pid", "Cid", "ChanelId", "Price")
 						//原分类-1
