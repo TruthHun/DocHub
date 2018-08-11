@@ -21,12 +21,12 @@ func (this *FriendController) Get() {
 		fr.Status = true
 		fr.TimeCreate = int(time.Now().Unix())
 		if i, err := orm.NewOrm().Insert(&fr); i > 0 && err == nil {
-			this.ResponseJson(1, "友链添加成功")
+			this.ResponseJson(true, "友链添加成功")
 		} else {
 			if err != nil {
 				helper.Logger.Error(err.Error())
 			}
-			this.ResponseJson(0, "友链添加失败，可能您要添加的友链已存在")
+			this.ResponseJson(false, "友链添加失败，可能您要添加的友链已存在")
 		}
 	} else {
 		this.Data["IsFriend"] = true

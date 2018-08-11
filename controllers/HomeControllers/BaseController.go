@@ -176,14 +176,18 @@ func (this *BaseController) Chanels() []orm.Params {
 //校验文档是否已经存在
 func (this *BaseController) DocExist() {
 	if models.NewDocument().IsExistByMd5(this.GetString("md5")) > 0 {
-		this.ResponseJson(1, "文档存在")
+		this.ResponseJson(true, "文档存在")
 	} else {
-		this.ResponseJson(0, "文档不存在")
+		this.ResponseJson(false, "文档不存在")
 	}
 }
 
 //响应json
-func (this *BaseController) ResponseJson(status int, msg string, data ...interface{}) {
+func (this *BaseController) ResponseJson(isSuccess bool, msg string, data ...interface{}) {
+	status := 0
+	if isSuccess {
+		status = 1
+	}
 	ret := map[string]interface{}{"status": status, "msg": msg}
 	if len(data) > 0 {
 		ret["data"] = data[0]

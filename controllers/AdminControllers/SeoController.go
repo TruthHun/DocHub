@@ -14,5 +14,5 @@ func (this *SeoController) Get() {
 
 func (this *SeoController) UpdateSitemap() {
 	go models.NewSeo().BuildSitemap()
-	this.ResponseJson(1, "Sitemap更新已提交后台执行，请耐心等待")
+	this.ResponseJson(true, "Sitemap更新已提交后台执行，请耐心等待")
 }

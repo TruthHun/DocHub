@@ -46,7 +46,7 @@ func (this *SysController) Get() {
 				if err != nil {
 					helper.Logger.Error(err.Error())
 				}
-				this.ResponseJson(0, "更新失败，可能您未对内容做更改")
+				this.ResponseJson(false, "更新失败，可能您未对内容做更改")
 			}
 		} else {
 			modelCfg := new(models.Config)
@@ -55,13 +55,13 @@ func (this *SysController) Get() {
 			}
 			if tab == models.CONFIG_ELASTICSEARCH {
 				if err := models.NewElasticSearchClient().Init(); err != nil {
-					this.ResponseJson(0, "ElasticSearch初始化失败："+err.Error())
+					this.ResponseJson(false, "ElasticSearch初始化失败："+err.Error())
 				}
 			}
 			//最后更新全局配置
 			modelCfg.UpdateGlobal()
 		}
-		this.ResponseJson(1, "更新成功")
+		this.ResponseJson(true, "更新成功")
 	} else {
 		this.Data["Tab"] = tab
 		this.Data["Title"] = "系统管理"

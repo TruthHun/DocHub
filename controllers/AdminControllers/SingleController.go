@@ -28,11 +28,11 @@ func (this *SingleController) Edit() {
 		page.TimeCreate = int(time.Now().Unix())
 		page.Content = models.NewOss().HandleContent(page.Content, false)
 		if rows, err := orm.NewOrm().Update(&page); err == nil && rows > 0 {
-			this.ResponseJson(1, "更新成功")
+			this.ResponseJson(true, "更新成功")
 		} else if err != nil {
-			this.ResponseJson(0, err.Error())
+			this.ResponseJson(false, err.Error())
 		} else {
-			this.ResponseJson(0, "更新失败，可能您未对内容做更改")
+			this.ResponseJson(false, "更新失败，可能您未对内容做更改")
 		}
 	} else {
 		page, _ = models.NewPages().One(alias)
@@ -47,13 +47,13 @@ func (this *SingleController) Del() {
 	id, _ := this.GetInt("id")
 	var page = models.Pages{Id: id}
 	if err := orm.NewOrm().Read(&page); err != nil {
-		this.ResponseJson(0, err.Error())
+		this.ResponseJson(false, err.Error())
 	} else {
 		if _, err = orm.NewOrm().QueryTable(models.GetTablePages()).Filter("Id", page.Id).Delete(); err != nil {
-			this.ResponseJson(0, err.Error())
+			this.ResponseJson(false, err.Error())
 		} else {
 			go models.NewOss().DelByHtmlPics(page.Content)
-			this.ResponseJson(1, "删除成功")
+			this.ResponseJson(true, "删除成功")
 		}
 	}
 }

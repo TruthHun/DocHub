@@ -26,7 +26,7 @@ func (this *KindEditorController) Upload() {
 	//文件在文档库中未存在，则接收文件并做处理
 	f, fh, err := this.GetFile("imgFile")
 	if err != nil {
-		this.ResponseJson(0, err.Error())
+		this.ResponseJson(false, err.Error())
 	}
 	defer f.Close()
 	now := time.Now()

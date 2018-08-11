@@ -163,7 +163,7 @@ func (this *UserController) Coin() {
 		listRows := 16
 		lists, _, _ := models.GetList(models.GetTableCoinLog(), p, listRows, orm.NewCondition().And("Uid", uid), "-Id")
 		if p > 1 {
-			this.ResponseJson(1, "数据获取成功", lists)
+			this.ResponseJson(true, "数据获取成功", lists)
 		} else {
 			user, rows, err := models.NewUser().GetById(uid)
 			if err != nil {
@@ -207,7 +207,7 @@ func (this *UserController) Collect() {
 		listRows := 100
 		lists, _, _ := models.GetList(models.GetTableCollectFolder(), p, listRows, orm.NewCondition().And("Uid", uid), "-Id")
 		if p > 1 {
-			this.ResponseJson(1, "数据获取成功", lists)
+			this.ResponseJson(true, "数据获取成功", lists)
 		} else {
 			user, rows, err := models.NewUser().GetById(uid)
 			if err != nil {
@@ -424,7 +424,7 @@ func (this *UserController) Sign() {
 		}
 		_, err := orm.NewOrm().Insert(&data)
 		if err != nil {
-			this.ResponseJson(0, "签到失败，您今天已签到")
+			this.ResponseJson(false, "签到失败，您今天已签到")
 		} else {
 			if err := models.Regulate(models.GetTableUserInfo(), "Coin", this.Sys.Sign, fmt.Sprintf("Id=%v", this.IsLogin)); err == nil {
 				log := models.CoinLog{
@@ -434,10 +434,10 @@ func (this *UserController) Sign() {
 				}
 				models.NewCoinLog().LogRecord(log)
 			}
-			this.ResponseJson(1, fmt.Sprintf("恭喜您，今日签到成功，领取了 %v 个金币", this.Sys.Sign))
+			this.ResponseJson(true, fmt.Sprintf("恭喜您，今日签到成功，领取了 %v 个金币", this.Sys.Sign))
 		}
 	} else {
-		this.ResponseJson(0, "签到失败，请先登录")
+		this.ResponseJson(false, "签到失败，请先登录")
 	}
 }
 
@@ -505,18 +505,18 @@ func (this *UserController) CreateCollectFolder() {
 
 		if err != nil {
 			helper.Logger.Error(err.Error())
-			this.ResponseJson(0, "操作失败，请重试")
+			this.ResponseJson(false, "操作失败，请重试")
 		}
 
 		if folder.Id == 0 {
 			models.Regulate(models.GetTableUserInfo(), "Collect", 1, fmt.Sprintf("Id=%v", this.IsLogin))
-			this.ResponseJson(1, "收藏夹创建成功")
+			this.ResponseJson(true, "收藏夹创建成功")
 		} else {
-			this.ResponseJson(1, "收藏夹编辑成功")
+			this.ResponseJson(true, "收藏夹编辑成功")
 		}
 
 	} else {
-		this.ResponseJson(0, "您当前未登录，请先登录")
+		this.ResponseJson(false, "您当前未登录，请先登录")
 	}
 }
 
@@ -539,30 +539,30 @@ func (this *UserController) FindPwd() {
 		fmt.Println(this.Ctx.Request.Form, params, errs)
 		if len(errs) > 0 {
 			if _, ok := errs["username"]; ok {
-				this.ResponseJson(0, "用户名限2-16个字符")
+				this.ResponseJson(false, "用户名限2-16个字符")
 			}
 			if _, ok := errs["email"]; ok {
-				this.ResponseJson(0, "邮箱格式不正确")
+				this.ResponseJson(false, "邮箱格式不正确")
 			}
 			if _, ok := errs["code"]; ok {
-				this.ResponseJson(0, "请输入6位验证码")
+				this.ResponseJson(false, "请输入6位验证码")
 			}
 			if _, ok := errs["password"]; ok {
-				this.ResponseJson(0, "密码长度，至少6个字符")
+				this.ResponseJson(false, "密码长度，至少6个字符")
 			}
 			if _, ok := errs["repassword"]; ok {
-				this.ResponseJson(0, "密码长度，至少6个字符")
+				this.ResponseJson(false, "密码长度，至少6个字符")
 			}
 		}
 		fmt.Println(this.Ctx.Request.Form)
 		//校验验证码和邮箱是否匹配
 		if fmt.Sprintf("%v", this.GetSession("FindPwdMail")) != params["email"].(string) || fmt.Sprintf("%v", this.GetSession("FindPwdCode")) != params["code"].(string) {
-			this.ResponseJson(0, "验证码不正确，修改密码失败")
+			this.ResponseJson(false, "验证码不正确，修改密码失败")
 		}
 		pwd := helper.MyMD5(params["password"].(string))
 		repwd := helper.MyMD5(params["repassword"].(string))
 		if pwd != repwd {
-			this.ResponseJson(0, "确认密码和密码不一致")
+			this.ResponseJson(false, "确认密码和密码不一致")
 		}
 		ModelUser := models.User{}
 		user := ModelUser.GetUserField(orm.NewCondition().And("Email", params["email"]))
@@ -570,13 +570,13 @@ func (this *UserController) FindPwd() {
 			_, err := models.UpdateByIds("user", "Password", pwd, user.Id)
 			if err != nil {
 				helper.Logger.Error(err.Error())
-				this.ResponseJson(0, "重置密码失败，请刷新页面重试")
+				this.ResponseJson(false, "重置密码失败，请刷新页面重试")
 			}
 			this.DelSession("FindPwdMail")
 			this.DelSession("FindPwdCode")
-			this.ResponseJson(1, "重置密码成功，请重新登录")
+			this.ResponseJson(true, "重置密码成功，请重新登录")
 		} else {
-			this.ResponseJson(0, "重置密码失败，用户名与邮箱不匹配")
+			this.ResponseJson(false, "重置密码失败，用户名与邮箱不匹配")
 		}
 	} else {
 		this.Data["Seo"] = models.NewSeo().GetByPage("PC-Findpwd", "找回密码", "找回密码", "找回密码", this.Sys.Site)
@@ -594,59 +594,35 @@ func (this *UserController) DocDel() {
 			errs := models.NewDocumentRecycle().RemoveToRecycle(this.IsLogin, true, docid)
 			if len(errs) > 0 {
 				helper.Logger.Error("删除失败：%v", strings.Join(errs, "; "))
-				this.ResponseJson(0, "删除失败，文档不存在")
+				this.ResponseJson(false, "删除失败，文档不存在")
 			} else {
-				this.ResponseJson(1, "删除成功")
+				this.ResponseJson(true, "删除成功")
 			}
-
-			//var doc = models.DocumentInfo{Id: docid}
-			//err := orm.NewOrm().Read(&doc)
-			//if err != nil {
-			//	helper.Logger.Error(err.Error())
-			//	this.ResponseJson(0, "删除失败，文档不存在")
-			//} else {
-			//	if doc.Uid == this.IsLogin {
-			//		doc.Status = -1
-			//		_, err := orm.NewOrm().Update(&doc)
-			//		if err == nil {
-			//			//总文档数量-1
-			//			models.SetDecr("sys", "CntDoc", "Id=1")
-			//			//用户的文档数量-1
-			//			models.SetDecr("user_info", "Document", fmt.Sprintf("Id=%v", this.IsLogin))
-			//			//分类下的文档统计-1
-			//			models.SetDecr("category", "Cnt", fmt.Sprintf("Id in(%v,%v,%v)", doc.Cid, doc.ChanelId, doc.Pid))
-			//			this.ResponseJson(1, "文档删除成功")
-			//		} else {
-			//			helper.Logger.Error(err.Error())
-			//			this.ResponseJson(0, "删除失败，请重试")
-			//		}
-			//
-			//	} else {
-			//		this.ResponseJson(0, "删除失败，文档不存在")
-			//	}
-			//}
 		} else {
-			this.ResponseJson(0, "删除失败，文档不存在")
+			this.ResponseJson(false, "删除失败，文档不存在")
 		}
 	} else {
-		this.ResponseJson(0, "请先登录")
+		this.ResponseJson(false, "请先登录")
 	}
 
 }
 
 //文档编辑
 func (this *UserController) DocEdit() {
-	docid, _ := this.GetInt(":doc")
+	var (
+		docId int //文档id
+	)
+	docId, _ = this.GetInt(":doc")
 	if this.IsLogin > 0 {
-		if docid > 0 {
-			var info = models.DocumentInfo{Id: docid}
+		if docId > 0 {
+			var info = models.DocumentInfo{Id: docId}
 			err := orm.NewOrm().Read(&info)
 			if err != nil {
 				helper.Logger.Error(err.Error())
 				this.Redirect("/user", 302)
 			} else {
 				if info.Uid == this.IsLogin {
-					var doc = models.Document{Id: docid}
+					var doc = models.Document{Id: docId}
 					//post
 					if this.Ctx.Request.Method == "POST" {
 						ruels := map[string][]string{
@@ -660,7 +636,7 @@ func (this *UserController) DocEdit() {
 						}
 						params, errs := helper.Valid(this.Ctx.Request.Form, ruels)
 						if len(errs) > 0 {
-							this.ResponseJson(0, "参数错误")
+							this.ResponseJson(false, "参数错误")
 						}
 						doc.Title = params["Title"].(string)
 						doc.Keywords = params["Tags"].(string)
@@ -675,7 +651,7 @@ func (this *UserController) DocEdit() {
 						models.Regulate(models.GetTableCategory(), "Cnt", -1, fmt.Sprintf("Id in(%v,%v,%v)", info.ChanelId, info.Cid, info.Pid))
 						//新分类+1
 						models.Regulate(models.GetTableCategory(), "Cnt", 1, fmt.Sprintf("Id in(%v,%v,%v)", params["Chanel"], params["Cid"], params["Pid"]))
-						this.ResponseJson(1, "文档编辑成功")
+						this.ResponseJson(true, "文档编辑成功")
 					} else {
 
 						err := orm.NewOrm().Read(&doc)
@@ -716,12 +692,12 @@ func (this *UserController) CollectFolderDel() {
 		err := models.NewCollect().DelFolder(cid, this.IsLogin)
 		if err != nil {
 			helper.Logger.Error(err.Error())
-			this.ResponseJson(0, err.Error())
+			this.ResponseJson(false, err.Error())
 		} else {
-			this.ResponseJson(1, "收藏夹删除成功")
+			this.ResponseJson(true, "收藏夹删除成功")
 		}
 	} else {
-		this.ResponseJson(0, "删除失败，参数错误")
+		this.ResponseJson(false, "删除失败，参数错误")
 	}
 }
 
@@ -731,9 +707,9 @@ func (this *UserController) CollectCancel() {
 	did, _ := this.GetInt(":did")
 	if err := models.NewCollect().Cancel(did, cid, this.IsLogin); err != nil {
 		helper.Logger.Error(err.Error())
-		this.ResponseJson(0, "移除收藏失败，可能您为收藏该文档")
+		this.ResponseJson(false, "移除收藏失败，可能您为收藏该文档")
 	}
-	this.ResponseJson(1, "移除收藏成功")
+	this.ResponseJson(true, "移除收藏成功")
 }
 
 //更换头像
@@ -744,26 +720,26 @@ func (this *UserController) Avatar() {
 		f, fh, err := this.GetFile("Avatar")
 		if err != nil {
 			helper.Logger.Error("用户(%v)更新头像失败：%v", this.IsLogin, err.Error())
-			this.ResponseJson(0, "头像文件上传失败")
+			this.ResponseJson(false, "头像文件上传失败")
 		}
 		defer f.Close()
 		slice := strings.Split(fh.Filename, ".")
 		ext := strings.ToLower(slice[len(slice)-1])
 		fmt.Println(ext)
 		if !(ext == "jpg" || ext == "jpeg" || ext == "png" || ext == "gif") {
-			this.ResponseJson(0, "头像图片格式只支持jpg、jpeg、png和gif")
+			this.ResponseJson(false, "头像图片格式只支持jpg、jpeg、png和gif")
 		}
 		tmpfile := dir + "/" + helper.MyMD5(fmt.Sprintf("%v-%v-%v", fh.Filename, this.IsLogin, time.Now().Unix())) + "." + ext
 		savefile := helper.MyMD5(tmpfile) + "." + ext
 		err = this.SaveToFile("Avatar", tmpfile)
 		if err != nil {
 			helper.Logger.Error("用户(%v)头像保存失败：%v", this.IsLogin, err.Error())
-			this.ResponseJson(0, "头像文件保存失败")
+			this.ResponseJson(false, "头像文件保存失败")
 		}
 		err = models.NewOss().MoveToOss(tmpfile, savefile, true, true)
 		if err != nil {
 			helper.Logger.Error(err.Error())
-			this.ResponseJson(0, "头像文件保存失败")
+			this.ResponseJson(false, "头像文件保存失败")
 		}
 		//查询数据库用户数据
 		var user = models.User{Id: this.IsLogin}
@@ -775,14 +751,14 @@ func (this *UserController) Avatar() {
 		user.Avatar = savefile
 		rows, err := orm.NewOrm().Update(&user, "Avatar")
 		if rows > 0 && err == nil {
-			this.ResponseJson(1, "头像更新成功")
+			this.ResponseJson(true, "头像更新成功")
 		}
 		if err != nil {
 			helper.Logger.Error(err.Error())
 		}
-		this.ResponseJson(0, "头像更新失败")
+		this.ResponseJson(false, "头像更新失败")
 	} else {
-		this.ResponseJson(0, "请先登录")
+		this.ResponseJson(false, "请先登录")
 	}
 }
 
@@ -799,25 +775,25 @@ func (this *UserController) Edit() {
 		}
 		params, errs := helper.Valid(this.Ctx.Request.Form, rules)
 		if len(errs) > 0 {
-			this.ResponseJson(0, "参数不正确")
+			this.ResponseJson(false, "参数不正确")
 		}
 		var user = models.User{Id: this.IsLogin}
 		orm.NewOrm().Read(&user)
 		if len(params["OldPassword"].(string)) > 0 || len(params["NewPassword"].(string)) > 0 || len(params["RePassword"].(string)) > 0 {
 			if len(params["NewPassword"].(string)) < 6 || len(params["RePassword"].(string)) < 6 {
-				this.ResponseJson(0, "密码长度必须至少6个字符")
+				this.ResponseJson(false, "密码长度必须至少6个字符")
 			}
 			opwd := helper.MyMD5(params["OldPassword"].(string))
 			npwd := helper.MyMD5(params["NewPassword"].(string))
 			rpwd := helper.MyMD5(params["RePassword"].(string))
 			if user.Password != opwd {
-				this.ResponseJson(0, "原密码不正确")
+				this.ResponseJson(false, "原密码不正确")
 			}
 			if npwd != rpwd {
-				this.ResponseJson(0, "确认密码和新密码必须一致")
+				this.ResponseJson(false, "确认密码和新密码必须一致")
 			}
 			if opwd == npwd {
-				this.ResponseJson(0, "确认密码不能与原密码相同")
+				this.ResponseJson(false, "确认密码不能与原密码相同")
 			}
 			user.Password = rpwd
 			cols = append(cols, "Password")
@@ -827,20 +803,20 @@ func (this *UserController) Edit() {
 		rows, err := orm.NewOrm().Update(&user, cols...)
 		if err != nil {
 			helper.Logger.Error(err.Error())
-			this.ResponseJson(0, "设置失败，请刷新页面重试")
+			this.ResponseJson(false, "设置失败，请刷新页面重试")
 		}
 		if rows > 0 {
 			if changepwd {
 				this.ResetCookie()
-				this.ResponseJson(1, "设置成功，您设置了新密码，请重新登录")
+				this.ResponseJson(true, "设置成功，您设置了新密码，请重新登录")
 			} else {
-				this.ResponseJson(1, "设置成功")
+				this.ResponseJson(true, "设置成功")
 			}
 		} else {
-			this.ResponseJson(1, "设置失败，可能您未对内容做更改")
+			this.ResponseJson(true, "设置失败，可能您未对内容做更改")
 		}
 	} else {
-		this.ResponseJson(0, "请先登录")
+		this.ResponseJson(false, "请先登录")
 	}
 
 }

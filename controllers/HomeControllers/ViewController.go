@@ -142,22 +142,22 @@ func (this *ViewController) Download() {
 							}
 						}
 
-						this.ResponseJson(1, "下载链接获取成功", map[string]interface{}{"url": url})
+						this.ResponseJson(true, "下载链接获取成功", map[string]interface{}{"url": url})
 					} else {
-						this.ResponseJson(0, "您的金币余额不足，请通过签到或者分享文档，增加您的金币财富。")
+						this.ResponseJson(false, "您的金币余额不足，请通过签到或者分享文档，增加您的金币财富。")
 					}
 				} else {
-					this.ResponseJson(0, "您要下载的文档不存在")
+					this.ResponseJson(false, "您要下载的文档不存在")
 				}
 			} else {
-				this.ResponseJson(0, "您要下载的文档不存在")
+				this.ResponseJson(false, "您要下载的文档不存在")
 			}
 
 		} else {
-			this.ResponseJson(0, "请先登录")
+			this.ResponseJson(false, "请先登录")
 		}
 	} else {
-		this.ResponseJson(0, "参数不正确")
+		this.ResponseJson(false, "参数不正确")
 	}
 }
 
@@ -166,10 +166,10 @@ func (this *ViewController) DownFree() {
 	if this.IsLogin > 0 {
 		did, _ := this.GetInt("id")
 		if free := models.NewFreeDown().IsFreeDown(this.IsLogin, did); free.Id > 0 && free.TimeCreate > int(time.Now().Unix())-this.Sys.FreeDay*24*3600 {
-			this.ResponseJson(1, fmt.Sprintf("您上次下载过当前文档，且仍在免费下载有效期(%v天)内，本次下载免费", this.Sys.FreeDay))
+			this.ResponseJson(true, fmt.Sprintf("您上次下载过当前文档，且仍在免费下载有效期(%v天)内，本次下载免费", this.Sys.FreeDay))
 		}
 	}
-	this.ResponseJson(0, "不能免费下载，不在免费下载期限内")
+	this.ResponseJson(false, "不能免费下载，不在免费下载期限内")
 }
 
 //文档评论
@@ -178,12 +178,12 @@ func (this *ViewController) Comment() {
 	score, _ := this.GetInt("Score")
 	answer := this.GetString("Answer")
 	if answer != this.Sys.Answer {
-		this.ResponseJson(0, "请输入正确的答案")
+		this.ResponseJson(false, "请输入正确的答案")
 	}
 	if id > 0 {
 		if this.IsLogin > 0 {
 			if score < 1 || score > 5 {
-				this.ResponseJson(0, "请给文档评分")
+				this.ResponseJson(false, "请给文档评分")
 			} else {
 				comment := models.DocumentComment{
 					Uid:        this.IsLogin,
@@ -195,11 +195,11 @@ func (this *ViewController) Comment() {
 				}
 				cnt := strings.Count(comment.Content, "") - 1
 				if cnt > 255 || cnt < 8 {
-					this.ResponseJson(0, "评论内容限8-255个字符")
+					this.ResponseJson(false, "评论内容限8-255个字符")
 				} else {
 					_, err := orm.NewOrm().Insert(&comment)
 					if err != nil {
-						this.ResponseJson(0, "发表评论失败：每人仅限给每个文档点评一次")
+						this.ResponseJson(false, "发表评论失败：每人仅限给每个文档点评一次")
 					} else {
 						//文档评论人数增加
 						sql := fmt.Sprintf("UPDATE `%v` SET `Score`=(`Score`*`ScorePeople`+%v)/(`ScorePeople`+1),`ScorePeople`=`ScorePeople`+1 WHERE Id=%v", models.GetTableDocumentInfo(), comment.Score, comment.Did)
@@ -207,15 +207,15 @@ func (this *ViewController) Comment() {
 						if err != nil {
 							helper.Logger.Error(err.Error())
 						}
-						this.ResponseJson(1, "恭喜您，评论发表成功")
+						this.ResponseJson(true, "恭喜您，评论发表成功")
 					}
 				}
 			}
 		} else {
-			this.ResponseJson(0, "评论失败，您当前处于未登录状态，请先登录")
+			this.ResponseJson(false, "评论失败，您当前处于未登录状态，请先登录")
 		}
 	} else {
-		this.ResponseJson(0, "评论失败，参数不正确")
+		this.ResponseJson(false, "评论失败，参数不正确")
 	}
 }
 
@@ -226,9 +226,9 @@ func (this *ViewController) GetComment() {
 	if p > 0 && did > 0 {
 		if rows, _, err := models.NewDocumentComment().GetCommentList(did, p, 10); err != nil {
 			helper.Logger.Error(err.Error())
-			this.ResponseJson(0, "评论列表获取失败")
+			this.ResponseJson(false, "评论列表获取失败")
 		} else {
-			this.ResponseJson(1, "评论列表获取成功", rows)
+			this.ResponseJson(true, "评论列表获取成功", rows)
 		}
 	}
 }

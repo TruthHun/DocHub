@@ -135,7 +135,11 @@ func (this *BaseController) Del() {
 }
 
 //响应json
-func (this *BaseController) ResponseJson(status int, msg string, data ...interface{}) {
+func (this *BaseController) ResponseJson(isSuccess bool, msg string, data ...interface{}) {
+	status := 0
+	if isSuccess {
+		status = 1
+	}
 	ret := map[string]interface{}{"status": status, "msg": msg}
 	if len(data) > 0 {
 		ret["data"] = data[0]

@@ -123,9 +123,9 @@ func (this *DocController) AddChanel() {
 	if len(cate.Title) > 0 && len(cate.Alias) > 0 {
 		cate.Status = true
 		orm.NewOrm().Insert(&cate)
-		this.ResponseJson(1, "频道新增成功")
+		this.ResponseJson(true, "频道新增成功")
 	} else {
-		this.ResponseJson(0, "名称和别名均不能为空")
+		this.ResponseJson(false, "名称和别名均不能为空")
 	}
 }
 
@@ -134,12 +134,12 @@ func (this *DocController) GetCateByCid() {
 	cid, _ := this.GetInt("Cid")
 	if cid > 0 {
 		if data, _, err := models.GetList(models.GetTableCategory(), 1, 100, orm.NewCondition().And("Pid", cid).And("Status", 1), "sort", "-id"); err != nil {
-			this.ResponseJson(0, err.Error())
+			this.ResponseJson(false, err.Error())
 		} else {
-			this.ResponseJson(1, "数据获取成功", data)
+			this.ResponseJson(true, "数据获取成功", data)
 		}
 	} else {
-		this.ResponseJson(0, "频道ID参数不正确，必须大于0")
+		this.ResponseJson(false, "频道ID参数不正确，必须大于0")
 	}
 
 }
@@ -168,21 +168,21 @@ func (this *DocController) AddCate() {
 	}
 	if l := len(cates); l > 0 {
 		if _, err := orm.NewOrm().InsertMulti(l, &cates); err != nil {
-			this.ResponseJson(0, err.Error())
+			this.ResponseJson(false, err.Error())
 		} else {
-			this.ResponseJson(1, "分类添加成功")
+			this.ResponseJson(true, "分类添加成功")
 		}
 	}
-	this.ResponseJson(0, "添加失败，缺少分类")
+	this.ResponseJson(false, "添加失败，缺少分类")
 }
 
 //删除分类
 func (this *DocController) DelCate() {
 	id, _ := this.GetInt("id")
 	if err := models.NewCategory().Del(id); err != nil {
-		this.ResponseJson(0, err.Error())
+		this.ResponseJson(false, err.Error())
 	}
-	this.ResponseJson(1, "删除成功")
+	this.ResponseJson(true, "删除成功")
 }
 
 //对文档进行操作，type类型的值包括remove（移入回收站），del(删除文档记录)，clear（清空通用户的内容)，deepdel（深度删除，在删除文档记录的同时删除文档文件），forbidden(禁止文档，把文档md5标记为禁止上传，只要文档的md5是这个，则该文档禁止被上传)
@@ -222,9 +222,9 @@ func (this *DocController) Action() {
 		//	}
 	}
 	if len(errs) > 0 {
-		this.ResponseJson(0, fmt.Sprintf("操作失败：%v", strings.Join(errs, "; ")))
+		this.ResponseJson(false, fmt.Sprintf("操作失败：%v", strings.Join(errs, "; ")))
 	} else {
-		this.ResponseJson(1, "操作成功")
+		this.ResponseJson(true, "操作成功")
 	}
 }
 
@@ -234,17 +234,17 @@ func (this *DocController) RemarkTpl() {
 		DsId, _ := this.GetInt("dsid")
 		if DsId > 0 {
 			remark := models.NewDocumentRemark().GetContentTplByDsId(DsId)
-			this.ResponseJson(1, "获取成功", remark)
+			this.ResponseJson(true, "获取成功", remark)
 		} else {
-			this.ResponseJson(0, "DsId不能为空")
+			this.ResponseJson(false, "DsId不能为空")
 		}
 	} else {
 		var rm models.DocumentRemark
 		this.ParseForm(&rm)
 		if err := models.NewDocumentRemark().Insert(rm); err != nil {
-			this.ResponseJson(0, fmt.Sprintf("操作失败：%v", err.Error()))
+			this.ResponseJson(false, fmt.Sprintf("操作失败：%v", err.Error()))
 		} else {
-			this.ResponseJson(1, "操作成功")
+			this.ResponseJson(true, "操作成功")
 		}
 	}
 }

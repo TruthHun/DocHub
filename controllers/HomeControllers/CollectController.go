@@ -15,7 +15,7 @@ type CollectController struct {
 //收藏文档
 func (this *CollectController) Get() {
 	if this.IsLogin == 0 {
-		this.ResponseJson(0, "您当前未登录，请先登录")
+		this.ResponseJson(false, "您当前未登录，请先登录")
 	} else {
 		cid, _ := this.GetInt("Cid")
 		did, _ := this.GetInt("Did")
@@ -34,12 +34,12 @@ func (this *CollectController) Get() {
 				//收藏夹的文档+1
 				models.Regulate(models.GetTableCollectFolder(), "Cnt", 1, fmt.Sprintf("`Id`=%v", cid))
 
-				this.ResponseJson(1, "恭喜您，文档收藏成功。")
+				this.ResponseJson(true, "恭喜您，文档收藏成功。")
 			} else {
-				this.ResponseJson(0, "收藏失败：您已收藏过该文档")
+				this.ResponseJson(false, "收藏失败：您已收藏过该文档")
 			}
 		} else {
-			this.ResponseJson(0, "收藏失败：参数不正确")
+			this.ResponseJson(false, "收藏失败：参数不正确")
 		}
 	}
 }
@@ -56,19 +56,19 @@ func (this *CollectController) FolderList() {
 			helper.Logger.Error(err.Error())
 		}
 		if rows > 0 && err == nil {
-			this.ResponseJson(1, "收藏夹获取获取成功", lists)
+			this.ResponseJson(true, "收藏夹获取获取成功", lists)
 		} else {
-			this.ResponseJson(0, "暂时没有收藏夹，请先在会员中心创建收藏夹")
+			this.ResponseJson(false, "暂时没有收藏夹，请先在会员中心创建收藏夹")
 		}
 	} else {
-		this.ResponseJson(0, "获取收藏夹失败：请先登录")
+		this.ResponseJson(false, "获取收藏夹失败：请先登录")
 	}
 }
 
 //取消收藏文档
 func (this *CollectController) CollectCancel() {
 	if this.IsLogin == 0 {
-		this.ResponseJson(0, "您当前未登录，请先登录")
+		this.ResponseJson(false, "您当前未登录，请先登录")
 	} else {
 		cid, _ := this.GetInt("Cid")
 		did, _ := this.GetInt("Did")
@@ -80,12 +80,12 @@ func (this *CollectController) CollectCancel() {
 				//收藏夹的文档-1
 				models.Regulate(models.GetTableCollectFolder(), "Cnt", -1, "`Id`=?", cid)
 
-				this.ResponseJson(1, "恭喜您，删除收藏文档成功")
+				this.ResponseJson(true, "恭喜您，删除收藏文档成功")
 			} else {
-				this.ResponseJson(0, "移除收藏文档失败，可能您为收藏该文档")
+				this.ResponseJson(false, "移除收藏文档失败，可能您为收藏该文档")
 			}
 		} else {
-			this.ResponseJson(0, "收藏失败：参数不正确")
+			this.ResponseJson(false, "收藏失败：参数不正确")
 		}
 	}
 }

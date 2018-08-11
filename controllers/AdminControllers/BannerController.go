@@ -57,9 +57,9 @@ func (this *BannerController) Add() {
 	}
 	if err != nil {
 		helper.Logger.Error(err.Error())
-		this.ResponseJson(0, err.Error())
+		this.ResponseJson(false, err.Error())
 	}
-	this.ResponseJson(1, "横幅添加成功")
+	this.ResponseJson(true, "横幅添加成功")
 }
 
 //删除横幅
@@ -71,8 +71,8 @@ func (this *BannerController) Del() {
 		//之所以这么做，是因为如果没有第一个参数，则参数编程了[]string，而不是[]interface{},有疑问可以自己验证试下
 		if _, err = models.NewBanner().Del(ids[0], ids[1:]); err != nil {
 			helper.Logger.Error(err.Error())
-			this.ResponseJson(0, err.Error())
+			this.ResponseJson(false, err.Error())
 		}
 	}
-	this.ResponseJson(1, "删除成功")
+	this.ResponseJson(true, "删除成功")
 }

@@ -30,7 +30,7 @@ func (this *UploadController) SegWord() {
 	if this.IsLogin > 0 {
 		wds = helper.SegWord(this.GetString("word"))
 	}
-	this.ResponseJson(1, "分词成功", wds)
+	this.ResponseJson(true, "分词成功", wds)
 }
 
 //文档上传页面
@@ -67,13 +67,13 @@ func (this *UploadController) Post() {
 
 	//1、用户是否已登录
 	if this.IsLogin == 0 {
-		this.ResponseJson(0, "您当前未登录，请先登录")
+		this.ResponseJson(false, "您当前未登录，请先登录")
 	}
 
 	this.ParseForm(&form)
 	//检查必填字段是否已经填写完毕
 	if len(form.Title) == 0 || form.Chanel*form.Pid*form.Cid == 0 {
-		this.ResponseJson(0, "文档名称、频道、一级文档分类、二级文档分类均不能为空")
+		this.ResponseJson(false, "文档名称、频道、一级文档分类、二级文档分类均不能为空")
 	}
 
 	//写死的范围，0-20，即文档收费范围
@@ -85,7 +85,7 @@ func (this *UploadController) Post() {
 
 	//非法文件，提示不允许上传，这里检测一次
 	if models.NewDocument().IsIllegal(form.Md5) {
-		this.ResponseJson(0, "您上传的文档已被站点标记为不符合要求的文档，暂时不允许上传分享。")
+		this.ResponseJson(false, "您上传的文档已被站点标记为不符合要求的文档，暂时不允许上传分享。")
 	}
 
 	if len(form.Md5) == 32 && form.Exist == 1 {
@@ -94,14 +94,14 @@ func (this *UploadController) Post() {
 		//文件在文档库中未存在，则接收文件并做处理
 		f, fh, err := this.GetFile("File")
 		if err != nil {
-			this.ResponseJson(0, err.Error())
+			this.ResponseJson(false, err.Error())
 		}
 		defer f.Close()
 		//判断文档格式是否被允许
 
 		ext = strings.TrimLeft(strings.ToLower(filepath.Ext(fh.Filename)), ".")
 		if !strings.Contains(helper.AllowedUploadExt, fmt.Sprintf(",%v,", ext)) {
-			this.ResponseJson(0, "您上传的文档格式不正确，请上传正确格式的文档")
+			this.ResponseJson(false, "您上传的文档格式不正确，请上传正确格式的文档")
 		}
 		//获取文件MD5
 		md5func := func(file io.Reader) string {
@@ -116,20 +116,20 @@ func (this *UploadController) Post() {
 
 		//非法文件，提示不允许上传。这里再检测一次，同时删除文档
 		if models.NewDocument().IsIllegal(form.Md5) {
-			this.ResponseJson(0, "您上传的文档已被站点标记为不符合要求的文档，暂时不允许上传分享。")
+			this.ResponseJson(false, "您上传的文档已被站点标记为不符合要求的文档，暂时不允许上传分享。")
 		}
 
 		//如果文档已经存在，则直接调用处理
 		if models.NewDocument().IsExistByMd5(form.Md5) > 0 {
 			models.HandleExistDoc(this.IsLogin, form)
-			this.ResponseJson(1, "文档上传成功")
+			this.ResponseJson(true, "文档上传成功")
 		}
 
 		os.MkdirAll(dir, 0777)
 		tmpfile = dir + "/" + form.Md5 + "." + ext
 		err = this.SaveToFile("File", tmpfile)
 		if err != nil {
-			this.ResponseJson(0, "文档存储失败，请重新上传")
+			this.ResponseJson(false, "文档存储失败，请重新上传")
 		}
 		if info, err := os.Stat(tmpfile); err == nil {
 			form.Size = int(info.Size())
@@ -159,9 +159,9 @@ func (this *UploadController) Post() {
 			helper.Logger.Error(err.Error())
 		}
 		models.Regulate(models.GetTableUserInfo(), "Coin", price, "Id=?", this.IsLogin)
-		this.ResponseJson(1, "^.^ 恭喜您，成功分享了一篇文档。")
+		this.ResponseJson(true, "^.^ 恭喜您，成功分享了一篇文档。")
 	} else {
-		this.ResponseJson(0, "啊哦，文档上传失败...重试一下吧。")
+		this.ResponseJson(false, "啊哦，文档上传失败...重试一下吧。")
 	}
 
 }

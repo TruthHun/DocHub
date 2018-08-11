@@ -40,9 +40,9 @@ func (this *LoginController) Login() {
 		this.ParseForm(&admin)
 		if admin, err := models.NewAdmin().Login(admin.Username, admin.Password, admin.Code); err == nil && admin.Id > 0 {
 			this.SetSession("AdminId", admin.Id)
-			this.ResponseJson(1, "登录成功")
+			this.ResponseJson(true, "登录成功")
 		} else {
-			this.ResponseJson(0, msg)
+			this.ResponseJson(false, msg)
 		}
 	}
 }
@@ -54,19 +54,19 @@ func (this *LoginController) UpdatePwd() {
 		PwdNew := this.GetString("password_new")
 		PwdEnsure := this.GetString("password_ensure")
 		if PwdOld == PwdNew || PwdNew != PwdEnsure {
-			this.ResponseJson(0, "新密码不能与原密码相同，且确认密码必须与新密码一致")
+			this.ResponseJson(false, "新密码不能与原密码相同，且确认密码必须与新密码一致")
 		} else {
 			var admin = models.Admin{Password: helper.MyMD5(PwdOld)}
 			if orm.NewOrm().Read(&admin, "Password"); admin.Id > 0 {
 				admin.Password = helper.MyMD5(PwdNew)
 				if rows, err := orm.NewOrm().Update(&admin); rows > 0 {
-					this.ResponseJson(1, "密码更新成功")
+					this.ResponseJson(true, "密码更新成功")
 				} else {
-					this.ResponseJson(0, "密码更新失败："+err.Error())
+					this.ResponseJson(false, "密码更新失败："+err.Error())
 				}
 
 			} else {
-				this.ResponseJson(0, "原密码不正确")
+				this.ResponseJson(false, "原密码不正确")
 			}
 		}
 	} else {

@@ -17,8 +17,8 @@ func (this *ScoreController) Get() {
 		err = models.NewCoinLog().LogRecord(log)
 	}
 	if err != nil {
-		this.ResponseJson(0, err.Error())
+		this.ResponseJson(false, err.Error())
 	} else {
-		this.ResponseJson(1, "积分变更成功")
+		this.ResponseJson(true, "积分变更成功")
 	}
 }
