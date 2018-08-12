@@ -51,7 +51,7 @@
                                 </td>
                                 <td>
                                     {{if (.Md5|IsIllegal)}}
-                                    <span class="text-danger">非法</span>
+                                    <span class="text-danger">非法(禁传)</span>
                                     {{else}}
                                     <span class="text-success">合法</span>
                                     {{end}}
@@ -62,10 +62,11 @@
                                 <td>
                                     {{/*<a href="#" class="wenku-tooltip" title="将文档换成其他用户发布，并恢复该文档">改发</a> |*/}}
                                     <a href="/admin/doc/action?type=recover&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get" title="将文档恢复到正常状态">恢复</a> |
-                                    <a href="/admin/doc/action?type=remove&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="把文档加入黑名单，禁止该文档被再次上传">禁传</a> |
-                                    <a href="/admin/doc/action?type=remove&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="删除文档文件，即删除用户上传的文档文件，但不删除文档在数据库表中的记录">删档</a> |
-                                    <a href="/admin/doc/action?type=illegal&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="删除文档记录，即删除数据库中的记录，但不删除文档">删录</a> |
-                                    <a href="/admin/doc/action?type=clear&id={{.Uid}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="彻底将文档删除，既删除文档文件，同时删除文档记录，并将文档列入不合法文档，不再允许用户上传">彻删</a>
+                                    <a href="/admin/doc/action?type=illegal&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="把文档加入黑名单，禁止该文档被再次上传">禁传</a> |
+                                    <a href="/admin/doc/action?type=del-row&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="只是删除文档记录，文档文件依然保留">删除记录</a> |
+                                    {{/*<a href="/admin/doc/action?type=remove&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="删除文档文件，即删除用户上传的文档文件，但不删除文档在数据库表中的记录">删档</a> |*/}}
+                                    {{/*<a href="/admin/doc/action?type=illegal&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="删除文档记录，即删除数据库中的记录，但不删除文档">删录</a> |*/}}
+                                    <a href="/admin/doc/action?type=deepdel&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="彻底将文档删除，既删除文档文件，同时删除文档记录，跟该文档MD5相同的文档也将一同被删除！！！">【慎重】彻删</a>
                                 </td>
                             </tr>
                             {{end}}

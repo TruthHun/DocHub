@@ -55,6 +55,7 @@ func (this *DocumentComment) GetCommentList(did, p, listRows int) (params []orm.
 //@return               err             错误，nil表示删除成功
 func (this *DocumentComment) DelCommentByDocId(ids ...interface{}) (err error) {
 	if len(ids) > 0 {
+		//TODO:文档评分也要跟着变化
 		_, err = orm.NewOrm().QueryTable(GetTableDocumentComment()).Filter("Did__in", ids...).Delete()
 	}
 	return err

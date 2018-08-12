@@ -190,36 +190,26 @@ func (this *DocController) Action() {
 	var errs []string
 	ActionType := strings.ToLower(this.GetString("type"))
 	ids := helper.StringSliceToInterfaceSlice(strings.Split(this.GetString("id"), ","))
-
+	recycle := models.NewDocumentRecycle()
 	switch ActionType {
-	case "deepdel": //深度删除，删除文档记录和文档
-	case "recover": //恢复文档，只有文档状态是-1时，才可以进行恢复【OK】
-		if err := models.NewDocumentRecycle().RecoverFromRecycle(ids...); err != nil {
+	case "deepdel": //彻底删除文档：删除文档记录的同时也删除文档
+		if err := recycle.DeepDel(ids...); err != nil {
 			errs = append(errs, err.Error())
 		}
-	case "illegal": //将文档标记为非法文档
+	case "del-row": //只是删除该文档的文档记录
+		if err := recycle.DelRows(ids...); err != nil {
+			errs = append(errs, err.Error())
+		}
+	case "recover": //恢复文档，只有文档状态是-1时，才可以进行恢复【OK】
+		if err := recycle.RecoverFromRecycle(ids...); err != nil {
+			errs = append(errs, err.Error())
+		}
+	case "illegal": //将文档标记为非法文档【OK】
 		if err := models.NewDocument().SetIllegal(ids...); err != nil {
 			errs = append(errs, err.Error())
 		}
 	case "remove": //将文档移入回收站【OK】
-		errs = models.NewDocumentRecycle().RemoveToRecycle(this.AdminId, false, ids...)
-	case "clear": //清空用户的分享文档。注意：这时的ids表示的是用户id
-		//先查询用户的分享文档
-		var (
-			docinfo []models.DocumentInfo
-			dids    []interface{}
-		)
-		if _, err := orm.NewOrm().QueryTable("document_info").Filter("Id__in", ids...).All(&docinfo); err != nil {
-			helper.Logger.Error(err.Error())
-		}
-		for _, info := range docinfo {
-			dids = append(dids, info.Id)
-		}
-		errs = models.NewDocumentRecycle().RemoveToRecycle(this.AdminId, false, dids...)
-		//case "illegal": //先将文档移入回收站，然后再将文档进行深度删除
-		//	if errs = models.RemoveToRecycle(this.AdminId, false, ids...); len(errs) == 0 {
-		//		errs = models.DocDeepDel(ids...)
-		//	}
+		errs = recycle.RemoveToRecycle(this.AdminId, false, ids...)
 	}
 	if len(errs) > 0 {
 		this.ResponseJson(false, fmt.Sprintf("操作失败：%v", strings.Join(errs, "; ")))

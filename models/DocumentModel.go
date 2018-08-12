@@ -600,105 +600,105 @@ func (this *Document) SoftDel(uid int, isAdmin bool, ids ...interface{}) (err er
 
 //注意：这里只能从回收站进行删除，因为这样就不需要再对统计数据进行增减计算操作了
 //删除文档，这里是彻底删除（会先查询md5，然后根据md5查找到所有文档进行删除），被彻底删除的文档，会被标记为非法文档，不再允许用户上传该文档
-func (this *Document) DeepDel(ids ...interface{}) (errs []string) {
-	var (
-		DocInfo      []DocumentInfo
-		DocStore     []DocumentStore
-		DocIllegal   []DocumentIllegal
-		DsIds, DocId []interface{}
-		err          error
-		o            = orm.NewOrm()
-	)
-
-	//查询现有的文档
-	if _, err := o.QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).All(&DocInfo); err != nil {
-		helper.Logger.Error(err.Error())
-		errs = append(errs, err.Error())
-	}
-
-	//获取DsId
-	for _, info := range DocInfo {
-		DsIds = append(DsIds, info.DsId)
-	}
-	//根据DsId查询所有需要删除的文档记录
-	DocInfo, _, _ = this.GetDocInfoByDsId(DsIds...)
-
-	if len(DsIds) > 0 {
-
-		//根据DsId查询所有DocumentStore表中的数据
-		if _, err = orm.NewOrm().QueryTable(GetTableDocumentStore()).Filter("Id__in", DsIds...).All(&DocStore); err != nil {
-			helper.Logger.Error(err.Error())
-			errs = append(errs, err.Error())
-		}
-
-		//清空document_store表中的数据
-		if _, err := orm.NewOrm().QueryTable(GetTableDocumentStore()).Filter("Id__in", DsIds...).Delete(); err != nil {
-			helper.Logger.Error(err.Error())
-			errs = append(errs, err.Error())
-		}
-	}
-
-	//记录非法的md5
-	for _, store := range DocStore {
-		var docIllegal = DocumentIllegal{Id: 0, Md5: store.Md5}
-		orm.NewOrm().Read(&docIllegal, "Md5")
-		if docIllegal.Id == 0 {
-			DocIllegal = append(DocIllegal, docIllegal)
-		}
-		go func() {
-			//删除预览文档
-			if err := NewOss().DelFromOss(true, store.Md5+".pdf"); err != nil {
-				helper.Logger.Error(err.Error())
-			}
-			//删除封面图片
-			if err := NewOss().DelFromOss(true, store.Md5+".jpg"); err != nil {
-				helper.Logger.Error(err.Error())
-			}
-			//删除原文档
-			if err := NewOss().DelFromOss(false, store.Md5+"."+store.Ext); err != nil {
-				helper.Logger.Error(err.Error())
-			}
-			if err := NewOss().DelFromOss(false, store.Md5+".pdf"); err != nil {
-				helper.Logger.Error(err.Error())
-			}
-		}()
-	}
-	//录入非法文档表
-	if l := len(DocIllegal); l > 0 {
-		if _, err := orm.NewOrm().InsertMulti(l, &DocIllegal); err != nil {
-			helper.Logger.Error(err.Error())
-			errs = append(errs, err.Error())
-		}
-	}
-
-	if len(DocId) > 0 {
-		//清空回收站中的这些非法文档
-		if _, err := orm.NewOrm().QueryTable(GetTableDocumentRecycle()).Filter("Id__in", DocId...).Delete(); err != nil {
-			helper.Logger.Error(err.Error())
-			errs = append(errs, err.Error())
-		}
-		//清空document表中的数据
-		if _, err := orm.NewOrm().QueryTable(GetTableDocument()).Filter("Id__in", DocId...).Delete(); err != nil {
-			helper.Logger.Error(err.Error())
-			errs = append(errs, err.Error())
-		}
-		//清空document_info表中的数据
-		if _, err := orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", DocId...).Delete(); err != nil {
-			helper.Logger.Error(err.Error())
-			errs = append(errs, err.Error())
-		}
-
-		//删除这些文档的所有评论记录
-		if _, err := orm.NewOrm().QueryTable(GetTableDocumentComment()).Filter("Did__in", DocId...).Delete(); err != nil {
-			helper.Logger.Error(err.Error())
-			errs = append(errs, err.Error())
-		}
-		//处理收藏
-		go NewCollect().DelByDocId(DocId...)
-	}
-
-	return errs
-}
+//func (this *Document) DeepDel(ids ...interface{}) (errs []string) {
+//	var (
+//		DocInfo      []DocumentInfo
+//		DocStore     []DocumentStore
+//		DocIllegal   []DocumentIllegal
+//		DsIds, DocId []interface{}
+//		err          error
+//		o            = orm.NewOrm()
+//	)
+//
+//	//查询现有的文档
+//	if _, err := o.QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).All(&DocInfo); err != nil {
+//		helper.Logger.Error(err.Error())
+//		errs = append(errs, err.Error())
+//	}
+//
+//	//获取DsId
+//	for _, info := range DocInfo {
+//		DsIds = append(DsIds, info.DsId)
+//	}
+//	//根据DsId查询所有需要删除的文档记录
+//	DocInfo, _, _ = this.GetDocInfoByDsId(DsIds...)
+//
+//	if len(DsIds) > 0 {
+//
+//		//根据DsId查询所有DocumentStore表中的数据
+//		if _, err = orm.NewOrm().QueryTable(GetTableDocumentStore()).Filter("Id__in", DsIds...).All(&DocStore); err != nil {
+//			helper.Logger.Error(err.Error())
+//			errs = append(errs, err.Error())
+//		}
+//
+//		//清空document_store表中的数据
+//		if _, err := orm.NewOrm().QueryTable(GetTableDocumentStore()).Filter("Id__in", DsIds...).Delete(); err != nil {
+//			helper.Logger.Error(err.Error())
+//			errs = append(errs, err.Error())
+//		}
+//	}
+//
+//	//记录非法的md5
+//	for _, store := range DocStore {
+//		var docIllegal = DocumentIllegal{Id: 0, Md5: store.Md5}
+//		orm.NewOrm().Read(&docIllegal, "Md5")
+//		if docIllegal.Id == 0 {
+//			DocIllegal = append(DocIllegal, docIllegal)
+//		}
+//		go func() {
+//			//删除预览文档
+//			if err := NewOss().DelFromOss(true, store.Md5+".pdf"); err != nil {
+//				helper.Logger.Error(err.Error())
+//			}
+//			//删除封面图片
+//			if err := NewOss().DelFromOss(true, store.Md5+".jpg"); err != nil {
+//				helper.Logger.Error(err.Error())
+//			}
+//			//删除原文档
+//			if err := NewOss().DelFromOss(false, store.Md5+"."+store.Ext); err != nil {
+//				helper.Logger.Error(err.Error())
+//			}
+//			if err := NewOss().DelFromOss(false, store.Md5+".pdf"); err != nil {
+//				helper.Logger.Error(err.Error())
+//			}
+//		}()
+//	}
+//	//录入非法文档表
+//	if l := len(DocIllegal); l > 0 {
+//		if _, err := orm.NewOrm().InsertMulti(l, &DocIllegal); err != nil {
+//			helper.Logger.Error(err.Error())
+//			errs = append(errs, err.Error())
+//		}
+//	}
+//
+//	if len(DocId) > 0 {
+//		//清空回收站中的这些非法文档
+//		if _, err := orm.NewOrm().QueryTable(GetTableDocumentRecycle()).Filter("Id__in", DocId...).Delete(); err != nil {
+//			helper.Logger.Error(err.Error())
+//			errs = append(errs, err.Error())
+//		}
+//		//清空document表中的数据
+//		if _, err := orm.NewOrm().QueryTable(GetTableDocument()).Filter("Id__in", DocId...).Delete(); err != nil {
+//			helper.Logger.Error(err.Error())
+//			errs = append(errs, err.Error())
+//		}
+//		//清空document_info表中的数据
+//		if _, err := orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", DocId...).Delete(); err != nil {
+//			helper.Logger.Error(err.Error())
+//			errs = append(errs, err.Error())
+//		}
+//
+//		//删除这些文档的所有评论记录
+//		if _, err := orm.NewOrm().QueryTable(GetTableDocumentComment()).Filter("Did__in", DocId...).Delete(); err != nil {
+//			helper.Logger.Error(err.Error())
+//			errs = append(errs, err.Error())
+//		}
+//		//处理收藏
+//		go NewCollect().DelByDocId(DocId...)
+//	}
+//
+//	return errs
+//}
 
 //根据document_store表中的id查询document_info表中的数据
 func (this *Document) GetDocInfoByDsId(DsId ...interface{}) (info []DocumentInfo, rows int64, err error) {
@@ -728,33 +728,36 @@ func (this *Document) GetDocInfoById(Ids ...interface{}) (info []DocumentInfo, r
 //@param                ids             文档id
 //@return               err             错误，nil表示成功
 func (this *Document) SetIllegal(ids ...interface{}) (err error) {
-	if l := int64(len(ids)); l > 0 {
+	if length := int64(len(ids)); length > 0 {
 		var (
-			docinfo []DocumentInfo
-			dsid    []interface{} //document_store表中的id
+			docInfo []DocumentInfo
+			dsId    []interface{} //document_store表中的id
 			did     []interface{} //文档id
 			stores  []DocumentStore
+			o       = orm.NewOrm()
 		)
-		l, err = orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).Limit(l).All(&docinfo)
-		if l > 0 {
-			for _, v := range docinfo {
-				dsid = append(dsid, v.DsId)
+
+		length, err = o.QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).Limit(length).All(&docInfo)
+		if length > 0 {
+
+			for _, v := range docInfo {
+				dsId = append(dsId, v.DsId)
 			}
-			if docinfo, l, err = this.GetDocInfoByDsId(dsid...); l > 0 {
-				for _, v := range docinfo {
+
+			if docInfo, length, err = this.GetDocInfoByDsId(dsId...); length > 0 {
+				for _, v := range docInfo {
 					did = append(did, v.Id)
 				}
-				//将文档移入回收站
+
+				//将文档移入回收站，主要是避免之前文档没有被删除的情况
 				if errs := NewDocumentRecycle().RemoveToRecycle(0, false, did...); len(errs) > 0 {
 					helper.Logger.Error(strings.Join(errs, "; "))
 				}
+
 				//根据dsid查询文档md5，并把md5录入到非法文档表
-				if stores, l, err = this.GetDocStoreByDsId(dsid...); err == nil && l > 0 {
+				if stores, length, err = this.GetDocStoreByDsId(dsId...); err == nil && length > 0 {
 					for _, store := range stores {
-						var ilg = DocumentIllegal{
-							Md5: store.Md5,
-						}
-						orm.NewOrm().Insert(&ilg)
+						o.Insert(&DocumentIllegal{Md5: store.Md5})
 					}
 				}
 			}

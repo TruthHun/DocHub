@@ -14,7 +14,12 @@
                     </div>
 
                             <div class="wenku-viewer clearfix wenku-unview">
-                                <h1><img alt="{{.Doc.Ext}}文档" src="/static/Home/default/img/{{.Doc.ExtCate}}_24.png"/> {{.Doc.Title}}</h1>
+                                <h1>
+                                    <img alt="{{.Doc.Ext}}文档" src="/static/Home/default/img/{{.Doc.ExtCate}}_24.png"/> {{.Doc.Title}}
+                                    {{if gt $.AdminId 0}}
+                                        <a href="/admin/doc/action?type=remove&id={{.Doc.Id}}" class="text-muted wenku-tooltip wenku-ajax-get" title="将文档移入回收站"><i class="fa fa-recycle"></i></a>
+                                    {{end}}
+                                </h1>
                                 <div class="help-block wenku-preview-tips text-center">
                                     当前格式({{.Doc.Ext}})文档暂时不支持在线预览，请下载原文档对内容进行浏览
                                 </div>
