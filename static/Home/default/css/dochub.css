@@ -220,9 +220,8 @@ textarea{resize: none;}
 #wenku-content.wenku-onlycover .container{width: 1100px !important;}
 #wenku-content.wenku-onlycover .container .wenku-view img{max-width: 702px;}
 #wenku-content h1{font-size: 22px;margin: 0px;line-height: 150%;}
-#wenku-content h1 img{
-    position: relative;
-    top:-3px;}
+#wenku-content h1 img{position: relative;top:-3px;}
+#wenku-content h1 .fa{font-size: 20px;}
 #wenku-content .wenku-doc-info .pull-right span{margin-left: 15px;}
 #wenku-content .wenku-relate .h7{margin: 0px 0px 5px;}
 #wenku-content .wenku-relate .col-xs-6{padding: 0px;}

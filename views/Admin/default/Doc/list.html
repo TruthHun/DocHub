@@ -1,7 +1,7 @@
         <div class="row">
             <h1 class="page-header">文档管理</h1>
             <div class="panel panel-default">
-                <div class="panel-heading wenku-no-pdl">
+                <div class="panel-heading wenku-no-pdl clearfix">
                     <div class="col-md-8 wenku-no-pdl">
                         <div class="btn btn-group">
                             <a href="#" class="btn btn-default" data-toggle="modal" data-target="#ModalChanel">新增频道</a>
@@ -9,7 +9,7 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <form class="pull-right" method="get" action="/admin/album.html" role="form">
+                        <form class="pull-right" target="_blank" method="get" action="/search" role="form">
                             <div class="form-group input-group">
                                 <input type="text" name="wd" required="required" placeholder="Search" value="" class="form-control">
                                 <span class="input-group-btn input-group-lg">
@@ -19,7 +19,7 @@
                         </form>
                     </div>
                 </div>
-                <div class="panel-body">
+                <div class="panel-body clearfix">
 
                     {{template "tabs" .}}
 
@@ -58,10 +58,9 @@
                                 </td>
                                 <td><a href="/user/{{.Uid}}" target="_blank">进击的皇虫</a></td>
                                 <td>
-                                    <a href="#" class="wenku-tooltip" title="对文档内容进行简单编辑">编辑</a> |
-                                    <a href="/admin/doc/action?type=remove&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get" title="删除当前文档，将该文档移入回收站">删除</a> |
-                                    <a href="/admin/doc/action?type=illegal&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get" title="将文档标记为非法文档，文档在被移入回收站的同时，并禁止任何用户再上传该文档">非法</a> |
-                                    <a href="javascript:void(0);" class="wenku-tooltip ModalRemark" title="给文档设置备注" data-dsid="{{.DsId}}" >备注 {{if (.DsId|IsRemark)}}(<i class="fa fa-check"></i>){{end}} </a>
+                                    {{/*<a href="#" class="wenku-tooltip" title="对文档内容进行简单编辑">编辑</a> |*/}}
+                                    <a href="/admin/doc/action?type=remove&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get" title="删除当前文档，将该文档移入回收站">删除</a>
+                                    {{/*<a href="/admin/doc/action?type=illegal&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get" title="将文档标记为非法文档，文档在被移入回收站的同时，并禁止任何用户再上传该文档">非法</a> |*/}}
                                 </td>
                             </tr>
                             {{end}}

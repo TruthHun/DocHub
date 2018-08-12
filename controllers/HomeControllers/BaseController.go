@@ -63,6 +63,7 @@ func (this *BaseController) Prepare() {
 	//单页
 	ModelPages := models.Pages{}
 	this.Data["Pages"], _, _ = ModelPages.List(beego.AppConfig.DefaultInt("pageslimit", 6), 1)
+	this.Data["AdminId"] = helper.Interface2Int(this.GetSession("AdminId"))
 }
 
 //自定义的文档错误

@@ -4,7 +4,13 @@
 
             <div class="panel panel-default wenku-noborder">
                 <div class="panel-body">
-                    <h1><img alt="{{.Doc.Ext}}文档" src="/static/Home/default/img/{{.Doc.ExtCate}}_24.png"/> {{.Doc.Title}}</h1>
+                    <h1><img alt="{{.Doc.Ext}}文档" src="/static/Home/default/img/{{.Doc.ExtCate}}_24.png"/> {{.Doc.Title}} 
+                    
+                        {{/*管理员删除按钮*/}}
+                        {{if gt $.AdminId 0}}
+                        <a href="/admin/doc/action?type=remove&id={{.Doc.Id}}" class="text-muted wenku-tooltip wenku-ajax-get" title="将文档移入回收站"><i class="fa fa-recycle"></i></a>
+                        {{end}}
+                    </h1>
                     <div class="help-block wenku-doc-info">
 							<span>
 								<a href="/list/{{.CrumbChanel.Alias}}" title="{{.CrumbChanel.Title}}">{{.CrumbChanel.Title}}</a> >

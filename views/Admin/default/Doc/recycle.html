@@ -1,7 +1,7 @@
         <div class="row">
             <h1 class="page-header">文档管理</h1>
             <div class="panel panel-default">
-                <div class="panel-heading wenku-no-pdl">
+                <div class="panel-heading wenku-no-pdl clearfix">
                     <div class="col-md-8 wenku-no-pdl">
                         <div class="btn btn-group">
                             <a href="#" class="btn btn-default" data-toggle="modal" data-target="#ModalChanel">新增频道</a>
@@ -9,14 +9,14 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <form class="pull-right" method="get" action="/admin/album.html" role="form">
-                            <div class="form-group input-group">
-                                <input type="text" name="wd" required="required" placeholder="Search" value="" class="form-control">
-                                <span class="input-group-btn input-group-lg">
-                                    <button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>
-                                </span>
-                            </div>
-                        </form>
+                        {{/*<form class="pull-right" method="get" action="/admin/album.html" role="form">*/}}
+                            {{/*<div class="form-group input-group">*/}}
+                                {{/*<input type="text" name="wd" required="required" placeholder="Search" value="" class="form-control">*/}}
+                                {{/*<span class="input-group-btn input-group-lg">*/}}
+                                    {{/*<button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>*/}}
+                                {{/*</span>*/}}
+                            {{/*</div>*/}}
+                        {{/*</form>*/}}
                     </div>
                 </div>
                 <div class="panel-body">
@@ -44,9 +44,9 @@
                                 </td>
                                 <td>
                                     {{if eq (.Self|Interface2Int) 1}}
-                                    <a href="/user/{{.Uid}}" target="_blank"><span class="text-success">{{.Username}}({UID:{.Uid}})|自删</span></a>
+                                       用户自删  | <a href="/user/{{.Uid}}" target="_blank"><span class="text-success">{{.Username}}</span></a>
                                     {{else}}
-                                        <span class="text-danger">管理员删除(UID:{{.Uid}})</span>
+                                        <span class="text-danger">管理员删除</span>
                                     {{end}}
                                 </td>
                                 <td>
@@ -60,8 +60,9 @@
                                     {{TimestampFormat (.Date|Interface2Int) "2006-01-02 15:04:05"}}
                                 </td>
                                 <td>
-                                    <a href="#" class="wenku-tooltip" title="将文档换成其他用户发布，并恢复该文档">改发</a> |
+                                    {{/*<a href="#" class="wenku-tooltip" title="将文档换成其他用户发布，并恢复该文档">改发</a> |*/}}
                                     <a href="/admin/doc/action?type=recover&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get" title="将文档恢复到正常状态">恢复</a> |
+                                    <a href="/admin/doc/action?type=remove&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="把文档加入黑名单，禁止该文档被再次上传">禁传</a> |
                                     <a href="/admin/doc/action?type=remove&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="删除文档文件，即删除用户上传的文档文件，但不删除文档在数据库表中的记录">删档</a> |
                                     <a href="/admin/doc/action?type=illegal&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="删除文档记录，即删除数据库中的记录，但不删除文档">删录</a> |
                                     <a href="/admin/doc/action?type=clear&id={{.Uid}}" class="wenku-tooltip wenku-confirm wenku-ajax-get text-danger" title="彻底将文档删除，既删除文档文件，同时删除文档记录，并将文档列入不合法文档，不再允许用户上传">彻删</a>
@@ -83,108 +84,12 @@
             </div>
         </div>
 
-        <div class="modal fade" id="HelpModal" tabindex="-1" role="dialog" aria-labelledby="HelpModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title" id="HelpModalLabel">使用帮助</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="help-block">此处是网盘专辑管理，对正式表中的网盘专辑进行维护和管理。</div>
-                        <div class="help-block">如果您发现不良信息资源，也可以在此处对资源进行删除。</div>
-                        <div class="help-block">每当您要删除资源时，都会弹出一个删除确认。请认真确认是否要删除，删除之后资源不可恢复</div>
-                        <hr />
-                        <div class="help-block"><span class="text-danger">批量删除</span>:对选中的专辑，进行批量删除操作</div>
-                        <div class="help-block"><span class="text-danger">删除单资源</span>:仅对指定的单个专辑进行删除操作</div>
-                        <div class="help-block"><span class="text-danger">删除同用户</span>:删除该网盘达人分享的所有网盘专辑</div>
-                        <hr />
-                        <div class="text-success">如需更多帮助，请到<a href="http://www.hc-cms.com" target="_blank">wenku-CMS</a>发帖询问。wenku-CMS官网:<a href="http://www.hc-cms.com" target="_blank">www.hc-cms.com</a></div>
 
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal">关闭帮助</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!--新增频道Modal-->
+        {{template "ModalChanel" .}}
 
+        <!--新增文档分类Modal-->
+        {{template "ModalCate" .}}
 
-        <div class="modal fade" id="ModalChanel" tabindex="-1" role="dialog" aria-labelledby="ModalChanelLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <form action="/admin/document/addchanel" method="post" class="wenku-ajax-form">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="ModalChanelLabel">新增频道</h4>
-                        </div>
-                        <div class="modal-body">
-
-                            <div class="form-group">
-                                <input type="text" required="required" name="title" class="form-control" value="" placeholder="请输入频道名称，限20个字符" />
-                            </div>
-                            <div class="form-group">
-                                <input type="text" required="required" name="alias" class="form-control" value="" placeholder="请输入频道别名，限30个字符，且为英文或字母" />
-                            </div>
-                        </div>
-                        <input type="hidden" name="_xsrf" value="troi026CYywB8gpxCRBf5RkLTJUAclYF" />
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">取消新增</button>
-                            <button type="submit" class="btn btn-success">确定新增</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-
-
-        <div class="modal fade" id="ModalCate" tabindex="-1" role="dialog" aria-labelledby="ModalCateLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <form action="/admin/document/addcate" method="post">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title" id="ModalCateLabel">新增分类</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group form-chanel">
-                                <label for="">分类频道(<i class="text-danger">*</i>)</label>
-
-                                <select name="cid" class="form-control" required="required" data-url="/admin/document/get_cate_by_cid">
-                                    <option value="">==请选择分类所属频道==</option>
-
-                                    <option value="1"> 教育频道 </option>
-
-                                    <option value="2"> 专业资料 </option>
-
-                                    <option value="3"> 实用文档 </option>
-
-                                    <option value="4"> 资格考试 </option>
-
-                                    <option value="5"> 生活休闲 </option>
-
-                                </select>
-                            </div>
-
-
-                            <div class="form-group">
-                                <label for="">分类名称(<i class="text-danger">*</i>)</label>
-                                <textarea name="content" rows="5" required="required" class="form-control" placeholder="请输入分类名称，支持批量添加。多个分类，请换行"></textarea>
-                            </div>
-                            <div class="help-block">
-                                <label for="">温馨提示:</label>
-                                <div>如果不选择或者没有一级分类，则表示您当前添加的分类为一级分类</div>
-                                <div>有<i class="text-danger">*</i> 为必填项</div>
-                            </div>
-                        </div>
-                        <input type="hidden" name="_xsrf" value="troi026CYywB8gpxCRBf5RkLTJUAclYF" />
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">取消新增</button>
-                            <button type="submit" class="btn btn-success">确定新增</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-
+        <!--文档备注Modal-->
+        {{template "ModalRemark" .}}
