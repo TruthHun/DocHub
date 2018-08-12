@@ -20,7 +20,7 @@
 
 
 
-## DocHub v1.2
+## DocHub v2.0
 
 
 - [x] 文档阅读页面再优化，修复v1.1版本优化造成的Bug——剩余未阅读页数不准确、无法正确翻页等问题。
@@ -45,9 +45,11 @@
 - [ ] 管理后台登录验证码管理（在修改密码的时候进行修改）
 - [ ] 文档管理优化
 - [ ] 制作docker镜像
-- [ ] 使用ElasticSearch搭建全文搜索引擎
-    - [ ] 全文搜索使用elasticsearch
+- [x] 使用ElasticSearch搭建全文搜索引擎
+    - [x] 全文搜索使用elasticsearch
     - [ ] 完善后台文档管理功能
+    
+暂时移除sitemap和索引定时更新功能，2.1版本再增加和优化
 
 - [x] pdftotext
 - [x] email
@@ -57,6 +59,20 @@
 - [x] oss
 - [x] soffice
 - [x] calibre
+
+
+ElasticSearch 部署示例：
+
+```
+mkdir -p /www/elasticsearch/dochub/data && sudo chmod 0777 -R /www/elasticsearch/dochub/data
+sudo docker run -d -p 9300:9300 -p 9200:9200 --restart always -v /www/elasticsearch/dochub/data:/usr/share/elasticsearch/data --name dochub-search truthhun/elasticsearch:6.2.4.ik
+```
+其中 `data`目录是索引数据存放目录，必须有读写权限，如执行下面语句，赋予读写权限：
+```
+sudo chmod 0777 -R /www/elasticsearch/dochub/data
+```
+
+记得屏蔽对外的9200、9300端口
 
 ## 测试
 - [x] 发送邮件测试
