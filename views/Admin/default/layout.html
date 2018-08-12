@@ -38,6 +38,7 @@
                         <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>　　
                     </a>
                     <ul class="dropdown-menu dropdown-user">
+                        <li><a href="javascript:void(0);" data-toggle="modal" data-target="#ModalUserInfoEdit"><i class="fa fa-gear fa-fw"></i> 修改资料</a></li>
                         <li><a href="javascript:void(0);" data-toggle="modal" data-target="#ModalUserEdit"><i class="fa fa-gear fa-fw"></i> 修改密码</a></li>
                         <li class="divider"></li>
                         <li><a href="/admin/logout"><i class="fa fa-sign-out fa-fw"></i> 退出登录</a></li>
@@ -104,38 +105,73 @@
     </div>
 	<footer>
 		
-    <div class="modal fade" id="ModalUserEdit" tabindex="-1" role="dialog" aria-labelledby="ModalUserEditLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<form action="/admin/updatePwd" method="post" class="wenku-ajax-form">
-				<div class="modal-content">
-                    <input type="hidden" name="uid" value="{{$.Uid}}">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title" id="ModalUserEditLabel">修改密码</h4>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<label for="">原密码</label>
-							<input type="password" class="form-control" name="password_old" value="" />
-						</div>
-						<div class="form-group">
-							<label for="">新密码</label>
-							<input type="password" class="form-control" name="password_new" value="" />
-						</div>
-						<div class="form-group">
-							<label for="">确认密码</label>
-							<input type="password" required="required" class="form-control" name="password_ensure" value="" />
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">取消修改</button>
-						<button type="submit" class="btn btn-success">提交修改</button>
-					</div>
-				</div>
-			</form>
-			
-		</div>
-	</div>
+        <div class="modal fade" id="ModalUserEdit" tabindex="-1" role="dialog" aria-labelledby="ModalUserEditLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form action="/admin/updatePwd" method="post" class="wenku-ajax-form">
+                    <div class="modal-content">
+                        <input type="hidden" name="uid" value="{{$.Uid}}">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="ModalUserEditLabel">修改密码</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="">原密码</label>
+                                <input type="password" class="form-control" name="password_old" value="" />
+                            </div>
+                            <div class="form-group">
+                                <label for="">新密码</label>
+                                <input type="password" class="form-control" name="password_new" value="" />
+                            </div>
+                            <div class="form-group">
+                                <label for="">确认密码</label>
+                                <input type="password" required="required" class="form-control" name="password_ensure" value="" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消修改</button>
+                            <button type="submit" class="btn btn-success">提交修改</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+
+        <div class="modal fade" id="ModalUserInfoEdit" tabindex="-1" role="dialog" aria-labelledby="ModalUserInfoEditLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form action="/admin/update-admin" method="post" class="wenku-ajax-form">
+                    <div class="modal-content">
+                        <input type="hidden" name="uid" value="{{$.Admin.Id}}">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="ModalUserInfoEditLabel">基本信息</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="">用户名</label>
+                                <input type="text" required class="form-control" name="username" value="{{$.Admin.Username}}" />
+                            </div>
+                            <div class="form-group">
+                                <label for="">邮箱</label>
+                                <input type="text" required class="form-control" name="email" value="{{$.Admin.Email}}" />
+                            </div>
+                            <div class="form-group">
+                                <label for="">验证码</label>
+                                <input type="text" required="required" class="form-control" name="code" value="{{$.Admin.Code}}" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">取消修改</button>
+                            <button type="submit" class="btn btn-success">提交修改</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
 	</footer>
     <iframe frameborder="0" style="display: none;" id="notarget" name="notarget"></iframe>
 	<script src="{{.TplStatic}}/js/jquery-1.10.2.js"></script>

@@ -24,15 +24,16 @@ type BaseController struct {
 //初始化函数
 func (this *BaseController) Prepare() {
 	var ok bool
-	//this.Sys, _ = models.ModelSys.Get()
-	this.Sys = models.GlobalSys
+	this.Sys, _ = models.NewSys().Get()
 	//检测是否已登录，未登录则跳转到登录页
 	AdminId := this.GetSession("AdminId")
 	this.AdminId, ok = AdminId.(int)
+	this.Data["Admin"], _ = models.NewAdmin().GetById(this.AdminId)
 	if !ok || this.AdminId == 0 {
 		this.Redirect("/admin/login", 302)
 		return
 	}
+
 	version := helper.VERSION
 	if helper.Debug {
 		version = fmt.Sprintf("%v.%v", version, time.Now().Unix())

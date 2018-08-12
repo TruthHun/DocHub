@@ -69,6 +69,7 @@ func back() {
 	beego.Router("/admin", &AdminControllers.IndexController{})
 	beego.Router("/admin/login", &AdminControllers.LoginController{}, "get,post:Login")
 	beego.Router("/admin/updatePwd", &AdminControllers.LoginController{}, "post:UpdatePwd")
+	beego.Router("/admin/update-admin", &AdminControllers.LoginController{}, "post:UpdateAdmin")
 	beego.Router("/admin/logout", &AdminControllers.LoginController{}, "get:Logout")
 	beego.Router("/admin/user", &AdminControllers.UserController{}, "get:List")
 	beego.Router("/admin/user/*", &AdminControllers.UserController{}, "get:List")

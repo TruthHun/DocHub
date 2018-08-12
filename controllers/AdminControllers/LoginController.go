@@ -23,6 +23,7 @@ func (this *LoginController) Prepare() {
 	this.Layout = ""
 	//当前模板静态文件
 	this.Data["TplStatic"] = "/static/Admin/" + TplTheme
+	this.AdminId = helper.Interface2Int(this.GetSession("AdminId"))
 }
 
 //登录后台
@@ -49,7 +50,7 @@ func (this *LoginController) Login() {
 
 //更新登录密码
 func (this *LoginController) UpdatePwd() {
-	if helper.Interface2Int(this.GetSession("AdminId")) > 0 {
+	if this.AdminId > 0 {
 		PwdOld := this.GetString("password_old")
 		PwdNew := this.GetString("password_new")
 		PwdEnsure := this.GetString("password_ensure")
@@ -69,6 +70,39 @@ func (this *LoginController) UpdatePwd() {
 				this.ResponseJson(false, "原密码不正确")
 			}
 		}
+	} else {
+		this.Error404()
+	}
+}
+
+//更新管理员信息
+func (this *LoginController) UpdateAdmin() {
+	if this.AdminId > 0 {
+		code := this.GetString("code")
+		if code == "" {
+			this.ResponseJson(false, "登录验证码不能为空")
+		}
+
+		username := this.GetString("username")
+		if username == "" {
+			this.ResponseJson(false, "登录用户名不能为空")
+		}
+
+		email := this.GetString("email")
+
+		admin := models.Admin{
+			Id:       this.AdminId,
+			Username: username,
+			Code:     code,
+			Email:    email,
+		}
+
+		if _, err := orm.NewOrm().Update(&admin, "Code", "Email", "Username"); err == nil {
+			this.ResponseJson(true, "资料更新成功")
+		} else {
+			this.ResponseJson(false, "资料更新失败："+err.Error())
+		}
+
 	} else {
 		this.Error404()
 	}
