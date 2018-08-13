@@ -56,7 +56,7 @@
                                 <td>
                                     <a href="/view/{{.Id}}" class="wenku-width-400px wenku-ellipsis" target="_blank"><img src="/static/Home/default/img/{{.ExtCate}}_24.png"> {{.Title}}</a>
                                 </td>
-                                <td><a href="/user/{{.Uid}}" target="_blank">进击的皇虫</a></td>
+                                <td><a href="/user/{{.Uid}}" target="_blank">{{.Username}}</a></td>
                                 <td>
                                     {{/*<a href="#" class="wenku-tooltip" title="对文档内容进行简单编辑">编辑</a> |*/}}
                                     <a href="/admin/doc/action?type=remove&id={{.Id}}" class="wenku-tooltip wenku-confirm wenku-ajax-get" title="删除当前文档，将该文档移入回收站">删除</a>

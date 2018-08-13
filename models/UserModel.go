@@ -8,6 +8,7 @@ import (
 
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego/orm"
+	"time"
 )
 
 //用户表
@@ -122,6 +123,7 @@ func (u *User) Reg(email, username, password, repassword, intro string) (error, 
 	var (
 		user User
 		o    = orm.NewOrm()
+		now  = time.Now().Unix()
 	)
 
 	l := strings.Count(username, "") - 1
@@ -140,7 +142,7 @@ func (u *User) Reg(email, username, password, repassword, intro string) (error, 
 	if user.Id > 0 {
 		//coin := beego.AppConfig.DefaultInt("coinreg", 10)
 		coin := NewSys().GetByField("CoinReg").CoinReg
-		var userinfo = UserInfo{Id: user.Id, Status: true, Coin: coin}
+		var userinfo = UserInfo{Id: user.Id, Status: true, Coin: coin, TimeCreate: int(now)}
 		_, err = o.Insert(&userinfo)
 	}
 	return err, user.Id
