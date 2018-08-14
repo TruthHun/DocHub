@@ -350,8 +350,9 @@ func SearchByMysql(wd, sourceType, order string, p, listRows int) (data []orm.Pa
 		sql = strings.Replace(sql, "i.Count", "count(d.Id) cnt", -1)
 		var params []orm.Params
 		o.Raw(sql, "%"+wd+"%").Values(&params)
-		if len(params) > 0 {
-			total, _ = strconv.ParseInt(params[0]["cnt"].(string), 10, 64)
+		cntNum := len(params)
+		if cntNum > 0 {
+			total = int64(cntNum)
 		}
 	} else {
 		helper.Logger.Error(err.Error())
