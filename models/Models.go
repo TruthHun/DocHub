@@ -346,12 +346,15 @@ func SearchByMysql(wd, sourceType, order string, p, listRows int) (data []orm.Pa
 	}
 	o := orm.NewOrm()
 	//数量统计
-	if sql, err := LeftJoinSqlBuild(tables, on, map[string][]string{"i": []string{"Count"}}, 1, 100000000, nil, []string{"i.DsId"}, cond); err == nil {
+	if sql, err := LeftJoinSqlBuild(tables, on, map[string][]string{"i": []string{"Count"}}, 1, 100000000, nil, nil, cond); err == nil {
 		sql = strings.Replace(sql, "i.Count", "count(d.Id) cnt", -1)
 		var params []orm.Params
 		o.Raw(sql, "%"+wd+"%").Values(&params)
 		if len(params) > 0 {
 			total, _ = strconv.ParseInt(params[0]["cnt"].(string), 10, 64)
+		}
+		if helper.Debug {
+			helper.Logger.Debug("统计SQL:%v", sql)
 		}
 	} else {
 		helper.Logger.Error(err.Error())
@@ -361,7 +364,7 @@ func SearchByMysql(wd, sourceType, order string, p, listRows int) (data []orm.Pa
 		return
 	}
 	//数据查询
-	if sql, err := LeftJoinSqlBuild(tables, on, fields, p, listRows, orderBy, []string{"i.DsId"}, cond); err == nil {
+	if sql, err := LeftJoinSqlBuild(tables, on, fields, p, listRows, orderBy, nil, cond); err == nil {
 		helper.Logger.Debug(sql, wd)
 		o.Raw(sql, "%"+wd+"%").Values(&data)
 	} else {
