@@ -353,9 +353,7 @@ func SearchByMysql(wd, sourceType, order string, p, listRows int) (data []orm.Pa
 		if len(params) > 0 {
 			total, _ = strconv.ParseInt(params[0]["cnt"].(string), 10, 64)
 		}
-		if helper.Debug {
-			helper.Logger.Debug("统计SQL:%v", sql)
-		}
+		helper.Logger.Debug("统计SQL:%v", sql)
 	} else {
 		helper.Logger.Error(err.Error())
 		helper.Logger.Debug(sql, wd)
