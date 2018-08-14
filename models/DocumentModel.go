@@ -190,6 +190,9 @@ func (this *Document) SimpleList(condition string, limit int, orderField ...stri
 	where %v group by d.Title order by di.%v desc limit %v
 	`
 	sql := fmt.Sprintf(sqlFormat, fields, GetTableDocument(), GetTableDocumentInfo(), GetTableDocumentStore(), condition, order, limit)
+	if helper.Debug {
+		helper.Logger.Debug("get simple list sql: %v", sql)
+	}
 	rows, err = orm.NewOrm().Raw(sql).Values(&params)
 	return params, rows, err
 }
