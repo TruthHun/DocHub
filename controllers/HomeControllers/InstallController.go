@@ -1,6 +1,8 @@
 package HomeControllers
 
 import (
+	"strings"
+
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego"
@@ -14,6 +16,7 @@ type installForm struct {
 	Host     string `form:"host"`
 	Port     int    `form:"port"`
 	Database string `form:"database"`
+	Prefix   string `form:"prefix"` //表前缀
 	Username string `form:"username"`
 	Password string `form:"password"`
 }
@@ -38,7 +41,10 @@ func (this *InstallController) Install() {
 				respData["msg"] = "数据库链接失败：" + err.Error()
 			} else {
 				//生成app.conf配置项
-				if err = helper.GenerateAppConf(form.Host, form.Port, form.Username, form.Password, form.Database); err == nil {
+				if form.Prefix = strings.TrimSpace(form.Prefix); form.Prefix == "" {
+					form.Prefix = "hc_"
+				}
+				if err = helper.GenerateAppConf(form.Host, form.Port, form.Username, form.Password, form.Database, form.Prefix); err == nil {
 					//重载app.conf
 					if err := beego.LoadAppConfig("ini", "conf/app.conf"); err == nil {
 						//初始化数据库
