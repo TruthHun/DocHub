@@ -2,14 +2,15 @@
 package helper
 
 import (
+	"sync"
+
 	"github.com/astaxie/beego"
 	"github.com/huichen/sego"
-	"sync"
 )
 
 const (
 	//DocHub Version
-	VERSION = "v1.2"
+	VERSION = "v2.0"
 	//Cache Config
 	CACHE_CONF = `{"CachePath":"./cache/runtime","FileSuffix":".cache","DirectoryLevel":2,"EmbedExpiry":120}`
 
