@@ -21,7 +21,7 @@
     - [office文档在线阅读](#read-office)
     - [PDF文档在线阅读](#read-pdf)
     - [mobi、epub、chm文档在线阅读](#read-other)
-    - [全文搜索【TODO】](#es)
+    - [全文搜索](#es)
     - [文档采集功能【TODO】](#crawl)
     - [积分功能](#score)
     - [阅读文档水印功能](#watermark)
@@ -178,7 +178,7 @@ office --> pdf --> svg
 > 目前该功能还没实现，epub、mobi等文档，现在还是暂时不能在线阅读
 
 <a name="es"></a>
-### 全文搜索【TODO】
+### 全文搜索
 全文搜索功能，之前是使用`coreseek`开发实现了这个功能的，但是现在`coreseek`的官网都已经挂了...打算用`elasticsearch`重新实现这个功能。
 
 <a name="crawl"></a>
