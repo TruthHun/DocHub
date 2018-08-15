@@ -156,7 +156,7 @@ func (this *BaseController) Error501() {
 func (this *BaseController) ErrorDb() {
 	this.Layout = ""
 	this.Data["content"] = "Database is now down"
-	this.Data["content_zh"] = "数据库别外星人抢走了"
+	this.Data["content_zh"] = "数据库被外星人抢走了"
 	this.TplName = "error.html"
 }
 
