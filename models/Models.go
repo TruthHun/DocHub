@@ -684,11 +684,24 @@ func DoesCollect(did, uid int) bool {
 //@param            database        数据库
 //@return           err             错误
 func CheckDatabaseIsExist(host string, port int, username, password, database string) (err error) {
-	var db *sql.DB
-	if db, err = sql.Open("mysql", fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8",
-		username, password, host, port, database,
-	)); err == nil {
-		err = db.Ping()
+	var (
+		db      *sql.DB
+		timeout = make(chan bool, 1)
+	)
+	go func() {
+		if db, err = sql.Open("mysql", fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8",
+			username, password, host, port, database,
+		)); err == nil {
+			err = db.Ping()
+		}
+	}()
+	go func() {
+		time.Sleep(3 * time.Second)
+		timeout <- true
+	}()
+
+	if t := <-timeout; t {
+		err = errors.New("MySQL数据库连接失败，请检查数据库链接是否正确")
 	}
 	return
 }
