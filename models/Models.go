@@ -694,6 +694,7 @@ func CheckDatabaseIsExist(host string, port int, username, password, database st
 		)); err == nil {
 			err = db.Ping()
 		}
+		timeout <- false
 	}()
 	go func() {
 		time.Sleep(3 * time.Second)

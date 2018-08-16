@@ -38,7 +38,7 @@ func (this *InstallController) Install() {
 			respData["msg"] = "所有必填输入项均不能为空，请按要求进行填写"
 		} else {
 			if err := models.CheckDatabaseIsExist(form.Host, form.Port, form.Username, form.Password, form.Database); err != nil {
-				respData["msg"] = "数据库链接失败：" + err.Error()
+				respData["msg"] = "数据库连接失败：" + err.Error()
 			} else {
 				//生成app.conf配置项
 				if form.Prefix = strings.TrimSpace(form.Prefix); form.Prefix == "" {
