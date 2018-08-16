@@ -23,10 +23,6 @@ ENV LANG en_US.utf8
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-#COPY . /www/dochub/
-RUN mkdir -p /www/dochub && wget https://github.com/TruthHun/DocHub/releases/download/v2.0/DocHub.V2.0_linux_amd64.zip \
-    && unzip DocHub.V2.0_linux_amd64.zip -d /www/dochub/ && rm -rf /www/dochub/__MACOSX
-
 WORKDIR /www/dochub
 
 # ======== 安装相关依赖 ========
@@ -50,7 +46,9 @@ RUN apt update -y && apt install -y fonts-wqy-zenhei fonts-wqy-microhei \
     python \
     && npm install -g svgo \
     && wget -nv -O- https://download.calibre-ebook.com/linux-installer.sh | sh /dev/stdin \
-    && chmod 0777 -R /www/dochub/
+    && mkdir -p /www/dochub && chmod 0777 -R /www/dochub/
 
+RUN  wget https://github.com/TruthHun/DocHub/releases/download/v2.0/DocHub.V2.0_linux_amd64.zip \
+    && apt install unzip -y && unzip DocHub.V2.0_linux_amd64.zip -d /www/dochub/ && rm -rf /www/dochub/__MACOSX
 
 CMD [ "./DocHub" ]
