@@ -47,6 +47,7 @@ body{background-color: #f6f6f6;}
 .em14{font-size: 1.4em}
 .navbar-fixed-bottom .navbar-text{font-size: 13px;line-height: 166%;margin-left: 5px;margin-right: 5px;}
 .navbar-fixed-bottom .wenku-up-to-top li.active a{background-color: #bdc3c7 !important;border-color: #bdc3c7 !important;}
+
 /*以上是禁止响应式的CSS代码*/
 
 

@@ -1,0 +1,35 @@
+/*
+ * Author:  皇虫 
+ * Email: 	TruthHun@QQ.COM
+ * Date: 	2018-09-01
+ * */
+@media (max-width: 768px) {
+    .navbar-fixed-bottom,.navbar-fixed-top{min-width:100% !important;}
+    .page-header{margin-bottom:30px}
+    .page-header .lead{margin-bottom:10px}
+    .container{width:100% !important;}
+    .container-fluid{min-width: 100% !important;}
+
+    .wenku-header .col-xs-6{width: 100%;text-align: center;}
+    .wenku-logo{margin:10px auto;}
+    .wenku-header .pull-right{margin-top: 0px;margin-bottom: 15px;}
+    .mobile-banner .col-xs-9{width: 100%;}
+    .mobile-banner .col-xs-3{width: 100%;padding-left: 0px;margin-top: 15px;}
+    .mobile-banner .col-xs-3 .panel{display: none}
+    .mobile-banner .col-xs-3 .wenku-count{display: block;}
+
+    #wenku-index .wenku-cate{padding: 10px 0px 15px;}
+    #wenku-index .wenku-cate .col-xs-3{width: 50%;}
+    #wenku-index .wenku-cate .h5{font-size: 20px;}
+
+    #wenku-index .wenku-item .panel-body .col-xs-5{display: none;}
+    #wenku-index .wenku-item .col-xs-6{width: 100%;}
+    #wenku-index .wenku-item .col-xs-7{width: 100%;}
+    #wenku-index .wenku-item .wenku-mgl-15px{margin-left: 0px;}
+    #wenku-index .wenku-item li{line-height: 180%;}
+
+
+    .wenku-footer{padding: 15px 0px;}
+    .wenku-footer-dark{padding: 30px 15px;}
+}
+
