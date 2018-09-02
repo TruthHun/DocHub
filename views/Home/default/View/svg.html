@@ -65,12 +65,12 @@
                     <div class="help-block">
                         <span>本文档由 <a href="/user/{{.Doc.Uid}}" target="_blank"title="{{.Doc.Username}}">{{.Doc.Username}}</a> 于 <span class="text-muted">{{TimestampFormat (Interface2Int .Doc.TimeCreate)}}</span>上传分享</span>
                     </div>
-                    <div class="help-block">
+                    <div class="help-block wenku-action">
                         <div class="pull-left">
                             <a href="javascript:void(0);" data-toggle="modal" data-target="#ModalReport" class="btn btn-primary btn-sm"><i class="fa fa-warning"></i> 举报</a>
                         </div>
                         <div class="pull-right wenku-mgl-15px">
-                            <a href="javascript:void(0);" rel="nofollow" data-toggle="modal" data-target="#ModalDownload" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-cloud-download"></i> 下载原文档({{FormatByte (Interface2Int .Doc.Size)}})</a>
+                            <a href="javascript:void(0);" rel="nofollow" data-toggle="modal" data-target="#ModalDownload" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-cloud-download"></i> 下载<span class="hidden-xs">原文档</span>({{FormatByte (Interface2Int .Doc.Size)}})</a>
                         </div>
                         <div class="pull-right">
                             {{if DoesCollect (Interface2Int .Doc.Id) .LoginUid}}

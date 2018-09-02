@@ -42,6 +42,7 @@
     .wenku-footer{padding: 15px 0px;}
     .wenku-footer-dark{padding: 30px 15px;}
 
+    /* 列表页 */
 
     #wenku-list .wenku-main .wenku-right{width: 100%;padding-left: 0px;}
     #wenku-list .wenku-main .wenku-left{width: 100%;padding-left: 0px;}
@@ -55,5 +56,27 @@
     .pagination{padding: 0px;margin: 5px 0px;}
     .pagination li{margin-right: 1px;}
     .pagination li>a, .pagination li>span{border-left: 0px;}
+
+
+    /* 阅读页 */
+    #wenku-content .container{min-width: 100% !important;}
+    #wenku-content.wenku-onlycover .container.wenku-main{min-width: 100% !important;width: 100% !important; }
+    #wenku-content .navbar-fixed-bottom{display: none;}
+    #wenku-content .wenku-left{width: 100%;}
+    #wenku-content .wenku-right{display: none;}
+    #wenku-content .wenku-action .pull-left{display: none;}
+    #wenku-content .wenku-action .pull-right{float: left !important;}
+    #wenku-content .wenku-action .pull-right.wenku-mgl-15px{float: right !important;}
+    #wenku-content .wenku-comment .col-xs-3{width: 100%;}
+    #wenku-content .wenku-comment .wenku-answer-tips{width: 100%;text-align: left;padding-left: 0px;margin: -15px 0px 10px;}
+    #wenku-content .wenku-comment .col-xs-2{width: 50%;}
+    #wenku-content .wenku-comment-list .col-xs-1{width: 15%;}
+    #wenku-content .wenku-comment-list .col-xs-11{width: 85%;}
+    #wenku-content .wenku-comment-list .color-gray{width: 100%;font-size: 12px;}
+    #wenku-content .wenku-comment-content{text-indent: 0px;}
+    #wenku-content .wenku-doc-info .pull-right span{margin-left: 0px;margin-right: 15px;}
+    #wenku-content .wenku-unview .col-xs-7{width: 100%;}
+    #wenku-content .wenku-unview .col-xs-5{display: none;}
+    #wenku-content .wenku-preview-tips{text-align: left;}
 }
 
