@@ -1,5 +1,5 @@
 {{define "UserRight"}}
-<div class="col-xs-4 wenku-right">
+<div class="col-xs-4 wenku-right pull-left">
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="row">
@@ -66,7 +66,7 @@
                             <a href="/user/{{.Id}}" class="wenku-username">{{.Username}}</a>
                             <div class="help-block pull-right"><span class="text-primary">{{.Document}}</span> 篇文档</div>
                         </div>
-                        <div class="help-block wenku-text-ellipsis">{{.Intro}}</div>
+                        <div class="help-block wenku-text-ellipsis">{{Default .Intro "暂无个性签名..."}}</div>
                     </div>
                 </li>
                 {{end}}

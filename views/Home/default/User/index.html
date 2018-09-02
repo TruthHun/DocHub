@@ -1,7 +1,10 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-xs-8 wenku-left">
+
+        {{template "UserRight" .}}
+
+        <div class="col-xs-8 wenku-left pull-left">
             <div class="panel panel-default">
                 {{if gt .Cid 0}}
                 <div class="panel-heading clearfix">
@@ -101,15 +104,14 @@
                     {{if .Lists}}{{else}}
                         <div class="help-block text-center">暂无分享文档</div>
                     {{end}}
-
+                    {{if .Page}}
                     <ul class="pagination">
                         {{str2html .Page}}
                     </ul>
+                    {{end}}
                 </div>
             </div>
         </div>
-
-        {{template "UserRight" .}}
 
     </div>
 </div>

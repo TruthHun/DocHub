@@ -79,5 +79,15 @@
     #wenku-content .wenku-unview .col-xs-7{width: 100%;}
     #wenku-content .wenku-unview .col-xs-5{display: none;}
     #wenku-content .wenku-preview-tips{text-align: left;}
+
+    /* 用户中心首页 */
+    #wenku-user .wenku-right{width: 100%;padding-right: 0px;}
+    #wenku-user .wenku-rankuser{display: none;}
+    #wenku-user .wenku-left{width: 100%;}
+    #wenku-user .wenku-left .pull-right{display: none;}
+    #wenku-user .wenku-list-table-head{display: none;}
+    #wenku-user .wenku-list-table .col-xs-5,#wenku-user .wenku-list-table .col-xs-8{width: 100%;padding-left:0px;padding-right:0px;white-space: normal;}
+    #wenku-user .wenku-list-table-body li{border-bottom: 1px dashed #EFEFEF;}
+    #wenku-user .wenku-list-table-body .col-xs-1,#wenku-user .wenku-list-table-body .col-xs-2,#wenku-user .wenku-list-table-body .col-xs-3{display: none !important;}
 }
 
