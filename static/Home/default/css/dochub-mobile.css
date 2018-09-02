@@ -9,16 +9,27 @@
     .page-header .lead{margin-bottom:10px}
     .container{width:100% !important;}
     .container-fluid{min-width: 100% !important;}
+    .navbar-collapse .navbar-nav.navbar-right:last-child{margin-bottom: 0px;}
+    .navbar-nav .open .dropdown-menu>li>a, .navbar-nav .open .dropdown-menu .dropdown-header{
+        padding: 7px 15px 7px 15px!important
+    }
+    .carousel-control .fa{top:40%;}
+    .navbar .navbar-nav .open .dropdown-menu>.active>a, .navbar .navbar-nav .open .dropdown-menu>.active>a:focus, .navbar .navbar-nav .open .dropdown-menu>.active>a:hover, .navbar .navbar-nav .open .dropdown-menu>li>a:focus, .navbar .navbar-nav .open .dropdown-menu>li>a:hover{
+        background-color: #1abc9c !important;
+    }
 
     .wenku-header .col-xs-6{width: 100%;text-align: center;}
     .wenku-logo{margin:10px auto;}
     .wenku-header .pull-right{margin-top: 0px;margin-bottom: 15px;}
     .mobile-banner .col-xs-9{width: 100%;}
-    .mobile-banner .col-xs-3{width: 100%;padding-left: 0px;margin-top: 15px;}
+    .mobile-banner .col-xs-3{width: 100%;padding-left: 0px;margin-top: -15px;}
     .mobile-banner .col-xs-3 .panel{display: none}
     .mobile-banner .col-xs-3 .wenku-count{display: block;}
+    .navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.active>a:focus{
+        border-top: 0px;margin-top:0px;
+    }
 
-    #wenku-index .wenku-cate{padding: 10px 0px 15px;}
+    #wenku-index .wenku-cate{padding: 10px 0px 15px;margin-top: 15px;}
     #wenku-index .wenku-cate .col-xs-3{width: 50%;}
     #wenku-index .wenku-cate .h5{font-size: 20px;}
 
@@ -27,7 +38,6 @@
     #wenku-index .wenku-item .col-xs-7{width: 100%;}
     #wenku-index .wenku-item .wenku-mgl-15px{margin-left: 0px;}
     #wenku-index .wenku-item li{line-height: 180%;}
-
 
     .wenku-footer{padding: 15px 0px;}
     .wenku-footer-dark{padding: 30px 15px;}

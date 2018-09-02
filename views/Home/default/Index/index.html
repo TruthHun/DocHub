@@ -1,25 +1,7 @@
 <div class="container">
 	<div class="row mobile-banner">
-		<div class="col-xs-9 wenku-nopadding">
-			<div id="wenku-carousel" class="carousel slide">
-				<ol class="carousel-indicators">
-					{{range $index,$banner:=.Banners}}
-					<li data-target="#wenku-carousel" data-slide-to="{{$index}}" {{if eq $index 0}}class="active"{{end}}></li>
-					{{end}}
-				</ol>
-				<div class="carousel-inner">
-					{{range $index,$banner:=.Banners}}
-					<a href="{{.Link}}" target="_blank" title="{{.Title}}" class="item {{if eq $index 0}}active{{end}}">
-						<img src="{{DefPic .Picture "banner"}}" alt="{{.Title}}">
-						<div class="carousel-caption">{{.Title}}</div>
-					</a>
-					{{end}}
-				</div>
-				<a class="carousel-control left" href="#wenku-carousel" data-slide="prev"><span class="fa fa-angle-left"></span></a>
-				<a class="carousel-control right" href="#wenku-carousel" data-slide="next"><span class="fa fa-angle-right"></span></a>
-			</div>
-		</div>
-		<div class="col-xs-3 wenku-nopadding wenku-pdl-15px">
+
+		<div class="col-xs-3 wenku-nopadding wenku-pdl-15px pull-right">
 			<div class="panel panel-default text-center wenku-noradius wenku-noborder wenku-count clearfix">
 				<div class="col-xs-6 wenku-nopadding">
 					<div class="help-block">收录文档</div>
@@ -92,6 +74,27 @@
 			{{end}}
 
 		</div>
+
+        <div class="col-xs-9 wenku-nopadding pull-left">
+            <div id="wenku-carousel" class="carousel slide">
+                <ol class="carousel-indicators">
+				{{range $index,$banner:=.Banners}}
+                    <li data-target="#wenku-carousel" data-slide-to="{{$index}}" {{if eq $index 0}}class="active"{{end}}></li>
+				{{end}}
+                </ol>
+                <div class="carousel-inner">
+				{{range $index,$banner:=.Banners}}
+                    <a href="{{.Link}}" target="_blank" title="{{.Title}}" class="item {{if eq $index 0}}active{{end}}">
+                        <img src="{{DefPic .Picture "banner"}}" alt="{{.Title}}">
+                        <div class="carousel-caption">{{.Title}}</div>
+                    </a>
+				{{end}}
+                </div>
+                <a class="carousel-control left" href="#wenku-carousel" data-slide="prev"><span class="fa fa-angle-left"></span></a>
+                <a class="carousel-control right" href="#wenku-carousel" data-slide="next"><span class="fa fa-angle-right"></span></a>
+            </div>
+        </div>
+
 	</div>
 
 
