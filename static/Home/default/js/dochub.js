@@ -637,7 +637,7 @@ $(function(){
 					if(ret.data){
 						$.each(ret.data,function () {
                             html+='<li class="clearfix help-block">';
-                            html+='<div class="col-xs-3">'+this.TimeCreate+'</div>';
+                            html+='<div class="col-xs-3">'+parseDate(this.TimeCreate)+'</div>';
                             html+='<div class="col-xs-1">';
                             if(this.Coin>-1){
                                 html+= '<span class="text-primary"> + '+this.Coin+'</span>';
@@ -923,6 +923,13 @@ $(function(){
 
     function setDefault(name,val) {
         $(".wenku-form-upload select[name="+name+"] option[value="+val+"]").attr("selected","selected");
+    }
+
+    //将时间戳转成日期，timestamp是时间戳，单位为秒
+    function parseDate(timestamp) {
+        var t = parseInt(timestamp)*1000
+        var tObj =new Date(t);
+        return tObj.toLocaleDateString().replace(/\//g, "-") + " " + tObj.toTimeString().substr(0, 8)
     }
 
 });
