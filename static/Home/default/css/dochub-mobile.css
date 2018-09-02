@@ -61,6 +61,7 @@
     /* 阅读页 */
     #wenku-content .container{min-width: 100% !important;}
     #wenku-content.wenku-onlycover .container.wenku-main{min-width: 100% !important;width: 100% !important; }
+    #wenku-content .wenku-header>.container{min-width: 100% !important;width: 100% !important; }
     #wenku-content .navbar-fixed-bottom{display: none;}
     #wenku-content .wenku-left{width: 100%;}
     #wenku-content .wenku-right{display: none;}
