@@ -25,30 +25,31 @@
                     <div class="wenku-list-thumb">
                         <div class="row">
                             {{range .Lists}}
-                            <div class="col-xs-3">
-                                {{if and (eq (Interface2Int $.User.Id) $.LoginUid) $.Edit (gt $.LoginUid 0)}}
-                                <!--编辑模式-->
-                                    <div title="{{.Title}}" class="thumbnail wenku-thumbnail-collect-edit">
-                                        <img class="img-responsive" src="{{DefPic .Cover "cover"}}"/>
-                                        <div class="wenku-title">
-                                            <div class="btn-group">
-                                                <a href="javascript:void(0);" class="btn btn-primary btn-xs" id="ModalFolderEditBtn" data-id="{{.Id}}"><i class="fa fa-edit"></i> 编辑</a>
-                                                <a href="/user/{{$.User.Id}}/del/collect/{{.Id}}" class="btn btn-danger btn-xs wenku-ajax-get wenku-confirm"><i class="fa fa-remove"></i> 删除</a>
+                                <div class="col-xs-3">
+                                    {{if and (eq (Interface2Int $.User.Id) $.LoginUid) $.Edit (gt $.LoginUid 0)}}
+                                    <!--编辑模式-->
+                                        <div title="{{.Title}}" class="thumbnail wenku-thumbnail-collect-edit">
+                                            <img class="img-responsive" src="{{DefPic .Cover "cover"}}"/>
+                                            <div class="wenku-title">
+                                                <div class="btn-group">
+                                                    <a href="javascript:void(0);" class="btn btn-primary btn-xs" id="ModalFolderEditBtn" data-id="{{.Id}}"><i class="fa fa-edit"></i> 编辑</a>
+                                                    <a href="/user/{{$.User.Id}}/del/collect/{{.Id}}" class="btn btn-danger btn-xs wenku-ajax-get wenku-confirm"><i class="fa fa-remove"></i> 删除</a>
+                                                </div>
+                                                <h6 class="wenku-collect-title wenku-mgt-15px">{{.Title}}</h6>
+                                                <div class="help-block wenku-mgt-15px text-indent  color-dark-white">{{.Description}}</div>
                                             </div>
-                                            <h6 class="wenku-collect-title wenku-mgt-15px">{{.Title}}</h6>
-                                            <div class="help-block wenku-mgt-15px text-indent  color-dark-white">{{.Description}}</div>
                                         </div>
-                                    </div>
-                                {{else}}
-                                    <a href="/user/{{$.User.Id}}/doc/cid/{{.Id}}" title="{{.Title}}" class="thumbnail">
-                                        <img class="img-responsive" src="{{DefPic .Cover "cover"}}"/>
-                                        <div class="wenku-title">
-                                            <div>{{.Title}}</div>
-                                            <div class="help-block text-indent color-dark-white">{{.Description}}</div>
-                                        </div>
-                                    </a>
-                                {{end}}
-                            </div>
+                                    {{else}}
+                                        <a href="/user/{{$.User.Id}}/doc/cid/{{.Id}}" title="{{.Title}}" class="thumbnail">
+                                            <img class="img-responsive" src="{{DefPic .Cover "cover"}}"/>
+                                            <div class="wenku-title">
+                                                <div>{{.Title}}</div>
+                                                <div class="help-block text-indent color-dark-white">{{.Description}}</div>
+                                            </div>
+                                        </a>
+                                    {{end}}
+                                </div>
+                                
                             {{else}}
                                 {{if eq $.LoginUid $.Uid}}
                                 <div class="help-block text-center">您暂无收藏夹，请点击右上角按钮创建收藏夹</div>

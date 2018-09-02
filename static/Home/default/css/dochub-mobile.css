@@ -89,5 +89,7 @@
     #wenku-user .wenku-list-table .col-xs-5,#wenku-user .wenku-list-table .col-xs-8{width: 100%;padding-left:0px;padding-right:0px;white-space: normal;}
     #wenku-user .wenku-list-table-body li{border-bottom: 1px dashed #EFEFEF;}
     #wenku-user .wenku-list-table-body .col-xs-1,#wenku-user .wenku-list-table-body .col-xs-2,#wenku-user .wenku-list-table-body .col-xs-3{display: none !important;}
+    #wenku-user .wenku-list-thumb .col-xs-3{width: 50%;}
+    #wenku-user .wenku-left .wenku-list-thumb .wenku-title{position: relative;width: 100%;left: 0px;bottom: 39px;}
 }
 
