@@ -84,7 +84,7 @@
                             <div class="wenku-desc help-block">{{GetDescByDid .Id 120}}</div>
                             <div class="help-block wenku-info">
                                 <div class="text-muted">
-                                    <i class="wenku-star star-{{StarVal (Interface2Int .Score) false}}"></i>{{StarVal (Interface2Int .Score) true}} 分 <span class="pull-right">{{.Price}} 金币 | {{.Page}} 页 | {{FormatByte (Interface2Int .Size)}} | {{TimestampFormat (Interface2Int .TimeCreate) "2006-01-02 15:04"}}</span>
+                                    <i class="wenku-star star-{{StarVal (Interface2Int .Score) false}}"></i>{{StarVal (Interface2Int .Score) true}} 分 <span class="pull-right">{{.Price}} 金币 | {{.Page}} 页 | {{FormatByte (Interface2Int .Size)}}<span class="hidden-xs"> | {{TimestampFormat (Interface2Int .TimeCreate) "2006-01-02 15:04"}}</span> </span>
                                 </div>
                             </div>
                         </li>
@@ -125,7 +125,7 @@
                     {{end}}
                 </div>
             </div>
-            <div class="panel panel-default">
+            <div class="panel panel-default panel-ad">
                 <div class="panel-body">
                     <div class="strong text-center">人生苦短，我学Python</div>
                     <img src="/static/Home/default/img/cover.png"/>

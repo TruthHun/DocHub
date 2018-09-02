@@ -102,5 +102,20 @@
     #wenku-reg .form-horizontal .form-group .col-sm-6{width: 50%;display: inline-block;padding-right: 0px;}
     #wenku-reg .form-horizontal .form-group .col-sm-4{width: 50%;float: right;}
     #wenku-reg .col-xs-4{width: 100%;padding: 0px;}
+
+    /* 搜索 */
+    #wenku-search .wenku-top{display: none;}
+    #wenku-search .wenku-logo{margin: 15px auto;max-height: 50px;width: auto;}
+    #wenku-search .wenku-header .col-xs-2{width: 100%;}
+    #wenku-search .wenku-header .col-xs-7{width: 100%;padding-right: 0px;}
+    #wenku-search .container .wenku-left{width: 100%;padding-right: 0px;}
+    #wenku-search .container .wenku-left .panel-body{padding-bottom: 0px;}
+    #wenku-search .container .wenku-left li{display: inline-block;}
+    #wenku-search .wenku-left .panel-body li a{padding-left: 10px;padding-right: 10px;}
+    #wenku-search .container .col-xs-7{width: 100%;padding-right: 0px;}
+    #wenku-search .panel-ad{display: none;}
+    #wenku-search .container .col-xs-3{width: 100%;}
+    #wenku-search .container .col-xs-3 .panel-body{padding-top: 0px;}
+    #wenku-search .container .col-xs-3 .panel-default > .panel-heading{border-color:#ffffff;}
 }
 
