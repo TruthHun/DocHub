@@ -7,7 +7,7 @@
     .navbar-fixed-bottom,.navbar-fixed-top{min-width:100% !important;}
     .page-header{margin-bottom:30px}
     .page-header .lead{margin-bottom:10px}
-    .container{width:100% !important;}
+    .container{width:100% !important;max-width: 100%!important;}
     .container-fluid{min-width: 100% !important;}
     .navbar-collapse .navbar-nav.navbar-right:last-child{margin-bottom: 0px;}
     .navbar-nav .open .dropdown-menu>li>a, .navbar-nav .open .dropdown-menu .dropdown-header{
@@ -91,5 +91,16 @@
     #wenku-user .wenku-list-table-body .col-xs-1,#wenku-user .wenku-list-table-body .col-xs-2,#wenku-user .wenku-list-table-body .col-xs-3{display: none !important;}
     #wenku-user .wenku-list-thumb .col-xs-3{width: 50%;}
     #wenku-user .wenku-left .wenku-list-thumb .wenku-title{position: relative;width: 100%;left: 0px;bottom: 39px;}
+
+    /* 用户登录 */
+    #wenku-reg .login-form{width: 100%;}
+    #wenku-reg .login{margin: -10px 0px 15px;}
+    #wenku-reg .login-form{border-radius: 0px;}
+    #wenku-reg .col-xs-8{width: 100%;border-right: 0px;padding: 0px;}
+    /*#wenku-reg .form-horizontal*/
+    #wenku-reg .form-horizontal .form-group .col-sm-2{display: block;}
+    #wenku-reg .form-horizontal .form-group .col-sm-6{width: 50%;display: inline-block;padding-right: 0px;}
+    #wenku-reg .form-horizontal .form-group .col-sm-4{width: 50%;float: right;}
+    #wenku-reg .col-xs-4{width: 100%;padding: 0px;}
 }
 
