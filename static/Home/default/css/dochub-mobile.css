@@ -41,5 +41,19 @@
 
     .wenku-footer{padding: 15px 0px;}
     .wenku-footer-dark{padding: 30px 15px;}
+
+
+    #wenku-list .wenku-main .wenku-right{width: 100%;padding-left: 0px;}
+    #wenku-list .wenku-main .wenku-left{width: 100%;padding-left: 0px;}
+    #wenku-list .wenku-right .wenku-cate .panel-body a{width: auto;margin-right: 15px;}
+    #wenku-list .panel-body img{width: 100%;}
+    #wenku-list .panel-body .col-xs-1{width: 15%;}
+    #wenku-list .panel-body .col-xs-11{width: 85%;padding-right: 0px;padding-left: 10px;}
+    #wenku-list .wenku-text-ellipsis{white-space: normal;}
+    #wenku-list h3.wenku-text-ellipsis{white-space: nowrap;}
+    #wenku-list .wenku-left .panel-body li.clearfix .help-block>span{display: inline-block;}
+    .pagination{padding: 0px;margin: 5px 0px;}
+    .pagination li{margin-right: 1px;}
+    .pagination li>a, .pagination li>span{border-left: 0px;}
 }
 

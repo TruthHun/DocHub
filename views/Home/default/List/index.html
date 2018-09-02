@@ -1,7 +1,38 @@
 
 <div class="container wenku-main">
     <div class="row">
-        <div class="col-xs-8 wenku-left wenku-nopadding">
+
+        <div class="col-xs-4 wenku-right pull-right">
+            <div class="panel panel-default wenku-cate wenku-noborder">
+                <div class="panel-heading"><div class="strong">{{.CurChanel.Title}}</div></div>
+                <div class="panel-body">
+                    <a href="/list/{{.CurChanel.Alias}}" {{if Equal $.CurPid 0}}class="active"{{end}} title="不限分类">不限分类 ({{$.CurChanel.Cnt}})</a>
+                {{range .Parents}}
+                    <a href="/list/{{$.CurChanel.Alias}}/pid/{{.Id}}" {{if Equal $.CurPid .Id}}class="active"{{else if eq (Interface2Int .Cnt) 0}}class="color-gray"{{end}} title="{{.Title}}">{{.Title}} ({{.Cnt}})</a>
+                {{end}}
+
+                </div>
+            </div>
+
+        {{if .Hots}}
+            <div class="panel panel-default wenku-noborder wenku-hot">
+                <div class="panel-heading"><div class="strong">热门文档</div></div>
+                <div class="panel-body">
+                    <ul>
+                    {{range .Hots}}
+                        <li><img alt="{{.Ext}}文档" src="/static/Home/default/img/{{.ExtCate}}_24.png"/><a href="/view/{{.Id}}" target="_blank" title="{{.Title}}">{{.Title}}</a></li>
+                    {{end}}
+                    </ul>
+                </div>
+            </div>
+        {{end}}
+
+
+        </div>
+
+
+
+        <div class="col-xs-8 wenku-left wenku-nopadding pull-left">
 
             {{if gt $.CurPid 0}}
             <div class="panel panel-default wenku-noradius wenku-noborder">
@@ -57,34 +88,6 @@
 
 
         </div>
-        <div class="col-xs-4 wenku-right">
-            <div class="panel panel-default wenku-cate wenku-noborder">
-                <div class="panel-heading"><div class="strong">{{.CurChanel.Title}}</div></div>
-                <div class="panel-body">
-                    <a href="/list/{{.CurChanel.Alias}}" {{if Equal $.CurPid 0}}class="active"{{end}} title="不限分类">不限分类 ({{$.CurChanel.Cnt}})</a>
-                    {{range .Parents}}
-                    <a href="/list/{{$.CurChanel.Alias}}/pid/{{.Id}}" {{if Equal $.CurPid .Id}}class="active"{{else if eq (Interface2Int .Cnt) 0}}class="color-gray"{{end}} title="{{.Title}}">{{.Title}} ({{.Cnt}})</a>
-                    {{end}}
-
-                </div>
-            </div>
-
-            {{if .Hots}}
-            <div class="panel panel-default wenku-noborder wenku-hot">
-                <div class="panel-heading"><div class="strong">热门文档</div></div>
-                <div class="panel-body">
-                    <ul>
-                        {{range .Hots}}
-                        <li><img alt="{{.Ext}}文档" src="/static/Home/default/img/{{.ExtCate}}_24.png"/><a href="/view/{{.Id}}" target="_blank" title="{{.Title}}">{{.Title}}</a></li>
-                        {{end}}
-                    </ul>
-                </div>
-            </div>
-            {{end}}
-
-
-        </div>
-
 
     </div>
 </div>

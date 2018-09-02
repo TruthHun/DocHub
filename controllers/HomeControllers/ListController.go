@@ -28,6 +28,7 @@ func (this *ListController) Get() {
 	if listRows == 0 {
 		listRows = 10
 	}
+
 	chanel := this.GetString(":chanel")
 	params := conv.Path2Map(this.GetString(":splat"))
 	chanels, rows, err := models.GetList(models.GetTableCategory(), 1, 1, orm.NewCondition().And("Alias", chanel))
