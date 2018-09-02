@@ -64,6 +64,8 @@ func (this *BaseController) Prepare() {
 	ModelPages := models.Pages{}
 	this.Data["Pages"], _, _ = ModelPages.List(beego.AppConfig.DefaultInt("pageslimit", 6), 1)
 	this.Data["AdminId"] = helper.Interface2Int(this.GetSession("AdminId"))
+
+	this.Data["CopyrightDate"] = time.Now().Format("2006")
 }
 
 //自定义的文档错误
