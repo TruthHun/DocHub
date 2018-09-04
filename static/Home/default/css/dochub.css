@@ -261,6 +261,8 @@ textarea{resize: none;}
 
 /*wenku page user [start]*/
 #wenku-user .wenku-left{padding: 0px;}
+#wenku-user .wenku-left .nav-tabs{font-size: 15px;}
+#wenku-user .wenku-left .nav-tabs li:first-of-type a{border-left: 0px !important;}
 #wenku-user .wenku-left .panel-heading .pull-right a{margin-left: 15px;color: #6b7a88;font-size: 15px;}
 #wenku-user .wenku-left .panel-heading .pull-right a.active{color: #00B38A;}
 #wenku-user .wenku-left .panel-heading .wenku-show{border-left: 1px solid #DDDDDD;margin-left: 15px;}
@@ -291,15 +293,16 @@ textarea{resize: none;}
 #wenku-user .wenku-list-table-body li .wenku-edit{display: none;}
 #wenku-user .wenku-list-table-body li:hover .wenku-time{display: none;}
 #wenku-user .wenku-list-table-body li:hover .wenku-edit{display: inline-block;}
-#wenku-user .wenku-circle-avatar{border-radius:50% !important;}
+#wenku-user .wenku-circle-avatar{border-radius:50% !important;width: 100px;height: 100px;margin: 0px auto;}
 #wenku-user .wenku-circle-avatar img{border-radius: 50% !important;}
 #wenku-user a.wenku-collect-edit{font-size: 12px !important;color:#ffffff !important;}
 #wenku-user .wenku-thumbnail-collect-edit .btn-group{text-align: right;clear: both;width: 100%;}
 #wenku-user .wenku-thumbnail-collect-edit .btn-group .btn{width: 50%;padding: 8px;}
-#wenku-user .column{border-top: 1px solid #EFEFEF;margin-top: 15px;padding-top: 15px;}
-#wenku-user .column ul{margin-bottom: 0px;}
-#wenku-user .column a{display: block;}
-#wenku-user .column li.active a{color: #1abc9c;}
+#wenku-user .username-info .strong{text-align: center;margin-top: 10px;}
+#wenku-user .username-info .help-block .col-xs-4{text-align: center;padding: 0px;border-left: 1px solid #EFEFEF;border-right: 1px solid #EFEFEF}
+#wenku-user .username-info .help-block .col-xs-middle{border: 0px;}
+#wenku-user .username-info .help-block{margin: 15px 0px;}
+
 
 /*wenku page user [end]*/
 

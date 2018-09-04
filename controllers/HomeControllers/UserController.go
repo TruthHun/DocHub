@@ -28,7 +28,7 @@ func (this *UserController) Prepare() {
 
 //会员中心
 func (this *UserController) Get() {
-
+	this.Data["Tab"] = "doc"
 	uid, _ := this.GetInt(":uid")
 	path := this.GetString(":splat")
 	params := conv.Path2Map(path)
@@ -149,7 +149,7 @@ func (this *UserController) Get() {
 
 //金币记录
 func (this *UserController) Coin() {
-
+	this.Data["Tab"] = "coin"
 	uid, _ := this.GetInt(":uid")
 	p, _ := this.GetInt("p", 1)
 	if p < 1 {
@@ -193,6 +193,7 @@ func (this *UserController) Coin() {
 
 //收藏夹
 func (this *UserController) Collect() {
+	this.Data["Tab"] = "collect"
 	action := this.GetString("action")
 	uid, _ := this.GetInt(":uid")
 	p, _ := this.GetInt("p", 1)
@@ -609,9 +610,10 @@ func (this *UserController) DocDel() {
 
 //文档编辑
 func (this *UserController) DocEdit() {
-	var (
-		docId int //文档id
-	)
+	var docId int //文档id
+
+	this.Data["Tab"] = "doc"
+
 	docId, _ = this.GetInt(":doc")
 	if this.IsLogin > 0 {
 		if docId > 0 {

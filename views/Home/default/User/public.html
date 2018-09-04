@@ -1,10 +1,19 @@
+{{define "Tabs"}}
+<ul class="nav nav-tabs">
+    <li {{if eq .Tab "doc"}}class="active"{{end}}><a href="/user/{{.User.Id}}/doc">分享文档</a></li>
+    <li {{if eq .Tab "collect"}}class="active"{{end}}><a href="/user/{{.User.Id}}/collect">收藏文档</a></li>
+    <li {{if eq .Tab "coin"}}class="active"{{end}}><a href="/user/{{.User.Id}}/coin">财富记录</a></li>
+</ul>
+{{end}}
+
+
 {{define "UserRight"}}
 <div class="col-xs-3 wenku-right pull-left">
     <div class="panel panel-default">
         <div class="panel-heading"><span class="strong">个人主页</span></div>
         <div class="panel-body">
             <div class="row">
-                <div class="col-xs-4 wenku-no-pdr">
+                <div class="col-xs-12">
                    {{if eq $.LoginUid (.User.Id|Interface2Int)}}
                     <a href="javascript:void(0);" title="点击选择图片更换头像" data-placement="bottom" class="thumbnail wenku-circle-avatar wenku-tooltip wenku-update-avatar">
                         <img onerror="this.src='/static/Common/img/avatar.png'" class="img-responsive" alt="{{.User.Username}}" src="{{DefPic .User.Avatar "avatar"}}"/>
@@ -21,7 +30,7 @@
                     </a>
                     {{end}}
                 </div>
-                <div class="col-xs-8">
+                <div class="col-xs-12 username-info">
                     <div class="strong">
                         <a href="/user/{{.User.Id}}" title="{{.User.Username}}">{{.User.Username}} </a>
                         {{if eq $.LoginUid (.User.Id|Interface2Int)}}
@@ -34,12 +43,22 @@
                         </small>
                         {{end}}
                     </div>
-                    <div class="help-block">
-                        <ul>
-                            <li>文档: <a href="/user/{{.User.Id}}/doc" class="text-primary">{{.User.Document}} </a></li>
-                            <li>财富: <a href="/user/{{.User.Id}}/coin" class="text-primary">{{.User.Coin}} </a></li>
-                            <li>收藏: <a href="/user/{{.User.Id}}/collect" class="text-primary">{{.User.Collect}}</a></li>
-                        </ul>
+                    <div class="help-block clearfix">
+                        <div class="col-xs-4">
+                            {{/*文档: <a href="/user/{{.User.Id}}/doc" class="text-primary">{{.User.Document}} </a>*/}}
+                            <div>文档</div>
+                            <div class="text-primary">{{.User.Document}}</div>
+                        </div>
+                        <div class="col-xs-4 col-xs-middle">
+                            {{/*财富: <a href="/user/{{.User.Id}}/coin" class="text-primary">{{.User.Coin}} </a>*/}}
+                            <div>财富</div>
+                            <div class="text-primary">{{.User.Coin}}</div>
+                        </div>
+                        <div class="col-xs-4">
+                            {{/*收藏: <a href="/user/{{.User.Id}}/collect" class="text-primary">{{.User.Collect}}</a>*/}}
+                            <div>收藏</div>
+                            <div class="text-primary">{{.User.Collect}}</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -47,15 +66,6 @@
                 <div class="strong">个性签名 </div>
                 <div style="text-indent: 2em;">{{Default .User.Intro "当前用户暂无个性签名"}}</div>
             </div>
-
-            <div class="column">
-                <ul>
-                    <li class="active"><a href="#">我的文档</a></li>
-                    <li><a href="#">我的收藏</a></li>
-                    <li><a href="#">财富记录</a></li>
-                </ul>
-            </div>
-
         </div>
     </div>
 
@@ -65,20 +75,19 @@
             <ul>
 
                 {{range .Ranks}}
-                <li class="clearfix">
-                    <div class="col-xs-2 wenku-nopadding">
-                        <a href="/user/{{.Id}}" title="{{.Username}}" target="_blank" class="thumbnail">
-                            <img class="img-responsive" onerror="this.src='/static/Common/img/avatar.png'" alt="{{.Username}}" src="{{DefPic .Avatar "avatar"}}"/>
-                        </a>
-                    </div>
-                    <div class="col-xs-10">
-                        <div>
-                            <a href="/user/{{.Id}}" class="wenku-username">{{.Username}}</a>
-                            <div class="help-block pull-right"><span class="text-primary">{{.Document}}</span> 篇文档</div>
+                    <li class="clearfix">
+                        <div class="col-xs-3 wenku-nopadding">
+                            <a href="/user/{{.Id}}" title="{{.Username}}" target="_blank" class="thumbnail">
+                                <img class="img-responsive" onerror="this.src='/static/Common/img/avatar.png'" alt="{{.Username}}" src="{{DefPic .Avatar "avatar"}}"/>
+                            </a>
                         </div>
-                        <div class="help-block wenku-text-ellipsis">{{Default .Intro "暂无个性签名..."}}</div>
-                    </div>
-                </li>
+                        <div class="col-xs-9">
+                            <div>
+                                <a href="/user/{{.Id}}" class="wenku-username">{{.Username}}</a>
+                            </div>
+                            <div class="help-block"><span class="text-primary">{{.Document}}</span> 篇文档</div>
+                        </div>
+                    </li>
                 {{end}}
 
             </ul>

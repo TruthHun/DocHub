@@ -1,7 +1,16 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-xs-8 wenku-left">
+
+
+    {{template "UserRight" .}}
+
+
+        <div class="col-xs-9 wenku-left">
+
+        {{template "Tabs" .}}
+
+
             <div class="panel panel-default">
                 <div class="panel-heading clearfix">
                     <div class="strong pull-left">文档编辑</div>
@@ -67,8 +76,6 @@
                 </div>
             </div>
         </div>
-
-        {{template "UserRight" .}}
 
     </div>
 </div>
