@@ -1,6 +1,7 @@
 {{define "UserRight"}}
-<div class="col-xs-4 wenku-right pull-left">
+<div class="col-xs-3 wenku-right pull-left">
     <div class="panel panel-default">
+        <div class="panel-heading"><span class="strong">个人主页</span></div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-xs-4 wenku-no-pdr">
@@ -46,6 +47,15 @@
                 <div class="strong">个性签名 </div>
                 <div style="text-indent: 2em;">{{Default .User.Intro "当前用户暂无个性签名"}}</div>
             </div>
+
+            <div class="column">
+                <ul>
+                    <li class="active"><a href="#">我的文档</a></li>
+                    <li><a href="#">我的收藏</a></li>
+                    <li><a href="#">财富记录</a></li>
+                </ul>
+            </div>
+
         </div>
     </div>
 

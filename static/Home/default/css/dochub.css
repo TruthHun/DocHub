@@ -265,12 +265,12 @@ textarea{resize: none;}
 #wenku-user .wenku-left .panel-heading .pull-right a.active{color: #00B38A;}
 #wenku-user .wenku-left .panel-heading .wenku-show{border-left: 1px solid #DDDDDD;margin-left: 15px;}
 #wenku-user .wenku-left .wenku-list-thumb .col-xs-3{margin-bottom: 25px;}
-#wenku-user .wenku-left .wenku-list-thumb .thumbnail{height: 210px;overflow: hidden;border-radius: 0px;}
-#wenku-user .wenku-left .wenku-list-thumb .thumbnail .img-responsive{width: 142px;height: 200px;}
+#wenku-user .wenku-left .wenku-list-thumb .thumbnail{height: 240px;overflow: hidden;border-radius: 0px;}
+#wenku-user .wenku-left .wenku-list-thumb .thumbnail .img-responsive{width: 160px;height: 230px;}
 #wenku-user .wenku-left .wenku-list-thumb .wenku-icon{position: absolute;top: 5px;right: 20px;}
-#wenku-user .wenku-left .wenku-list-thumb .wenku-title{text-align: left;position: absolute;width: 153px;bottom: 5px;left:15px;background-color: rgba(0,0,0,0.5);color: #FFFFFF;padding: 5px;height: 37px;word-break: break-all;transition: all 0.3s ease-in-out;-moz-transition: all 0.3s ease-in-out;-webkit-transition: all 0.3s ease-in-out;-ms-transition: all 0.3s ease-in-out;-o-transition: all 0.3s ease-in-out;overflow: hidden;}
+#wenku-user .wenku-left .wenku-list-thumb .wenku-title{text-align: left;position: absolute;width: 175px;bottom: 5px;left:15px;background-color: rgba(0,0,0,0.5);color: #FFFFFF;padding: 5px 15px;height: 37px;word-break: break-all;transition: all 0.3s ease-in-out;-moz-transition: all 0.3s ease-in-out;-webkit-transition: all 0.3s ease-in-out;-ms-transition: all 0.3s ease-in-out;-o-transition: all 0.3s ease-in-out;overflow: hidden;}
 #wenku-user .wenku-left .wenku-list-thumb .wenku-thumbnail-collect-edit .wenku-title{height:210px;}
-#wenku-user .wenku-left .wenku-list-thumb .thumbnail:hover .wenku-title{height:210px;}
+#wenku-user .wenku-left .wenku-list-thumb .thumbnail:hover .wenku-title{height:240px;}
 #wenku-user .wenku-right{padding-right: 15px;padding-left: 0px;}
 #wenku-user .wenku-right .wenku-username{font-size: 16px;}
 #wenku-user .wenku-right .wenku-rankuser li{margin-bottom: 15px;border-bottom: 1px dashed #EEEEEE;padding-bottom: 10px;}
@@ -296,6 +296,11 @@ textarea{resize: none;}
 #wenku-user a.wenku-collect-edit{font-size: 12px !important;color:#ffffff !important;}
 #wenku-user .wenku-thumbnail-collect-edit .btn-group{text-align: right;clear: both;width: 100%;}
 #wenku-user .wenku-thumbnail-collect-edit .btn-group .btn{width: 50%;padding: 8px;}
+#wenku-user .column{border-top: 1px solid #EFEFEF;margin-top: 15px;padding-top: 15px;}
+#wenku-user .column ul{margin-bottom: 0px;}
+#wenku-user .column a{display: block;}
+#wenku-user .column li.active a{color: #1abc9c;}
+
 /*wenku page user [end]*/
 
 /*wenku page upload [start]*/
