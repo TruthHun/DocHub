@@ -271,7 +271,7 @@ textarea{resize: none;}
 #wenku-user .wenku-left .wenku-list-thumb .thumbnail .img-responsive{width: 160px;height: 230px;}
 #wenku-user .wenku-left .wenku-list-thumb .wenku-icon{position: absolute;top: 5px;right: 20px;}
 #wenku-user .wenku-left .wenku-list-thumb .wenku-title{text-align: left;position: absolute;width: 175px;bottom: 5px;left:15px;background-color: rgba(0,0,0,0.5);color: #FFFFFF;padding: 5px 15px;height: 37px;word-break: break-all;transition: all 0.3s ease-in-out;-moz-transition: all 0.3s ease-in-out;-webkit-transition: all 0.3s ease-in-out;-ms-transition: all 0.3s ease-in-out;-o-transition: all 0.3s ease-in-out;overflow: hidden;}
-#wenku-user .wenku-left .wenku-list-thumb .wenku-thumbnail-collect-edit .wenku-title{height:210px;}
+#wenku-user .wenku-left .wenku-list-thumb .wenku-thumbnail-collect-edit .wenku-title{height:240px;}
 #wenku-user .wenku-left .wenku-list-thumb .thumbnail:hover .wenku-title{height:240px;}
 #wenku-user .wenku-right{padding-right: 15px;padding-left: 0px;}
 #wenku-user .wenku-right .wenku-username{font-size: 16px;}
