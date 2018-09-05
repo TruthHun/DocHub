@@ -27,43 +27,43 @@ func (this *InstallController) Install() {
 		this.Redirect("/", 302)
 		return
 	}
-	if this.Ctx.Request.Method == "POST" {
-		var (
-			form     installForm
-			respData = map[string]interface{}{"status": 0}
-		)
-		this.ParseForm(&form)
-		//if form.Database == "" || form.Host == "" || form.Username == "" || form.Password == "" || form.Port <= 0 {
-		if form.Database == "" || form.Host == "" || form.Username == "" || form.Port <= 0 {
-			respData["msg"] = "所有必填输入项均不能为空，请按要求进行填写"
-		} else {
-			if err := models.CheckDatabaseIsExist(form.Host, form.Port, form.Username, form.Password, form.Database); err != nil {
-				respData["msg"] = "数据库连接失败：" + err.Error()
-			} else {
-				//生成app.conf配置项
-				if form.Prefix = strings.TrimSpace(form.Prefix); form.Prefix == "" {
-					form.Prefix = "hc_"
-				}
-				if err = helper.GenerateAppConf(form.Host, form.Port, form.Username, form.Password, form.Database, form.Prefix); err == nil {
-					//重载app.conf
-					if err := beego.LoadAppConfig("ini", "conf/app.conf"); err == nil {
-						//初始化数据库
-						models.Init()
-						//将安装设置为true
-						helper.IsInstalled = true
-						respData["msg"] = "程序安装成功"
-						respData["status"] = 1
-					} else {
-						respData["msg"] = "重载配置文件失败：" + err.Error()
-					}
-				} else {
-					respData["msg"] = "生成配置文件失败：" + err.Error()
-				}
-			}
-		}
-		this.Data["json"] = respData
-		this.ServeJSON()
-	} else {
+
+	if this.Ctx.Request.Method == "GET" {
 		this.TplName = "Install/install.html"
 	}
+
+	var form installForm
+	var respData = map[string]interface{}{"status": 0}
+
+	this.ParseForm(&form)
+	if form.Database == "" || form.Host == "" || form.Username == "" || form.Port <= 0 {
+		respData["msg"] = "所有必填输入项均不能为空，请按要求进行填写"
+	} else {
+		if err := models.CheckDatabaseIsExist(form.Host, form.Port, form.Username, form.Password, form.Database); err != nil {
+			respData["msg"] = "数据库连接失败：" + err.Error()
+		} else {
+			//生成app.conf配置项
+			if form.Prefix = strings.TrimSpace(form.Prefix); form.Prefix == "" {
+				form.Prefix = "hc_"
+			}
+			if err = helper.GenerateAppConf(form.Host, form.Port, form.Username, form.Password, form.Database, form.Prefix); err == nil {
+				//重载app.conf
+				if err := beego.LoadAppConfig("ini", "conf/app.conf"); err == nil {
+					//初始化数据库
+					models.Init()
+					//将安装设置为true
+					helper.IsInstalled = true
+					respData["msg"] = "程序安装成功"
+					respData["status"] = 1
+				} else {
+					respData["msg"] = "重载配置文件失败：" + err.Error()
+				}
+			} else {
+				respData["msg"] = "生成配置文件失败：" + err.Error()
+			}
+		}
+	}
+
+	this.Data["json"] = respData
+	this.ServeJSON()
 }

@@ -35,10 +35,12 @@ type BaseController struct {
 func (this *BaseController) Prepare() {
 	ctrl, _ := this.GetControllerAndAction()
 	ctrl = strings.TrimSuffix(ctrl, "Controller")
+
 	//设置默认模板
 	this.TplTheme = "default"
 	this.TplPrefix = "Home/" + this.TplTheme + "/" + ctrl + "/"
 	this.Layout = "Home/" + this.TplTheme + "/layout.html"
+
 	//防止跨站攻击
 	//this.Xsrf()//在有post表单的页面添加，避免每次都生成
 	//检测用户是否已经在cookie存在登录
@@ -56,15 +58,10 @@ func (this *BaseController) Prepare() {
 	this.Sys, _ = models.NewSys().Get()
 	this.Data["Version"] = version
 	this.Data["Sys"] = this.Sys
-	//this.Data["PreviewDomain"] = beego.AppConfig.String("oss::PreviewUrl")
 	this.Data["PreviewDomain"] = strings.TrimRight(helper.GetConfig("oss", "preview_url"), "/")
-
 	this.Data["Chanels"] = this.Chanels()
-	//单页
-	ModelPages := models.Pages{}
-	this.Data["Pages"], _, _ = ModelPages.List(beego.AppConfig.DefaultInt("pageslimit", 6), 1)
+	this.Data["Pages"], _, _ = models.NewPages().List(beego.AppConfig.DefaultInt("pageslimit", 6), 1)
 	this.Data["AdminId"] = helper.Interface2Int(this.GetSession("AdminId"))
-
 	this.Data["CopyrightDate"] = time.Now().Format("2006")
 }
 

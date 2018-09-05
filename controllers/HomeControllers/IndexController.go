@@ -23,8 +23,7 @@ func (this *IndexController) Get() {
 
 	//判断用户是否已登录，如果已登录，则返回用户信息
 	if this.IsLogin > 0 {
-		ModelUser := models.User{}
-		users, rows, err := ModelUser.UserList(1, 1, "", "*", "i.`Id`=?", this.IsLogin)
+		users, rows, err := models.NewUser().UserList(1, 1, "", "*", "i.`Id`=?", this.IsLogin)
 		if err != nil {
 			helper.Logger.Error(err.Error())
 		}

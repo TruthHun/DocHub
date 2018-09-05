@@ -143,25 +143,25 @@ func (this *UploadController) Post() {
 			go models.HandleOffice(this.IsLogin, tmpfile, form)
 		}
 	}
-	if err == nil {
-		price := this.Sys.Reward
-		var log = models.CoinLog{
-			Uid: this.IsLogin,
-		}
-		if form.Exist == 1 {
-			price = 1 //已被分享过的文档，奖励1个金币
-			log.Log = fmt.Sprintf("于%v成功分享了一篇已分享过的文档，获得 %v 个金币奖励", time.Now().Format("2006-01-02 15:04:05"), price)
-		} else {
-			log.Log = fmt.Sprintf("于%v成功分享了一篇未分享过的文档，获得 %v 个金币奖励", time.Now().Format("2006-01-02 15:04:05"), price)
-		}
-		log.Coin = price //金币变更
-		if err := models.NewCoinLog().LogRecord(log); err != nil {
-			helper.Logger.Error(err.Error())
-		}
-		models.Regulate(models.GetTableUserInfo(), "Coin", price, "Id=?", this.IsLogin)
-		this.ResponseJson(true, "^.^ 恭喜您，成功分享了一篇文档。")
-	} else {
+
+	if err != nil {
 		this.ResponseJson(false, "啊哦，文档上传失败...重试一下吧。")
 	}
 
+	price := this.Sys.Reward
+	log := models.CoinLog{
+		Uid: this.IsLogin,
+	}
+	if form.Exist == 1 {
+		price = 1 //已被分享过的文档，奖励1个金币
+		log.Log = fmt.Sprintf("于%v成功分享了一篇已分享过的文档，获得 %v 个金币奖励", time.Now().Format("2006-01-02 15:04:05"), price)
+	} else {
+		log.Log = fmt.Sprintf("于%v成功分享了一篇未分享过的文档，获得 %v 个金币奖励", time.Now().Format("2006-01-02 15:04:05"), price)
+	}
+	log.Coin = price //金币变更
+	if err := models.NewCoinLog().LogRecord(log); err != nil {
+		helper.Logger.Error(err.Error())
+	}
+	models.Regulate(models.GetTableUserInfo(), "Coin", price, "Id=?", this.IsLogin)
+	this.ResponseJson(true, "^.^ 恭喜您，成功分享了一篇文档。")
 }
