@@ -28,6 +28,9 @@
     .navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.active>a:focus{
         border-top: 0px;margin-top:0px;
     }
+    .navbar .container>.navbar-header, .navbar .container-fluid>.navbar-header, .navbar .container>.navbar-collapse, .navbar .container-fluid>.navbar-collapse{
+        padding-left: 0px;padding-right: 0px;margin-left: 0px;margin-right: 0px;
+    }
 
     #wenku-index .wenku-cate{padding: 10px 0px 15px;margin-top: 15px;}
     #wenku-index .wenku-cate .col-xs-3{width: 50%;}
