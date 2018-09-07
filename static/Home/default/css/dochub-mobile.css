@@ -4,6 +4,8 @@
  * Date: 	2018-09-01
  * */
 @media (max-width: 768px) {
+    .visible-mobile{display: block;}
+    .hidden-mobile{display: none;}
     .navbar-fixed-bottom,.navbar-fixed-top{min-width:100% !important;}
     .page-header{margin-bottom:30px}
     .page-header .lead{margin-bottom:10px}
