@@ -22,6 +22,7 @@ type Sys struct {
 	DirtyWord         string `orm:"size(2048);default();column(DirtyWord)"`              //不良信息关键字
 	TimeExpireRelate  int    `orm:"default(604800);column(TimeExpireRelate)"`            //相关资源过期更新的时间周期，0表示关闭相关资源
 	TimeExpireHotspot int    `orm:"default(604800);column(TimeExpireHotspot)"`           //热门文档的时间范围
+	MobileOn          bool   `orm:"default(true);column(MobileOn)"`                      //是否开启移动端
 	TplMobile         string `orm:"default(default);column(TplMobile)"`                  //手机模板
 	TplComputer       string `orm:"default(default);column(TplComputer)"`                //电脑端模板
 	TplAdmin          string `orm:"default(default);column(TplAdmin)"`                   //后台模板

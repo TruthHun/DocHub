@@ -66,6 +66,7 @@ func installSys() {
 		TimeExpireRelate:  604800,
 		MaxFile:           52428800, //50M
 		CoinReg:           10,       //注册奖励金币
+		MobileOn:          true,
 		ReportReasons: `1:垃圾广告
 2:淫秽色情
 3:虚假中奖

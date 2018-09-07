@@ -53,47 +53,48 @@ func (this *SysController) Get() {
 			for k, v := range this.Ctx.Request.Form {
 				modelCfg.UpdateByKey(models.ConfigCate(tab), k, v[0])
 			}
+			//最后更新全局配置
+			modelCfg.UpdateGlobal()
 			if tab == models.CONFIG_ELASTICSEARCH {
 				if err := models.NewElasticSearchClient().Init(); err != nil {
 					this.ResponseJson(false, "ElasticSearch初始化失败："+err.Error())
 				}
 			}
-			//最后更新全局配置
-			modelCfg.UpdateGlobal()
+
 		}
 		this.ResponseJson(true, "更新成功")
+	}
+
+	this.Data["Tab"] = tab
+	this.Data["Title"] = "系统管理"
+	this.Data["IsSys"] = true
+	if tab == "default" {
+		this.Data["Sys"], _ = models.NewSys().Get()
 	} else {
-		this.Data["Tab"] = tab
-		this.Data["Title"] = "系统管理"
-		this.Data["IsSys"] = true
-		if tab == "default" {
-			this.Data["Sys"], _ = models.NewSys().Get()
-		} else {
-			this.Data["Configs"] = new(models.Config).All()
-			if tab == models.CONFIG_ELASTICSEARCH {
-				count, errES := models.NewElasticSearchClient().Count()
-				this.Data["Count"] = count
-				if errES != nil {
-					this.Data["ErrES"] = errES.Error()
-				}
-			} else if tab == "logs" {
-				var logs []logFile
-				if files, _ := ioutil.ReadDir("logs"); len(files) > 0 {
-					for _, file := range files {
-						if !file.IsDir() {
-							logs = append(logs, logFile{
-								Path:    "logs/" + file.Name(),
-								ModTime: file.ModTime(),
-								Size:    int(file.Size()),
-							})
-						}
+		this.Data["Configs"] = new(models.Config).All()
+		if tab == models.CONFIG_ELASTICSEARCH {
+			count, errES := models.NewElasticSearchClient().Count()
+			this.Data["Count"] = count
+			if errES != nil {
+				this.Data["ErrES"] = errES.Error()
+			}
+		} else if tab == "logs" {
+			var logs []logFile
+			if files, _ := ioutil.ReadDir("logs"); len(files) > 0 {
+				for _, file := range files {
+					if !file.IsDir() {
+						logs = append(logs, logFile{
+							Path:    "logs/" + file.Name(),
+							ModTime: file.ModTime(),
+							Size:    int(file.Size()),
+						})
 					}
 				}
-				this.Data["Logs"] = logs
 			}
+			this.Data["Logs"] = logs
 		}
-		this.TplName = "index.html"
 	}
+	this.TplName = "index.html"
 }
 
 //下载或者删除日志文件

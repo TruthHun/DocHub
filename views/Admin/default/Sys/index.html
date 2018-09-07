@@ -32,9 +32,22 @@
                                 <label >网站备案号</label>
                                 <input type="text" class="form-control" name="Icp" placeholder="请输入网站备案号，如 桂ICP备 xxxx" value="{{.Icp}}" />
                             </div>
-                            <div class="form-group">
-                                <label >文档水印文本</label>
-                                <input type="text" class="form-control" name="Watermark" placeholder="文档水印文案，留空则表示不添加水印" value="{{.Watermark}}" />
+
+                            <div class="col-xs-6" style="padding-left: 0px;">
+                                <div class="form-group">
+                                    <label >文档水印文本</label>
+                                    <input type="text" class="form-control" name="Watermark" placeholder="文档水印文案，留空则表示不添加水印" value="{{.Watermark}}" />
+                                </div>
+                            </div>
+
+                            <div class="col-xs-6" style="padding-left: 0px;">
+                                <div class="form-group">
+                                    <label >是否开启移动端</label>
+                                    <select name="MobileOn" class="form-control">
+                                        <option {{if eq .MobileOn true}}selected="selected"{{end}} value="true">启用</option>
+                                        <option {{if eq .MobileOn false}}selected="selected"{{end}} value="false">关闭</option>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="col-xs-6" style="padding-left: 0px">
