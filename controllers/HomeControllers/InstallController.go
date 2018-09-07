@@ -27,9 +27,9 @@ func (this *InstallController) Install() {
 		this.Redirect("/", 302)
 		return
 	}
-
 	if this.Ctx.Request.Method == "GET" {
 		this.TplName = "Install/install.html"
+		return
 	}
 
 	var form installForm
