@@ -314,7 +314,7 @@ func SearchByMysql(wd, sourceType, order string, p, listRows int) (data []orm.Pa
 	case "down":
 		orderBy = []string{"i.Dcnt desc"}
 	case "page":
-		orderBy = []string{"s.Page desc"}
+		orderBy = []string{"ds.Page desc"}
 	case "score":
 		orderBy = []string{"i.Score desc"}
 	case "size":
