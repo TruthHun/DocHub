@@ -418,7 +418,7 @@ func UnofficeToPdf(file string) (pdfFile string, err error) {
 		file,
 		pdfFile,
 		"--paper-size", "a4",
-		"--pdf-default-font-size", "15",
+		"--pdf-default-font-size", "16",
 		"--pdf-page-margin-bottom", "36",
 		"--pdf-page-margin-left", "36",
 		"--pdf-page-margin-right", "36",
