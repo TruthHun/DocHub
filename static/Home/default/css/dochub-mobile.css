@@ -95,6 +95,8 @@
     #wenku-user .wenku-right{width: 100%;padding-right: 0px;}
     #wenku-user .wenku-rankuser{display: none;}
     #wenku-user .wenku-left{width: 100%;}
+    #wenku-user .wenku-left .nav-tabs{padding-left: 15px;}
+    #wenku-user .wenku-left .nav-tabs li:first-of-type a{border-left: 1px solid #dddddd !important;}
     #wenku-user .wenku-left .pull-right{display: none;}
     #wenku-user .wenku-list-table-head{display: none;}
     #wenku-user .wenku-list-table .col-xs-5,#wenku-user .wenku-list-table .col-xs-8{width: 100%;padding-left:0px;padding-right:0px;white-space: normal;}
@@ -122,7 +124,7 @@
     #wenku-search .container .wenku-left{width: 100%;padding-right: 0px;}
     #wenku-search .container .wenku-left .panel-body{padding-bottom: 0px;}
     #wenku-search .container .wenku-left li{display: inline-block;}
-    #wenku-search .wenku-left .panel-body li a{padding-left: 5px;padding-right: 5px;font-size: 15px;}
+    #wenku-search .wenku-left .panel-body li a{padding-left: 0px;padding-right: 10px;font-size: 15px;}
     #wenku-search .container .col-xs-7{width: 100%;padding-right: 0px;}
     #wenku-search .panel-ad{display: none;}
     #wenku-search .container .col-xs-3{width: 100%;}
