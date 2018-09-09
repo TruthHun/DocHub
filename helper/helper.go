@@ -414,7 +414,17 @@ func UnofficeToPdf(file string) (pdfFile string, err error) {
 	//calibre := beego.AppConfig.DefaultString("calibre", "ebook-convert")
 	calibre := GetConfig("depend", "calibre", "ebook-convert")
 	pdfFile = filepath.Dir(file) + "/" + strings.TrimSuffix(filepath.Base(file), filepath.Ext(file)) + ".pdf"
-	cmd := exec.Command(calibre, file, pdfFile)
+	args := []string{
+		file,
+		pdfFile,
+		"--paper-size", "a4",
+		"--pdf-default-font-size", "13",
+		"--pdf-page-margin-bottom", "36",
+		"--pdf-page-margin-left", "36",
+		"--pdf-page-margin-right", "36",
+		"--pdf-page-margin-top", "36",
+	}
+	cmd := exec.Command(calibre, args...)
 	if Debug {
 		beego.Debug("非Office文档转成PDF：", cmd.Args)
 	}
