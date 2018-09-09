@@ -80,10 +80,20 @@ func (this *SearchController) Get() {
 				if len(item.Highlight.Title) > 0 {
 					title = item.Highlight.Title[0]
 				}
-				extCate := "other"
-				if store, _, err := modelDoc.GetOneDocStoreByDsId(item.Source.DsID); err == nil {
-					extCate = store.ExtCate
+				if title == "" {
+					title = item.Source.Title
 				}
+
+				extCate := "other"
+
+				if item.Source.DocType != helper.EXT_NUM_OTHER {
+					extCate = helper.GetExtCateByExtNum(item.Source.DocType)
+				} else {
+					if store, _, err := modelDoc.GetOneDocStoreByDsId(item.Source.DsID); err == nil {
+						extCate = store.ExtCate
+					}
+				}
+
 				data = append(data, orm.Params{
 					"Id":          item.ID,
 					"Dcnt":        item.Source.Dcnt,
