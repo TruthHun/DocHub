@@ -92,7 +92,7 @@ func installFriendlinks() {
 			Title:      "书栈网",
 			Link:       "https://www.bookstack.cn",
 			Status:     true,
-			Sort:       0,
+			Sort:       1,
 			TimeCreate: now,
 		},
 		Friend{
@@ -100,15 +100,7 @@ func installFriendlinks() {
 			Title:      "掘金量化",
 			Link:       "https://www.myquant.cn",
 			Status:     true,
-			Sort:       0,
-			TimeCreate: now,
-		},
-		Friend{
-			Id:         3,
-			Title:      "HC-CMS",
-			Link:       "http://www.hc-cms.com",
-			Status:     true,
-			Sort:       0,
+			Sort:       2,
 			TimeCreate: now,
 		},
 		Friend{
@@ -116,7 +108,15 @@ func installFriendlinks() {
 			Title:      "南宁引力互动科技",
 			Link:       "http://www.gxyinli.com",
 			Status:     true,
-			Sort:       0,
+			Sort:       3,
+			TimeCreate: now,
+		},
+		Friend{
+			Id:         3,
+			Title:      "HC-CMS",
+			Link:       "http://www.hc-cms.com",
+			Status:     true,
+			Sort:       4,
 			TimeCreate: now,
 		},
 	}
