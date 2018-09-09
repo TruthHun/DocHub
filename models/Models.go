@@ -510,6 +510,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 		}
 		if err := cmd.Run(); err != nil {
 			helper.Logger.Error(err.Error())
+			helper.Logger.Error(strings.Join(cmd.Args, " "))
 		} else {
 			if num == 1 {
 				//封面处理

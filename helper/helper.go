@@ -296,6 +296,7 @@ func FormatByte(size int) string {
 //@return           extNum      文档类型(整型)
 func GetExtCate(ext string) (extCate string, extNum int) {
 	ext = strings.ToLower(strings.TrimLeft(ext, "."))
+	extNum = EXT_NUM_OTHER
 	switch ext {
 	case "doc", "docx", "rtf", "wps", "odt":
 		extCate = EXT_CATE_WORD
@@ -312,9 +313,8 @@ func GetExtCate(ext string) (extCate string, extNum int) {
 	case "txt":
 		extCate = EXT_CATE_TEXT
 		extNum = EXT_NUM_TEXT
-	case "umd", "chm", "epub", "mobi":
-		extCate = EXT_CATE_OTHER
-		extNum = EXT_NUM_OTHER
+	case EXT_CATE_OTHER_UMD, EXT_CATE_OTHER_CHM, EXT_CATE_OTHER_EPUB, EXT_CATE_OTHER_MOBI: // cate other
+		extCate = ext
 	}
 	return
 }

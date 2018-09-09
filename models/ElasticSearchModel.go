@@ -364,7 +364,7 @@ func (this *ElasticSearchClient) BuildIndexByBuck(data []ElasticSearchData) (err
 	return
 }
 
-//新增/更新索引
+//创建索引
 func (this *ElasticSearchClient) BuildIndex(es ElasticSearchData) (err error) {
 	var (
 		js   []byte

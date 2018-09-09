@@ -7,10 +7,11 @@ import (
 
 	"github.com/TruthHun/DocHub/helper"
 
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"github.com/astaxie/beego/orm"
 	"strconv"
 	"strings"
+
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"github.com/astaxie/beego/orm"
 )
 
 //文档回收站
@@ -120,14 +121,13 @@ func (this *DocumentRecycle) RemoveToRecycle(uid interface{}, self bool, ids ...
 	//5、分类下的文档减少
 	//不需要删除用户的收藏记录
 	//不需要删除文档的评分记录
-	var (
-		docinfo []DocumentInfo
-	)
+
+	var docInfo []DocumentInfo
 	if len(ids) > 0 {
-		orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).All(&docinfo)
+		orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).All(&docInfo)
 		//总文档记录减少
-		Regulate(GetTableSys(), "CntDoc", -len(docinfo), "Id=1")
-		for _, info := range docinfo {
+		Regulate(GetTableSys(), "CntDoc", -len(docInfo), "Id=1")
+		for _, info := range docInfo {
 			//文档分类统计数量减少
 			if err := Regulate(GetTableCategory(), "Cnt", -1, "Id in(?,?,?)", info.ChanelId, info.Pid, info.Cid); err != nil {
 				helper.Logger.Error(err.Error())
@@ -142,8 +142,9 @@ func (this *DocumentRecycle) RemoveToRecycle(uid interface{}, self bool, ids ...
 			helper.Logger.Error(err.Error())
 			errs = append(errs, err.Error())
 		}
-		//移入回收站
+
 		client := NewElasticSearchClient()
+		//移入回收站
 		for _, id := range ids {
 			var rc DocumentRecycle
 			rc.Id = helper.Interface2Int(id)
@@ -152,10 +153,9 @@ func (this *DocumentRecycle) RemoveToRecycle(uid interface{}, self bool, ids ...
 			rc.Self = self
 			if _, err := orm.NewOrm().Insert(&rc); err != nil {
 				helper.Logger.Error(err.Error())
-			} else {
-				//删除索引
-				client.DeleteIndex(rc.Id)
 			}
+			//删除索引
+			client.DeleteIndex(rc.Id)
 		}
 	} else {
 		errs = append(errs, "参数错误:缺少文档id")

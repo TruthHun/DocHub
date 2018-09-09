@@ -18,18 +18,22 @@ const (
 	DEFAULT_COOKIE_SECRET = "dochub"
 
 	//	扩展名
-	EXT_CATE_WORD  = "word"
-	EXT_NUM_WORD   = 1
-	EXT_CATE_PPT   = "ppt"
-	EXT_NUM_PPT    = 2
-	EXT_CATE_EXCEL = "excel"
-	EXT_NUM_EXCEL  = 3
-	EXT_CATE_PDF   = "pdf"
-	EXT_NUM_PDF    = 4
-	EXT_CATE_TEXT  = "text"
-	EXT_NUM_TEXT   = 5
-	EXT_CATE_OTHER = "other"
-	EXT_NUM_OTHER  = 6
+	EXT_CATE_WORD       = "word"
+	EXT_NUM_WORD        = 1
+	EXT_CATE_PPT        = "ppt"
+	EXT_NUM_PPT         = 2
+	EXT_CATE_EXCEL      = "excel"
+	EXT_NUM_EXCEL       = 3
+	EXT_CATE_PDF        = "pdf"
+	EXT_NUM_PDF         = 4
+	EXT_CATE_TEXT       = "text"
+	EXT_NUM_TEXT        = 5
+	EXT_CATE_OTHER      = "other"
+	EXT_NUM_OTHER       = 6
+	EXT_CATE_OTHER_MOBI = "mobi"
+	EXT_CATE_OTHER_EPUB = "epub"
+	EXT_CATE_OTHER_CHM  = "chm"
+	EXT_CATE_OTHER_UMD  = "umd"
 )
 
 var (

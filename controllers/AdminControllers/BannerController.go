@@ -23,7 +23,7 @@ type BannerController struct {
 //横幅列表
 func (this *BannerController) Get() {
 	var err error
-	if this.Data["Banners"], _, err = models.NewBanner().List(1, 100); err != nil {
+	if this.Data["Banners"], _, err = models.NewBanner().List(1, 100); err != nil && err != orm.ErrNoRows {
 		helper.Logger.Error(err.Error())
 	}
 	this.Data["IsBanner"] = true
