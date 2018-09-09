@@ -118,7 +118,7 @@
 
     /* 搜索 */
     #wenku-search .wenku-top{display: none;}
-    #wenku-search .wenku-logo{margin: 15px auto;max-height: 60px;width: auto;}
+    #wenku-search .wenku-logo{margin: 15px auto;width: auto;}
     #wenku-search .wenku-header .col-xs-2{width: 100%;}
     #wenku-search .wenku-header .col-xs-7{width: 100%;padding-right: 0px;}
     #wenku-search .container .wenku-left{width: 100%;padding-right: 0px;}
