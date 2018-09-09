@@ -214,6 +214,7 @@ textarea{resize: none;}
 #wenku-list .wenku-right .wenku-hot img{height: 18px;position: relative;top: -2px;margin-right: 5px;}
 #wenku-list .wenku-right .wenku-hot li{display: block;border-bottom: 1px dashed #EFEFEF;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 240%;}
 #wenku-list .wenku-right .wenku-hot .panel-body{padding-bottom: 5px;}
+#wenku-list .wenku-left .col-xs-11 .help-block{margin-top: 12px;margin-bottom: -10px;}
 
 /*wenku page list [end]*/
 
