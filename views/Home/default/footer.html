@@ -22,13 +22,16 @@
 					{{end}}
     			</div>
     			<div class="col-xs-12 text-center">
-					{{.Sys.Site}}&nbsp;&nbsp;&copy;{{.CopyrightDate}}
+					{{.Sys.Site}}&nbsp;&nbsp;&copy;{{.CopyrightDate}}&nbsp;&nbsp;<span class="text-muted">|</span>&nbsp;&nbsp;<a href="/sitemap.xml" title="站点地图" target="_blank">站点地图</a>
     			</div>
+                <div class="col-xs-12 text-center">
+                    <div class="help-block"><a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">粤ICP备18004373号-2</a></div>
+                </div>
     			<div class="col-xs-12 text-center">
     				Powered By <a href="https://github.com/TruthHun/DocHub" style="color: #1abc9c;" target="_blank" title="DocHub">DocHub</a> {{.Version}}
     			</div>
+
 				<div class="col-xs-12 text-center">{{str2html .Sys.Tongji}}</div>
-				<div class="col-xs-12 text-center"><a href="/sitemap.xml" title="站点地图" target="_blank">站点地图</a></div>
 			</div>
     	</div>
     </div>

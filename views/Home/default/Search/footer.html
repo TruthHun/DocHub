@@ -17,24 +17,21 @@
     	<div class="container">
     		<div class="row">
     			<div class="col-xs-12 text-center wenku-help">
-    				 <!--<a href="javascript:void(0);">关于我们</a> | -->
-    				 <!--<a href="javascript:void(0);">帮助中心</a> | -->
-    				 <!--<a href="javascript:void(0);">意见反馈</a> | -->
-    				 <!--<a href="javascript:void(0);">合作共赢</a> | -->
-    				 <!--<a href="javascript:void(0);">文库守则</a> | -->
-    				 <!--<a href="javascript:void(0);">用户协议</a>-->
 					{{range .Pages}}
 						<a href="/pages/{{.Alias}}" target="_blank" title="{{.Title}}">{{.Name}}</a>
 					{{end}}
     			</div>
     			<div class="col-xs-12 text-center">
-					{{.Sys.Site}}&nbsp;&nbsp;&copy;{{.CopyrightDate}}
+					{{.Sys.Site}}&nbsp;&nbsp;&copy;{{.CopyrightDate}}&nbsp;&nbsp;<span class="text-muted">|</span>&nbsp;&nbsp;<a href="/sitemap.xml" title="站点地图" target="_blank">站点地图</a>
     			</div>
                 <div class="col-xs-12 text-center">
-                    Powered By <a href="https://github.com/TruthHun/DocHub" style="color: #1abc9c;" target="_blank" title="DocHub">DocHub</a> {{.Version}}
+                    <div class="help-block"><a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">粤ICP备18004373号-2</a></div>
                 </div>
-                <div class="col-xs-12 text-center">{{str2html .Sys.Tongji}}</div>
-                <div class="col-xs-12 text-center"><a href="/sitemap.xml" title="站点地图" target="_blank">站点地图</a></div>
+    			<div class="col-xs-12 text-center">
+    				Powered By <a href="https://github.com/TruthHun/DocHub" style="color: #1abc9c;" target="_blank" title="DocHub">DocHub</a> {{.Version}}
+    			</div>
+
+				<div class="col-xs-12 text-center">{{str2html .Sys.Tongji}}</div>
 			</div>
     	</div>
     </div>
@@ -51,7 +48,7 @@
 	{{if .IsUpload}}
 	<script src="/static/Common/js/spark-md5.min.js"></script>
 	{{end}}
-    <script src="{{.TplStatic}}/js/wenku.js?version={{$.Version}}"></script>
+    <script src="{{.TplStatic}}/js/dochub.js?version={{$.Version}}"></script>
       
   </body>
 </html>

@@ -19,6 +19,10 @@
     .navbar .navbar-nav .open .dropdown-menu>.active>a, .navbar .navbar-nav .open .dropdown-menu>.active>a:focus, .navbar .navbar-nav .open .dropdown-menu>.active>a:hover, .navbar .navbar-nav .open .dropdown-menu>li>a:focus, .navbar .navbar-nav .open .dropdown-menu>li>a:hover{
         background-color: #1abc9c !important;
     }
+    .wenku-footer-dark .wenku-help a{
+        margin: 0px 4px;
+    }
+    .wenku-footer-dark .wenku-help{padding: 0px;}
 
     .wenku-header .col-xs-6{width: 100%;text-align: center;}
     .wenku-logo{margin:10px auto;}
@@ -52,6 +56,7 @@
     #wenku-list .wenku-main .wenku-right{width: 100%;padding-left: 0px;}
     #wenku-list .wenku-main .wenku-left{width: 100%;padding-left: 0px;}
     #wenku-list .wenku-right .wenku-cate .panel-body a{width: auto;margin-right: 15px;}
+    #wenku-list .wenku-hot{display: none;}
     #wenku-list .panel-body img{width: 100%;}
     #wenku-list .panel-body .col-xs-1{width: 15%;}
     #wenku-list .panel-body .col-xs-11{width: 85%;padding-right: 0px;padding-left: 10px;}
