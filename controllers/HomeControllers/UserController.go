@@ -329,7 +329,7 @@ func (this *UserController) Reg() {
 		return
 	}
 
-	if this.Sys.IsCloseReg == false {
+	if this.Sys.IsCloseReg {
 		this.ResponseJson(false, "注册失败，站点已关闭注册功能")
 	}
 
