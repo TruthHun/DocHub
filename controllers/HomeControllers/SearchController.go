@@ -69,6 +69,7 @@ func (this *SearchController) Get() {
 			res.Msg = "搜索成功"
 			res.Time = float64(result.Took) / 1000 //耗时
 			var data []orm.Params
+			modelDoc := models.NewDocument()
 			for _, item := range result.Hits.Hits {
 				desc := ""
 				if len(item.Highlight.Description) > 0 {
@@ -79,7 +80,10 @@ func (this *SearchController) Get() {
 				if len(item.Highlight.Title) > 0 {
 					title = item.Highlight.Title[0]
 				}
-
+				extCate := "other"
+				if store, _, err := modelDoc.GetOneDocStoreByDsId(item.Source.DsID); err == nil {
+					extCate = store.ExtCate
+				}
 				data = append(data, orm.Params{
 					"Id":          item.ID,
 					"Dcnt":        item.Source.Dcnt,
@@ -91,7 +95,7 @@ func (this *SearchController) Get() {
 					"Vcnt":        item.Source.Vcnt,
 					"Title":       title,
 					"Size":        item.Source.Size,
-					"ExtCate":     helper.GetExtCateByExtNum(item.Source.DocType),
+					"ExtCate":     extCate,
 				})
 			}
 			this.Data["Data"] = data

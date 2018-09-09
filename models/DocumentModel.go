@@ -720,6 +720,12 @@ func (this *Document) GetDocStoreByDsId(DsId ...interface{}) (store []DocumentSt
 }
 
 //根据document_store表中的id查询document_info表中的数据
+func (this *Document) GetOneDocStoreByDsId(DsId interface{}, fields ...string) (store DocumentStore, rows int64, err error) {
+	err = orm.NewOrm().QueryTable(GetTableDocumentStore()).Filter("Id__in", DsId).One(&store, fields...)
+	return
+}
+
+//根据document_store表中的id查询document_info表中的数据
 func (this *Document) GetDocInfoById(Ids ...interface{}) (info []DocumentInfo, rows int64, err error) {
 	if len(Ids) > 0 {
 		rows, err = orm.NewOrm().QueryTable(GetTableDocumentInfo()).Limit(len(Ids)).Filter("Id__in", Ids...).All(&info)
