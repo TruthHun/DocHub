@@ -20,13 +20,12 @@
                 <div class="panel-body">
                     <ul>
                     {{range .Hots}}
-                        <li><img alt="{{.Ext}}文档" src="/static/Home/default/img/{{.ExtCate}}_24.png"/><a href="/view/{{.Id}}" target="_blank" title="{{.Title}}">{{.Title}}</a></li>
+                        <li><img alt="{{.ExtCate}}文档" src="/static/Home/default/img/{{.ExtCate}}_24.png"/><a href="/view/{{.Id}}" target="_blank" title="{{.Title}}">{{.Title}}</a></li>
                     {{end}}
                     </ul>
                 </div>
             </div>
         {{end}}
-
 
         </div>
 
@@ -50,7 +49,7 @@
                         {{range .Lists}}
                         <li class="clearfix">
                             <a href="/view/{{.Id}}" title="{{.Title}}" class="col-xs-1 wenku-nopadding" target="_blank">
-                                <img src="/static/Home/default/img/{{.ExtCate}}_54.png"/>
+                                <img alt="{{.ExtCate}}文档" src="/static/Home/default/img/{{.ExtCate}}_54.png"/>
                             </a>
                             <div class="col-xs-11">
                                 <h3 class="wenku-text-ellipsis"><a href="/view/{{.Id}}" title="{{.Title}}" target="_blank">{{.Title}}</a></h3>
