@@ -15,6 +15,7 @@
     .navbar-nav .open .dropdown-menu>li>a, .navbar-nav .open .dropdown-menu .dropdown-header{
         padding: 7px 15px 7px 15px!important
     }
+    .wenku-logo{height: auto;width: 100%;}
     .carousel-control .fa{top:40%;}
     .navbar .navbar-nav .open .dropdown-menu>.active>a, .navbar .navbar-nav .open .dropdown-menu>.active>a:focus, .navbar .navbar-nav .open .dropdown-menu>.active>a:hover, .navbar .navbar-nav .open .dropdown-menu>li>a:focus, .navbar .navbar-nav .open .dropdown-menu>li>a:hover{
         background-color: #1abc9c !important;
