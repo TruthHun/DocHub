@@ -8,7 +8,7 @@
 
 
 {{define "UserRight"}}
-<div class="col-xs-3 wenku-right pull-left">
+<div class="col-xs-3 wenku-right">
     <div class="panel panel-default">
         <div class="panel-heading"><span class="strong">个人主页</span></div>
         <div class="panel-body">
@@ -96,60 +96,60 @@
 
 
 </div>
+    {{if eq $.LoginUid (.User.Id|Interface2Int)}}
+    <div class="modal fade" id="ModalUserEdit" tabindex="-1" role="dialog" aria-labelledby="ModalUserEditLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form class="form-horizontal wenku-ajax-form" role="form" method="post" action="/user/edit">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title" id="ModalUserEditLabel">会员设置</h4>
+                    </div>
+                    <div class="modal-body clearfix">
 
-<div class="modal fade" id="ModalUserEdit" tabindex="-1" role="dialog" aria-labelledby="ModalUserEditLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form class="form-horizontal wenku-ajax-form" role="form" method="post" action="/user/edit">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title" id="ModalUserEditLabel">会员设置</h4>
-                </div>
-                <div class="modal-body clearfix">
-
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">原密码 </label>
-                            <div class="col-sm-10">
-                                <input type="password" class="form-control" name="OldPassword" placeholder="">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">原密码 </label>
+                                <div class="col-sm-10">
+                                    <input type="password" class="form-control" name="OldPassword" placeholder="">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">新密码 </label>
-                            <div class="col-sm-10">
-                                <input type="password" class="form-control" name="NewPassword" placeholder="">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">新密码 </label>
+                                <div class="col-sm-10">
+                                    <input type="password" class="form-control" name="NewPassword" placeholder="">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">确认密码 </label>
-                            <div class="col-sm-10">
-                                <input type="password" class="form-control" name="RePassword" placeholder="">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">确认密码 </label>
+                                <div class="col-sm-10">
+                                    <input type="password" class="form-control" name="RePassword" placeholder="">
+                                </div>
                             </div>
-                        </div>
-                        {{.xsrfdata}}
+                            {{.xsrfdata}}
 
-                        <div class="form-group">
-                            <label class="col-sm-2 control-label">个性签名</label>
-                            <div class="col-sm-10">
-                                <textarea name="Intro" rows="3" class="form-control" placeholder="请输入您的个性签名">{{.User.Intro}}</textarea>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">个性签名</label>
+                                <div class="col-sm-10">
+                                    <textarea name="Intro" rows="3" class="form-control" placeholder="请输入您的个性签名">{{.User.Intro}}</textarea>
+                                </div>
                             </div>
-                        </div>
 
 
-                        <div class="help-block">
-                            温馨提示
-                            <ul>
-                                <li>1、如果您要修改密码，则原密码、新密码和确认密码均为必填项</li>
-                                <li>2、如果您要更换头像，请在会员中心点击个人头像进行更换</li>
-                            </ul>
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">取消设置</button>
-                    <button type="submit" class="btn btn-primary">提交设置</button>
-                </div>
-            </form>
+                            <div class="help-block">
+                                温馨提示
+                                <ul>
+                                    <li>1、如果您要修改密码，则原密码、新密码和确认密码均为必填项</li>
+                                    <li>2、如果您要更换头像，请在会员中心点击个人头像进行更换</li>
+                                </ul>
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">取消设置</button>
+                        <button type="submit" class="btn btn-primary">提交设置</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-
+    {{end}}
 {{end}}
