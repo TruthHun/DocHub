@@ -117,7 +117,7 @@ textarea{resize: none;}
 .wenku-footer-dark a{color: #FFFFFF;display: inline-block;}
 .wenku-footer .wenku-flink a{text-decoration: none;display: inline-block;margin-right: 15px;line-height: 200%;}
 .wenku-footer .wenku-flink a:hover{color: #00B38A;}
-.wenku-footer-dark .text-center{line-height: 200%;font-size: 13px;}
+.wenku-footer-dark .text-center{line-height: 200%;font-size: 13px;color: #ffffff;}
 .wenku-footer-dark .wenku-help a{margin: 0px 8px;}
 
 .panel{border-radius: 0px;border: none;}
