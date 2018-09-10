@@ -133,14 +133,17 @@
 					<div class="col-xs-7 wenku-nopadding">
 						<ul>
 							{{range .Latest}}
-							<li><a href="/view/{{.Id}}" target="_blank" title="{{.Title}}" class="wenku-text-ellipsis">{{.Title}}</a></li>
+							<li>
+								<a href="/view/{{.Id}}" target="_blank" title="{{.Title}}" class="wenku-text-ellipsis">
+                                    <img alt="{{.ExtCate}}文档" src="/static/Home/default/img/{{.ExtCate}}_24.png"> {{.Title}}
+								</a>
+							</li>
 							{{end}}
 						</ul>
 					</div>
 				</div>
 			</div>
 		</div>
-
 
 		{{range $index,$val:=.Cates}}
 
@@ -156,7 +159,11 @@
 					<div class="col-xs-7 wenku-nopadding">
 						<ul>
 							{{range (SimpleList .Id)}}
-							<li><a href="/view/{{.Id}}" target="_blank" title="{{.Title}}" class="wenku-text-ellipsis">{{.Title}}</a></li>
+								<li>
+									<a href="/view/{{.Id}}" target="_blank" title="{{.Title}}" class="wenku-text-ellipsis">
+										<img alt="{{.ExtCate}}文档" src="/static/Home/default/img/{{.ExtCate}}_24.png"> {{.Title}}
+									</a>
+								</li>
 							{{end}}
 						</ul>
 					</div>

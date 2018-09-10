@@ -194,6 +194,7 @@ textarea{resize: none;}
     margin-top:2px;}
 #wenku-index .wenku-item ul{margin-bottom: 0px;}
 #wenku-index .wenku-item img{width:195px;border: 1px solid #EFEFEF;}
+#wenku-index .wenku-item a.wenku-text-ellipsis img{display: none;}
 #wenku-index .wenku-loginbox .panel-body{padding-bottom: 0px;}
 #wenku-index .wenku-loginbox{padding: 11px 0px;}
 /*#wenku-index .wenku-item .panel-body{padding-bottom: 6px;}*/
