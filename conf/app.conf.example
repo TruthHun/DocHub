@@ -1,3 +1,4 @@
+
 # 项目名称
 appname = DocHub
 
@@ -10,13 +11,13 @@ runmode = dev
 # 开启GZip[建议开启]
 EnableGzip=true
 
-# 启用XSRF
+# 必须启用XSRF
 enablexsrf = true
-xsrfkey = gsrtewrt45324joidsffrtqwe
+xsrfkey = 8fd70cd11c371951b1f385f452784fbb
 xsrfexpire = 3600
 
 # cookie的加密密钥
-cookieSecret=sfgowtrfgjqwetryfqef8sd
+CookieSecret=jLGy7yFD69dYItVJ
 
 # 静态文件扩展名【注意：不要把.conf设置为扩展名，以避免泄露数据库账号密码】
 StaticExt=.txt,.html,.ico,.jpeg,.png,.gif,.xml
