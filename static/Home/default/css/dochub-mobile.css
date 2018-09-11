@@ -49,7 +49,7 @@
     #wenku-index .wenku-item .col-xs-7{width: 100%;}
     #wenku-index .wenku-item .wenku-mgl-15px{margin-left: 0px;}
     #wenku-index .wenku-item li{line-height: 200%;}
-    #wenku-index a.wenku-text-ellipsis img{display:inline-block !important;width: auto;border: 0px;margin-right: 3px;position: relative;top:-2px;}
+    #wenku-index a.wenku-text-ellipsis img{display:inline-block !important;width: auto;border: 0px;margin-right: 3px;position: relative;top:-2px;height: 18px;}
 
     .wenku-footer{padding: 15px 0px;}
     .wenku-footer-dark{padding: 30px 15px;}
