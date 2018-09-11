@@ -99,7 +99,8 @@
     #wenku-user .wenku-rankuser{display: none;}
     #wenku-user .wenku-left{width: 100%;}
     #wenku-user .wenku-left .nav-tabs{padding-left: 15px;}
-    #wenku-user .wenku-left .nav-tabs li:first-of-type a{border-left: 1px solid #dddddd !important;}
+    /*#wenku-user .wenku-left .nav-tabs li:first-of-type a{border-left: 1px solid #dddddd !important;}*/
+    #wenku-user .wenku-left .nav-tabs li:first-of-type.active a{border-left: 1px solid #dddddd !important;}
     #wenku-user .wenku-left .pull-right{display: none;}
     #wenku-user .wenku-list-table-head{display: none;}
     #wenku-user .wenku-list-table .col-xs-5,#wenku-user .wenku-list-table .col-xs-8{width: 100%;padding-left:0px;padding-right:0px;white-space: normal;}
