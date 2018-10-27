@@ -182,7 +182,7 @@ textarea{resize: none;}
 #wenku-index .wenku-avatar{height: 80px;width: 80px;margin: 15px;border-radius:50%;}
 #wenku-index .wenku-avatar img{border-radius: 50%;}
 #wenku-index .wenku-username{margin-top: 10px;}
-#wenku-index .wenku-userinfo{border-top: 1px solid #EEEEEE;margin-top: 15px;padding-top: 1px;padding-bottom:7px;width: 230px;margin-left: 15px;}
+#wenku-index .wenku-userinfo{border-top: 1px solid #EEEEEE;margin-top: 15px;padding-top: 5px;padding-bottom:10px;width: 230px;margin-left: 15px;}
 
 #wenku-index .wenku-cate{background-color: #FFFFFF;margin-bottom: 15px;padding: 15px;}
 #wenku-index .wenku-cate a{display: inline-block;font-size: 16px;margin-right: 5px;}
@@ -196,7 +196,16 @@ textarea{resize: none;}
 #wenku-index .wenku-item img{width:195px;border: 1px solid #EFEFEF;}
 #wenku-index .wenku-item a.wenku-text-ellipsis img{display: none;}
 #wenku-index .wenku-loginbox .panel-body{padding-bottom: 0px;}
-#wenku-index .wenku-loginbox{padding: 11px 0px;}
+#wenku-index .wenku-loginbox{padding: 11px 0px 0px;}
+#wenku-index .quick-login{height: 40px;line-height: 40px;margin-bottom: 0px;}
+#wenku-index .quick-login .iconfont{font-size: 25px;margin-left: 5px;}
+#wenku-index .quick-login .icon-weixin{font-size: 23px;color: #00bf75;}
+#wenku-index .quick-login .icon-weibo{font-size: 23px;color: #fa4151;}
+#wenku-index .quick-login .icon-QQ{font-size: 26px;color: #5fa3e4;}
+#wenku-index .quick-login .iconfont:hover{color: #1abc9c;}
+
+#wenku-carousel .carousel-inner img{height: 350px;}
+
 /*#wenku-index .wenku-item .panel-body{padding-bottom: 6px;}*/
 /*wenku page index [end]*/
 

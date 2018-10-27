@@ -54,6 +54,8 @@
     .wenku-footer{padding: 15px 0px;}
     .wenku-footer-dark{padding: 30px 15px;}
 
+    #wenku-carousel .carousel-inner img{height: auto;}
+
     /* 列表页 */
 
     #wenku-list .wenku-main .wenku-right{width: 100%;padding-left: 0px;}
@@ -119,6 +121,9 @@
     #wenku-reg .form-horizontal .form-group .col-sm-6{width: 50%;display: inline-block;padding-right: 0px;}
     #wenku-reg .form-horizontal .form-group .col-sm-4{width: 50%;float: right;}
     #wenku-reg .col-xs-4{width: 100%;padding: 0px;}
+    #wenku-reg .form-header{padding: 10px 15px;}
+    #wenku-reg .login-form .form-box{padding: 25px 15px;}
+    #wenku-reg .form-footer{padding: 5px 15px;}
 
     /* 搜索 */
     #wenku-search .wenku-top{display: none;}

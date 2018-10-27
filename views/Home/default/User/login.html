@@ -6,7 +6,17 @@
             <form action="/user/login" method="post" class="wenku-ajax-form" data-redirect="/user">
                 <div class="login-screen">
                     <div class="login-form">
-                        <div class="form-header">会员登录</div>
+                        <div class="form-header">
+                            会员登录
+                            <div class="help-block quick-login pull-right">
+                                <div class="pull-right">
+                                    <a href="#"><i class="iconfont icon-github"></i></a>
+                                    <a href="#"><i class="iconfont icon-weixin"></i></a>
+                                    <a href="#"><i class="iconfont icon-weibo"></i></a>
+                                    <a href="#"><i class="iconfont icon-QQ"></i></a>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-box">
                             <div class="form-group form-group-lg">
                                 <input type="email" autocomplete="no" name="Email" class="form-control login-field" required="required" value="" placeholder="请输入登录邮箱" id="login-name">
@@ -25,6 +35,7 @@
                                 <a href="/user/findpwd">找回密码</a>
                                 <a class="pull-right" href="/user/reg">立即注册</a>
                             </div>
+
                         </div>
                     </div>
                 </div>
