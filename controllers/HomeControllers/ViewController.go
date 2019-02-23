@@ -3,6 +3,8 @@ package HomeControllers
 import (
 	"fmt"
 
+	"github.com/astaxie/beego"
+
 	"strings"
 
 	"time"
@@ -56,6 +58,7 @@ func (this *ViewController) Get() {
 		}
 	}
 
+	this.Data["IsViewer"] = true
 	models.Regulate(models.GetTableDocumentInfo(), "Vcnt", 1, "`Id`=?", id)
 	this.Data["PageId"] = "wenku-content"
 	this.Data["Doc"] = doc
@@ -71,9 +74,14 @@ func (this *ViewController) Get() {
 	if this.Data["Comments"], _, err = models.NewDocumentComment().GetCommentList(id, 1, 10); err != nil {
 		helper.Logger.Error(err.Error())
 	}
+
+	content := models.NewDocText().GetDescByMd5(doc["Md5"], 2000)
+	this.Data["Content"] = content
+
 	seoTitle := fmt.Sprintf("[%v·%v·%v] ", chanelTitle, parentTitle, childrenTitle) + doc["Title"].(string)
 	seoKeywords := fmt.Sprintf("%v,%v,%v,", chanelTitle, parentTitle, childrenTitle) + doc["Keywords"].(string)
-	seoDesc := doc["Description"].(string)
+	seoDesc := doc["Description"].(string) + content
+	seoDesc = beego.Substr(seoDesc, 0, 255)
 	this.Data["Seo"] = models.NewSeo().GetByPage("PC-View", seoTitle, seoKeywords, seoDesc, this.Sys.Site)
 	this.Xsrf()
 	ext := fmt.Sprintf("%v", doc["Ext"])

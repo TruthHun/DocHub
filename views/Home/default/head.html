@@ -6,7 +6,7 @@
     <meta name="description" content="{{.Seo.Description}}"/>
     {{if $.IsViewer}}
         <meta property="og:type" content="document"/>
-        <meta property="og:url" content="//{{$.Sys.DomainPc}}/view/{{.Doc.Id}}" />
+        <meta property="og:url" content="{{$.Sys.DomainPc}}/view/{{.Doc.Id}}" />
         <meta property="og:release_date" content="{{TimestampFormat (Interface2Int .Doc.TimeCreate) "2006-01-02 15:04:05"}}"/>
         <meta property="og:title" content="{{.Doc.Title}}"/>
         <meta property="og:description" content="{{.Seo.Description}}"/>
