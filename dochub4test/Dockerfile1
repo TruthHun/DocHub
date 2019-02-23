@@ -1,9 +1,0 @@
-FROM truthhun/dochub:env
-
-COPY . /www/dochub
-
-WORKDIR /www/dochub
-
-RUN chmod 0777 -R /www/dochub
-
-CMD [ "./DocHub" ]
