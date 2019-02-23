@@ -36,7 +36,7 @@
                         <div class="form-group">
                             <label>数据库地址</label>
                             <input type="text" required name="host" autocomplete="off" class="form-control">
-                            <p class="help-block">请填写MySQL数据库地址，Docker部署程序时慎用localhost</p>
+                            <p class="help-block">请填写MySQL数据库地址</p>
                         </div>
                         <div class="form-group">
                             <label>数据库服务端口</label>
@@ -49,9 +49,17 @@
                             <p class="help-block">请填写您预先创建的 <span class="text-danger">UTF8</span> 字符编码的数据库名称</p>
                         </div>
                         <div class="form-group">
-                            <label>数据库表前缀</label>
-                            <input type="text"  autocomplete="off"  name="prefix" value="hc_"  class="form-control">
-                            <p class="help-block">如果您的表前缀为空，则默认使用 <span class="text-danger">hc_</span> 作为您的表前缀</p>
+                            <label>数据库名称</label>
+                            <input type="text"  autocomplete="off"  name="database" value=""  class="form-control">
+                            <p class="help-block">请填写您预先创建的数据库名称</p>
+                        </div>
+                        <div class="form-group">
+                            <label>数据库字符编码</label>
+                            <select name="charset" class="form-control">
+                                <option value="utf8">utf8</option>
+                                <option value="utf8mb4">utf8mb4</option>
+                            </select>
+                            <p class="help-block">数据库字符编码仅支持 <span class="text-danger">utf8</span>、<span class="text-danger">utf8mb4</span>，请确保您的数据库是这两种字符编码</p>
                         </div>
                         <div class="form-group">
                             <label>数据库用户名</label>

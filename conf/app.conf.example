@@ -63,7 +63,7 @@ database=dochub
 # 表前缀
 prefix=hc_
 
-# 字符串类型【不要修改，整个程序都是utf-8的】。
+# 数据库字符编码
 charset=utf8
 
 #设置最大空闲连接
