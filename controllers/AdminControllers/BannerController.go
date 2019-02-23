@@ -44,14 +44,14 @@ func (this *BannerController) Add() {
 	ext := helper.GetSuffix(h.Filename, ".")
 	filePath := dir + "/" + helper.MyMD5(fmt.Sprintf("%v-%v", h.Filename, time.Now().Unix())) + "." + ext
 
-	if err = helper.CropImage(filePath, helper.BannerWidth, helper.BannerHeight); err != nil {
-		helper.Logger.Error("横幅裁剪失败：%v", err.Error())
-		this.ResponseJson(false, err.Error())
-	}
-
 	err = this.SaveToFile("Picture", filePath) // 保存位置
 	if err != nil {
 		helper.Logger.Error(err.Error())
+		this.ResponseJson(false, err.Error())
+	}
+
+	if err = helper.CropImage(filePath, helper.BannerWidth, helper.BannerHeight); err != nil {
+		helper.Logger.Error("横幅裁剪失败：%v", err.Error())
 		this.ResponseJson(false, err.Error())
 	}
 
