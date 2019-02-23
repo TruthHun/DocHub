@@ -863,11 +863,6 @@ func SvgoCompress(input, output string) (err error) {
 }
 
 // 图片缩放居中裁剪
-//@param        file        图片文件
-//@param        width       图片宽度
-//@param        height      图片高度
-//@return       err         错误
-
 //图片缩放居中裁剪
 //@param        file        图片文件
 //@param        width       图片宽度
@@ -882,7 +877,7 @@ func CropImage(file string, width, height int) (err error) {
 	ext := strings.ToLower(filepath.Ext(file))
 	switch ext {
 	case ".jpeg", ".jpg", ".png", ".gif":
-		img = imaging.Fill(img, width, height, imaging.Center, imaging.Linear)
+		img = imaging.Fill(img, width, height, imaging.Center, imaging.NearestNeighbor)
 	default:
 		err = errors.New("unsupported image format")
 		return
