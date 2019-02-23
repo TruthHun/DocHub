@@ -100,18 +100,18 @@ func (this *Oss) IsObjectExist(object string, isBucketPreview bool) (err error) 
 //@param                style               图片处理风格
 //@param                ext                 图片扩展名，如果图片文件参数(picture)的值为md5时，需要加上后缀扩展名
 //@return               url                 图片url链接
-func (*Oss) DefaultPicture(picture, style string, ext ...string) (url string) {
+func (*Oss) DefaultPicture(picture string, ext ...string) (url string) {
 	if len(ext) > 0 {
 		picture = picture + "." + ext[0]
 	} else if !strings.Contains(picture, ".") && len(picture) > 0 {
 		picture = picture + ".jpg"
 	}
 	picture = strings.Trim(picture, "/")
-	style = strings.ToLower(style)
-	switch style {
-	case "avatar", "cover", "banner":
-		return NewOss().PreviewUrl + picture + "/" + style
-	}
+	//style = strings.ToLower(style)
+	//switch style {
+	//case "avatar", "cover", "banner":
+	//	return NewOss().PreviewUrl + picture + "/" + style
+	//}
 	return NewOss().PreviewUrl + picture //返回默认图片
 }
 
