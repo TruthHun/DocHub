@@ -706,8 +706,12 @@ $(function(){
         });
 		
 		//编辑收藏夹
-		$("#ModalFolderEditBtn").click(function () {
-			var obj=$(this).parents(".wenku-title"),title=obj.find("h6").text(),desc=obj.find(".help-block").text(),id=$(this).attr("data-id"),form=$("#ModalFolderEdit form");
+		$(".ModalFolderEditBtn").click(function () {
+			var obj=$(this).parents(".wenku-title"),
+                title=obj.find("h6").text(),
+                desc=obj.find(".help-block").text(),
+                id=$(this).attr("data-id"),
+                form=$("#ModalFolderEdit form");
 			form.find("[name=Id]").val(id),form.find("[name=Title]").val(title),form.find("[name=Description]").val(desc);
 			$("#ModalFolderEdit").modal("show");
         });

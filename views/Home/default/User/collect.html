@@ -34,7 +34,7 @@
                                             <img class="img-responsive" onerror="this.src='/static/Common/img/cover.jpg'" src="{{DefPic .Cover}}"/>
                                             <div class="wenku-title">
                                                 <div class="btn-group">
-                                                    <a href="javascript:void(0);" class="btn btn-primary btn-xs" id="ModalFolderEditBtn" data-id="{{.Id}}"><i class="fa fa-edit"></i> 编辑</a>
+                                                    <a href="javascript:void(0);" class="btn btn-primary btn-xs ModalFolderEditBtn" data-id="{{.Id}}"><i class="fa fa-edit"></i> 编辑</a>
                                                     <a href="/user/{{$.User.Id}}/del/collect/{{.Id}}" class="btn btn-danger btn-xs wenku-ajax-get wenku-confirm"><i class="fa fa-remove"></i> 删除</a>
                                                 </div>
                                                 <h6 class="wenku-collect-title wenku-mgt-15px">{{.Title}}</h6>
