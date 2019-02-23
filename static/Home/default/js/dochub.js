@@ -715,7 +715,9 @@ $(function(){
 			form.find("[name=Id]").val(id),form.find("[name=Title]").val(title),form.find("[name=Description]").val(desc);
 			$("#ModalFolderEdit").modal("show");
         });
-		
+
+		console.log($("#wenku-user .wenku-right").height());
+        $("#wenku-user .wenku-left .panel-body").css({"min-height":$("#wenku-user .wenku-right").height()-105});
 
 	}
 
