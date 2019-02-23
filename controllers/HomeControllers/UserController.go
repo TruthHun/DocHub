@@ -475,16 +475,27 @@ func (this *UserController) CreateCollectFolder() {
 		dir := fmt.Sprintf("./uploads/%v/%v/", time.Now().Format("2006-01-02"), this.IsLogin)
 		os.MkdirAll(dir, 0777)
 		file := helper.MyMD5(fmt.Sprintf("%v-%v-%v", timestamp, this.IsLogin, fh.Filename)) + "." + ext
-		err = this.SaveToFile("Cover", dir+file)
-		if err == nil {
-			//将图片移动到OSS
-			err = models.NewOss().MoveToOss(dir+file, file, true, true)
-			helper.Logger.Debug(dir + file)
-			if err != nil {
-				helper.Logger.Error(err.Error())
-			}
-			cover = file
+
+		tmpFile := dir + file
+
+		err = this.SaveToFile("Cover", tmpFile)
+		if err != nil {
+			helper.Logger.Error(err.Error())
+			this.ResponseJson(false, "封面保存失败")
 		}
+
+		if err = helper.CropImage(tmpFile, helper.CoverWidth, helper.CoverHeight); err != nil {
+			helper.Logger.Error(err.Error())
+			this.ResponseJson(false, "封面裁剪失败")
+		}
+
+		//将图片移动到OSS
+		err = models.NewOss().MoveToOss(tmpFile, file, true, true)
+		helper.Logger.Debug(tmpFile)
+		if err != nil {
+			helper.Logger.Error(err.Error())
+		}
+		cover = file
 	}
 
 	// 收藏夹
@@ -743,6 +754,12 @@ func (this *UserController) Avatar() {
 		helper.Logger.Error("用户(%v)头像保存失败：%v", this.IsLogin, err.Error())
 		this.ResponseJson(false, "头像文件保存失败")
 	}
+
+	//头像裁剪
+	if err = helper.CropImage(tmpFile, helper.AvatarWidth, helper.AvatarHeight); err != nil {
+		helper.Logger.Error("图片裁剪失败：%v", err.Error())
+	}
+
 	err = models.NewOss().MoveToOss(tmpFile, saveFile, true, true)
 	if err != nil {
 		helper.Logger.Error(err.Error())

@@ -141,6 +141,12 @@
 			"revisionTime": "2017-03-25T00:33:56Z"
 		},
 		{
+			"checksumSHA1": "1OmwbWaOG0jEW8FJ5dqnpbhm1ZY=",
+			"path": "github.com/disintegration/imaging",
+			"revision": "d2cd1e458082cead80c95e9b8eff56837c577a9a",
+			"revisionTime": "2017-08-21T15:22:04Z"
+		},
+		{
 			"checksumSHA1": "A6K2xo78IQVnKSu8rGdVFMaZMRA=",
 			"path": "github.com/go-sql-driver/mysql",
 			"revision": "d2cd1e458082cead80c95e9b8eff56837c577a9a",

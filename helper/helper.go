@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"html/template"
+	"image"
 	"math/rand"
 
 	"crypto/md5"
@@ -37,6 +38,7 @@ import (
 	"github.com/TruthHun/DocHub/helper/crawl"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
+	"github.com/disintegration/imaging"
 	"github.com/huichen/sego"
 	"rsc.io/pdf"
 )
@@ -756,6 +758,7 @@ func DownFile(fileUrl, savePath string, cookies string) (md5str, localFile, file
 	if err != nil {
 		return
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode >= 300 {
 		err = errors.New(fmt.Sprintf("HTTP响应头错误：%v。文件下载地址：%v", resp.Status, fileUrl))
 		return
@@ -857,4 +860,32 @@ func SvgoCompress(input, output string) (err error) {
 	svgo := GetConfig("depend", "svgo", "svgo")
 	args := []string{input, "-o", output}
 	return exec.Command(svgo, args...).Run()
+}
+
+// 图片缩放居中裁剪
+//@param        file        图片文件
+//@param        width       图片宽度
+//@param        height      图片高度
+//@return       err         错误
+
+//图片缩放居中裁剪
+//@param        file        图片文件
+//@param        width       图片宽度
+//@param        height      图片高度
+//@return       err         错误
+func CropImage(file string, width, height int) (err error) {
+	var img image.Image
+	img, err = imaging.Open(file)
+	if err != nil {
+		return
+	}
+	ext := strings.ToLower(filepath.Ext(file))
+	switch ext {
+	case ".jpeg", ".jpg", ".png", ".gif":
+		img = imaging.Fill(img, width, height, imaging.Center, imaging.Linear)
+	default:
+		err = errors.New("unsupported image format")
+		return
+	}
+	return imaging.Save(img, file)
 }

@@ -515,6 +515,9 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 			if num == 1 {
 				//封面处理
 				if cover, err := helper.ConvertToJpeg(svgfile, false); err == nil {
+					if err = helper.CropImage(cover, helper.CoverWidth, helper.CoverHeight); err != nil {
+						helper.Logger.Error("文档封面裁剪失败：%v", err.Error())
+					}
 					NewOss().MoveToOss(cover, md5str+".jpg", true, true)
 				}
 				//获取svg的宽高(pt)

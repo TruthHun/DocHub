@@ -33,32 +33,53 @@ func (this *BannerController) Get() {
 //新增横幅
 func (this *BannerController) Add() {
 	f, h, err := this.GetFile("Picture")
-	if err == nil {
-		defer f.Close()
-		dir := "uploads/" + time.Now().Format("2006-01-02")
-		os.MkdirAll(dir, 0777)
-		ext := helper.GetSuffix(h.Filename, ".")
-		filepath := dir + "/" + helper.MyMD5(fmt.Sprintf("%v-%v", h.Filename, time.Now().Unix())) + "." + ext
-		err = this.SaveToFile("Picture", filepath) // 保存位置
-		if err == nil {
-			if md5str, err := helper.FileMd5(filepath); err == nil {
-				save := md5str + "." + ext
-				err = models.NewOss().MoveToOss(filepath, save, true, true)
-				if err == nil {
-					var banner models.Banner
-					this.ParseForm(&banner)
-					banner.Picture = save
-					banner.TimeCreate = int(time.Now().Unix())
-					banner.Status = true
-					_, err = orm.NewOrm().Insert(&banner)
-				}
-			}
-		}
-	}
 	if err != nil {
 		helper.Logger.Error(err.Error())
 		this.ResponseJson(false, err.Error())
 	}
+	defer f.Close()
+
+	dir := "uploads/" + time.Now().Format("2006-01-02")
+	os.MkdirAll(dir, 0777)
+	ext := helper.GetSuffix(h.Filename, ".")
+	filePath := dir + "/" + helper.MyMD5(fmt.Sprintf("%v-%v", h.Filename, time.Now().Unix())) + "." + ext
+
+	if err = helper.CropImage(filePath, helper.BannerWidth, helper.BannerHeight); err != nil {
+		helper.Logger.Error("横幅裁剪失败：%v", err.Error())
+		this.ResponseJson(false, err.Error())
+	}
+
+	err = this.SaveToFile("Picture", filePath) // 保存位置
+	if err != nil {
+		helper.Logger.Error(err.Error())
+		this.ResponseJson(false, err.Error())
+	}
+
+	var md5str string
+	md5str, err = helper.FileMd5(filePath)
+	if err != nil {
+		helper.Logger.Error(err.Error())
+		this.ResponseJson(false, err.Error())
+	}
+
+	save := md5str + "." + ext
+	err = models.NewOss().MoveToOss(filePath, save, true, true)
+	if err != nil {
+		helper.Logger.Error(err.Error())
+		this.ResponseJson(false, err.Error())
+	}
+
+	var banner models.Banner
+	this.ParseForm(&banner)
+	banner.Picture = save
+	banner.TimeCreate = int(time.Now().Unix())
+	banner.Status = true
+	_, err = orm.NewOrm().Insert(&banner)
+	if err != nil {
+		helper.Logger.Error(err.Error())
+		this.ResponseJson(false, err.Error())
+	}
+
 	this.ResponseJson(true, "横幅添加成功")
 }
 

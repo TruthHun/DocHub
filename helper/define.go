@@ -54,4 +54,12 @@ var (
 
 	//允许上传的文档扩展名
 	AllowedUploadExt = ",doc,docx,rtf,wps,odt,ppt,pptx,pps,ppsx,dps,odp,pot,xls,xlsx,et,ods,txt,pdf,chm,epub,umd,mobi,"
+
+	// 图片尺寸
+	CoverWidth   = beego.AppConfig.DefaultInt("cover_width", 140)
+	CoverHeight  = beego.AppConfig.DefaultInt("cover_height", 200)
+	BannerWidth  = beego.AppConfig.DefaultInt("banner_width", 825)
+	BannerHeight = beego.AppConfig.DefaultInt("banner_height", 316)
+	AvatarWidth  = beego.AppConfig.DefaultInt("avatar_width", 120)
+	AvatarHeight = beego.AppConfig.DefaultInt("avatar_height", 120)
 )
