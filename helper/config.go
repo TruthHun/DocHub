@@ -87,7 +87,7 @@ func setDefaultConfig() {
 }
 
 //生成app.conf配置文件
-func GenerateAppConf(host string, port int, username, password, database, prefix string) (err error) {
+func GenerateAppConf(host string, port int, username, password, database, prefix string, charset ...string) (err error) {
 	if !IsInstalled { //程序未安装状态才能生成app.conf文件
 		os.Mkdir("conf", os.ModePerm)
 		fileContent := `
@@ -155,8 +155,8 @@ database=%v
 # 表前缀
 prefix=%v
 
-# 字符串类型【不要修改，整个程序都是utf-8的】。
-charset=utf8
+# 数据库字符编码
+charset=%v
 
 #设置最大空闲连接
 maxIdle= 50
@@ -169,6 +169,10 @@ maxConn= 300
 `
 		cs, _ := ConfigMap.Load("CookieSecret")
 		se, _ := ConfigMap.Load("StaticExt")
+		char := "utf8" //默认字符编码
+		if len(charset) > 0 {
+			char = charset[0]
+		}
 		//配置项配置
 		fileContent = fmt.Sprintf(
 			fileContent,
@@ -176,7 +180,7 @@ maxConn= 300
 			beego.BConfig.WebConfig.XSRFExpire,
 			cs,
 			se,
-			host, port, username, password, database, prefix,
+			host, port, username, password, database, prefix, char,
 		)
 		err = ioutil.WriteFile("conf/app.conf", []byte(fileContent), os.ModePerm)
 	}
