@@ -54,3 +54,4 @@ DocHub
 *.lock
 sitemap
 sitemap.xml
+*_test.go
