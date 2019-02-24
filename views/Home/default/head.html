@@ -14,22 +14,16 @@
         <meta property="og:document:page" content="{{.Doc.Page}}"/>
         <meta property="og:document:cost" content="{{.Doc.Price}}积分"/>
     {{end}}
-    <!--<link rel="stylesheet" type="text/css" href="{{.TplStatic}}/css/bootstrap.min.css"/>-->
-    <link rel="stylesheet" href="//apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.css">
-    <!--<link rel="stylesheet" type="text/css" href="{{.TplStatic}}/css/flat-ui.min.css"/>-->
-    <!--<link rel="stylesheet" href="//cdn.bootcss.com/flat-ui/2.2.2/css/flat-ui.min.css">-->
-    <link rel="stylesheet" href="//cdn.staticfile.org/flat-ui/2.3.0/css/flat-ui.min.css">
-    <!--<link rel="stylesheet" type="text/css" href="{{.TplStatic}}/css/font-awesome.min.css"/>-->
-    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="{{.TplStatic}}/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="{{.TplStatic}}/css/flat-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="{{.TplStatic}}/css/font-awesome.min.css"/>
     <link rel="stylesheet" type="text/css" href="/static/Common/css/jquery.toast.min.css"/>
     <link rel="stylesheet" type="text/css" href="{{.TplStatic}}/css/dochub.css?version={{$.Version}}"/>
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_794762_dpncr3eyueh.css">
+    {{/*<link rel="stylesheet" href="//at.alicdn.com/t/font_794762_dpncr3eyueh.css">*/}}
     {{if .Sys.MobileOn}}
     <link rel="stylesheet" type="text/css" href="{{.TplStatic}}/css/dochub-mobile.css?version={{$.Version}}"/>
     {{end}}
     <link rel="shortcut icon" href="{{.TplStatic}}/img/favicon.ico">
-    <!--[if lt IE 9]>
-      <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+      <script src="/static/Common/js/html5shiv.min.js"></script>
+      <script src="/static/Common/js/respond.min.js"></script>
 {{end}}
