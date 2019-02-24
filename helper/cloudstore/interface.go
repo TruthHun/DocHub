@@ -5,4 +5,5 @@ type CloudStore interface {
 	PutObject(string, string, map[string]string) error
 	DeleteObjects([]string) error
 	GetObjectURL(string, int64) (string, error)
+	//IsObjectExist(string) (bool, error)//判断文件对象是否存在
 }

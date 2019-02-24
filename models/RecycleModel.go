@@ -119,11 +119,12 @@ func (this *DocumentRecycle) RemoveToRecycle(uid interface{}, self bool, ids ...
 	//3、用户文档数量减少
 	//4、整站文档数量减少
 	//5、分类下的文档减少
-	//TODO: 文档的上传用户，积分减少
 	//不需要删除用户的收藏记录
 	//不需要删除文档的评分记录
 
 	var docInfo []DocumentInfo
+	sys, _ := NewSys().Get()
+
 	if len(ids) > 0 {
 		orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).All(&docInfo)
 		//总文档记录减少
@@ -136,6 +137,18 @@ func (this *DocumentRecycle) RemoveToRecycle(uid interface{}, self bool, ids ...
 			//用户文档统计数量减少
 			if err := Regulate(GetTableUserInfo(), "Document", -1, "Id=?", info.Uid); err != nil {
 				helper.Logger.Error(err.Error())
+			}
+
+			// 上传该文档的用户积分减少
+			if err := Regulate(GetTableUserInfo(), "Coin", -sys.Reward, "Id=?", info.Uid); err == nil {
+				log := CoinLog{
+					Uid:  info.Uid,
+					Coin: -sys.Reward,
+				}
+				log.Log = fmt.Sprintf("于 %v 删除了一个文档，扣除 %v 个金币", time.Now().Format("2006-01-02 15:04:05"), sys.Reward)
+				if err := NewCoinLog().LogRecord(log); err != nil {
+					helper.Logger.Error(err.Error())
+				}
 			}
 		}
 		//变更文档状态

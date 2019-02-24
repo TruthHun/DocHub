@@ -18,7 +18,6 @@ func (this *ScoreController) Get() {
 	}
 	if err != nil {
 		this.ResponseJson(false, err.Error())
-	} else {
-		this.ResponseJson(true, "积分变更成功")
 	}
+	this.ResponseJson(true, "积分变更成功")
 }

@@ -193,6 +193,9 @@ func Regulate(table, field string, step int, condition string, conditionArgs ...
 		mark = "-"
 	}
 	sql := fmt.Sprintf("update %v set %v=%v%v? where %v", getTable(table), field, field, mark, condition)
+	if step < 0 {
+		sql = fmt.Sprintf("update %v set %v=%v%v? where %v and %v>0", getTable(table), field, field, mark, condition, field)
+	}
 	if len(conditionArgs) > 0 {
 		_, err = orm.NewOrm().Raw(sql, step, conditionArgs[0:]).Exec()
 	} else {

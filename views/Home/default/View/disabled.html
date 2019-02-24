@@ -66,6 +66,8 @@
         </div>
         <div class="{{if .OnlyCover}}col-xs-4{{else}}col-xs-3{{end}} wenku-right">
 
+
+            {{if .Hots}}
             <div class="panel panel-default wenku-noborder wenku-maylike">
                 <div class="panel-heading">
                     <div class="strong">热门文档</div>
@@ -79,6 +81,7 @@
                     </ul>
                 </div>
             </div>
+            {{end}}
 
 
             <div class="panel panel-default wenku-noborder wenku-maylike">
