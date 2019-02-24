@@ -375,9 +375,14 @@ func GetPdfPagesNum(file string) (pages int, err error) {
 //@return           err             错误
 func ConvertToJpeg(pdffile string, removeFile bool) (cover string, err error) {
 	//convert := beego.AppConfig.DefaultString("imagick", "convert")
-	convert := GetConfig("depend", "imagemagick", "convert")
+	convert := strings.TrimSpace(GetConfig("depend", "imagemagick", "convert"))
 	cover = pdffile + ".jpg"
-	cmd := exec.Command(convert, "-density", "150", "-quality", "100", pdffile, cover)
+	args := []string{"-density", "150", "-quality", "100", pdffile, cover}
+	if strings.HasPrefix(convert, "sudo") {
+		args = append([]string{strings.TrimPrefix(convert, "sudo")}, args...)
+		convert = "sudo"
+	}
+	cmd := exec.Command(convert, args...)
 	if Debug {
 		beego.Debug("转化封面图片：", cmd.Args)
 	}
@@ -390,14 +395,17 @@ func ConvertToJpeg(pdffile string, removeFile bool) (cover string, err error) {
 
 //office文档转pdf，返回转化后的文档路径和错误
 func OfficeToPdf(office string) (err error) {
-	//	soffice --headless --invisible --convert-to pdf doctest.docx
-	//soffice := beego.AppConfig.DefaultString("soffice", "soffice")
-	soffice := GetConfig("depend", "soffice", "soffice")
-	dir_slice := strings.Split(office, "/")
-	dir := strings.Join(dir_slice[0:(len(dir_slice)-1)], "/")
-	cmd := exec.Command(soffice, "--headless", "--invisible", "--convert-to", "pdf", office, "--outdir", dir)
+	soffice := strings.TrimSpace(GetConfig("depend", "soffice", "soffice"))
+	dirSlice := strings.Split(office, "/")
+	dir := strings.Join(dirSlice[0:(len(dirSlice)-1)], "/")
+	args := []string{"--headless", "--invisible", "--convert-to", "pdf", office, "--outdir", dir}
+	if strings.HasPrefix(soffice, "sudo") {
+		args = append([]string{strings.TrimPrefix(soffice, "sudo")}, args...)
+		soffice = "sudo"
+	}
+	cmd := exec.Command(soffice, args...)
 	if Debug {
-		Logger.Debug("office 文档转 PDF:", cmd.Args)
+		Logger.Debug("office 文档转 PDF:%v", cmd.Args)
 	}
 	go func() { //超时关闭程序
 		expire := GetConfigInt64("depend", "soffice-expire")
@@ -414,7 +422,7 @@ func OfficeToPdf(office string) (err error) {
 //非office文档(.txt,.mobi,.epub)转pdf文档
 func UnofficeToPdf(file string) (pdfFile string, err error) {
 	//calibre := beego.AppConfig.DefaultString("calibre", "ebook-convert")
-	calibre := GetConfig("depend", "calibre", "ebook-convert")
+	calibre := strings.TrimSpace(GetConfig("depend", "calibre", "ebook-convert"))
 	pdfFile = filepath.Dir(file) + "/" + strings.TrimSuffix(filepath.Base(file), filepath.Ext(file)) + ".pdf"
 	args := []string{
 		file,
@@ -427,6 +435,11 @@ func UnofficeToPdf(file string) (pdfFile string, err error) {
 		"--pdf-page-margin-top", "36",
 	}
 	cmd := exec.Command(calibre, args...)
+	if strings.HasPrefix(calibre, "sudo") {
+		calibre = strings.TrimPrefix(calibre, "sudo")
+		args = append([]string{calibre}, args...)
+		cmd = exec.Command("sudo", args...)
+	}
 	if Debug {
 		beego.Debug("非Office文档转成PDF：", cmd.Args)
 	}
@@ -824,10 +837,14 @@ func UpperFirst(str string) string {
 //@param			to			截止页
 func ExtractPdfText(file string, from, to int) (content string) {
 	//pdftotext := beego.AppConfig.DefaultString("pdftotext", "pdftotext")
-	pdftotext := GetConfig("depend", "pdftotext")
+	pdftotext := strings.TrimSpace(GetConfig("depend", "pdftotext"))
 	textfile := file + ".txt"
 	defer os.Remove(textfile)
 	args := []string{"-f", strconv.Itoa(from), "-l", strconv.Itoa(to), file, textfile}
+	if strings.HasPrefix(pdftotext, "sudo") {
+		args = append([]string{strings.TrimPrefix(pdftotext, "sudo")}, args...)
+		pdftotext = "sudo"
+	}
 	if err := exec.Command(pdftotext, args...).Run(); err != nil {
 		Logger.Error(err.Error())
 	} else {
@@ -857,8 +874,12 @@ func HandlePageNum(PageNum interface{}) string {
 //@param            output          压缩后的文件路径
 //@param            err             压缩错误
 func SvgoCompress(input, output string) (err error) {
-	svgo := GetConfig("depend", "svgo", "svgo")
+	svgo := strings.TrimSpace(GetConfig("depend", "svgo", "svgo"))
 	args := []string{input, "-o", output}
+	if strings.HasPrefix(svgo, "sudo") {
+		args = append([]string{strings.TrimPrefix(svgo, "sudo")}, args...)
+		svgo = "sudo"
+	}
 	return exec.Command(svgo, args...).Run()
 }
 

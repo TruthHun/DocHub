@@ -496,7 +496,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	os.MkdirAll(folder, os.ModePerm)
 	defer os.RemoveAll(folder)
 
-	pdf2svg := helper.GetConfig("depend", "pdf2svg", "pdf2svg")
+	pdf2svg := strings.TrimSpace(helper.GetConfig("depend", "pdf2svg", "pdf2svg"))
 
 	//compress := beego.AppConfig.DefaultBool("compressSvg", false) //是否压缩svg
 	compress := true                            //强制为true
@@ -507,7 +507,12 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 		num := i + 1
 		svgfile := fmt.Sprintf("%v/%v.svg", folder, num)
 		//Usage: pdf2svg <in file.pdf> <out file.svg> [<page no>]
-		cmd := exec.Command(pdf2svg, file, svgfile, strconv.Itoa(num))
+		args := []string{file, svgfile, strconv.Itoa(num)}
+		cmd := exec.Command(pdf2svg, args...)
+		if strings.HasPrefix(pdf2svg, "sudo") {
+			args = append([]string{strings.TrimPrefix(pdf2svg, "sudo")}, args...)
+			cmd = exec.Command("sudo", args...)
+		}
 		if helper.Debug {
 			beego.Debug("pdf转svg参数", cmd.Args)
 		}
@@ -540,7 +545,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 
 	//将内容更新到数据库
 	if len(content) > 5000 {
-		content = helper.SubStr(content, 0, 4800)
+		content = beego.Substr(content, 0, 4800)
 	}
 	var docText = DocText{Md5: md5str, Content: content}
 	if _, _, err := orm.NewOrm().ReadOrCreate(&docText, "Md5"); err != nil {

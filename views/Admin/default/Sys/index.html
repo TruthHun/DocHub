@@ -266,9 +266,11 @@
                             <input type="submit" class="btn btn-success" value="提交更改"/>
                             {{if eq $.Tab "email"}}
                                 <a href="/admin/test/send-email" class="btn btn-default wenku-ajax-get">测试邮件发送</a>
+                                <div class="help-block text-danger"><span class="text-danger">请先保存更改再进行测试</span> </div>
                             {{end}}
                             {{if eq $.Tab "oss"}}
                                 <a href="/admin/test/ping-oss" class="btn btn-default wenku-ajax-get">测试OSS连通</a>
+                                <div class="help-block"> <span class="text-danger">请先保存更改再进行测试</span> </div>
                             {{end}}
                             {{if eq $.Tab "elasticsearch"}}
                                 <a href="/admin/elasticsearch/rebuild" title="重建全量索引" class="btn btn-default wenku-ajax-get">重建全量索引</a>
@@ -284,6 +286,11 @@
                                             {{end}}
                                         </span>
                                     </div>
+                            {{end}}
+                            {{if eq $.Tab "depend"}}
+                            <div class="help-block">
+                                <h4>重要：如果需要 <span class="text-danger">sudo</span> 权限才能执行命令，则在命令前加上sudo。如<span class="text-danger">pdf2svg</span> 这个命令，修改为 <span class="text-danger">sudo pdf2svg</span> </h4>
+                            </div>
                             {{end}}
                         </form>
 
