@@ -60,5 +60,5 @@ func (o *OSS) DeleteObjects(objects []string) (err error) {
 
 // get objects url
 func (o *OSS) GetObjectURL(object string, expire int64) (urlStr string, err error) {
-	return o.bucketObj.SignURL(object, oss.HTTPGet, expire)
+	//TODO:
 }

@@ -682,83 +682,6 @@ func installCfg() {
 		},
 	}
 
-	//oss
-	cateOss := string(CONFIG_OSS)
-	cfgOss := []Config{
-		Config{
-			Title:       "AccessKeyId",
-			Description: "",
-			Key:         "access_key_id",
-			Value:       "",
-			Category:    cateOss,
-		},
-		Config{
-			Title:       "AccessKeySecret",
-			Description: "",
-			Key:         "access_key_secret",
-			Value:       "",
-			Category:    cateOss,
-		},
-		Config{
-			Title:       "是否内网",
-			Description: "当前环境是否内网，内网则使用内网endpoint，否则使用外网endpoint",
-			Key:         "is_internal",
-			Value:       "false",
-			Category:    cateOss,
-			InputType:   INPUT_BOOL,
-		},
-		Config{
-			Title:       "内网Endpoint",
-			Description: "",
-			Key:         "endpoint_internal",
-			Value:       "",
-			Category:    cateOss,
-		},
-		Config{
-			Title:       "外网Endpoint",
-			Description: "",
-			Key:         "endpoint_outer",
-			Value:       "",
-			Category:    cateOss,
-		},
-		Config{
-			Title:       "公共读Bucket",
-			Description: "提供图片和文档预览，如：dochub-public",
-			Key:         "bucket_preview",
-			Value:       "",
-			Category:    cateOss,
-		},
-		Config{
-			Title:       "私有Bucket",
-			Description: "存储文档，无法直接访问，如：dochub-private",
-			Key:         "bucket_store",
-			Value:       "",
-			Category:    cateOss,
-		},
-		Config{
-			Title:       "预览链接",
-			Description: "如：https://dochub-public.oss-cn-hongkong.aliyuncs.com",
-			Key:         "preview_url",
-			Value:       "",
-			Category:    cateOss,
-		},
-		Config{
-			Title:       "下载链接",
-			Description: "如：https://dochub-private.oss-cn-hongkong.aliyuncs.com",
-			Key:         "download_url",
-			Value:       "",
-			Category:    cateOss,
-		},
-		Config{
-			Title:       "下载链接过期时长(秒)",
-			Description: "",
-			Key:         "url_expire",
-			Value:       "600",
-			InputType:   INPUT_NUMBER,
-			Category:    cateOss,
-		},
-	}
-
 	//日志
 	cateLogs := string(CONFIG_LOGS)
 	cfgLogs := []Config{
@@ -866,6 +789,83 @@ func installCfg() {
 			Key:         "host",
 			Value:       "",
 			Category:    cateES,
+		},
+	}
+
+	//oss
+	storeOss := string(STORE_OSS)
+	cfgOss := []Config{
+		Config{
+			Title:       "AccessKeyId",
+			Description: "",
+			Key:         "access_key_id",
+			Value:       "",
+			Category:    storeOss,
+		},
+		Config{
+			Title:       "AccessKeySecret",
+			Description: "",
+			Key:         "access_key_secret",
+			Value:       "",
+			Category:    storeOss,
+		},
+		Config{
+			Title:       "是否内网",
+			Description: "当前环境是否内网，内网则使用内网endpoint，否则使用外网endpoint",
+			Key:         "is_internal",
+			Value:       "false",
+			Category:    storeOss,
+			InputType:   INPUT_BOOL,
+		},
+		Config{
+			Title:       "内网Endpoint",
+			Description: "",
+			Key:         "endpoint_internal",
+			Value:       "",
+			Category:    storeOss,
+		},
+		Config{
+			Title:       "外网Endpoint",
+			Description: "",
+			Key:         "endpoint_outer",
+			Value:       "",
+			Category:    storeOss,
+		},
+		Config{
+			Title:       "公共读Bucket",
+			Description: "提供图片和文档预览，如：dochub-public",
+			Key:         "bucket_preview",
+			Value:       "",
+			Category:    storeOss,
+		},
+		Config{
+			Title:       "私有Bucket",
+			Description: "存储文档，无法直接访问，如：dochub-private",
+			Key:         "bucket_store",
+			Value:       "",
+			Category:    storeOss,
+		},
+		Config{
+			Title:       "预览链接",
+			Description: "如：https://dochub-public.oss-cn-hongkong.aliyuncs.com",
+			Key:         "preview_url",
+			Value:       "",
+			Category:    storeOss,
+		},
+		Config{
+			Title:       "下载链接",
+			Description: "如：https://dochub-private.oss-cn-hongkong.aliyuncs.com",
+			Key:         "download_url",
+			Value:       "",
+			Category:    storeOss,
+		},
+		Config{
+			Title:       "下载链接过期时长(秒)",
+			Description: "",
+			Key:         "url_expire",
+			Value:       "600",
+			InputType:   INPUT_NUMBER,
+			Category:    storeOss,
 		},
 	}
 

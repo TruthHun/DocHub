@@ -708,10 +708,9 @@ func CheckDatabaseIsExist(host string, port int, username, password, database st
 		}
 		timeout <- false
 	}()
-	go func() {
-		time.Sleep(3 * time.Second)
+	time.AfterFunc(3*time.Second, func() {
 		timeout <- true
-	}()
+	})
 
 	if t := <-timeout; t {
 		err = errors.New("MySQL数据库连接失败，请检查数据库链接是否正确")

@@ -14,10 +14,17 @@ type (
 
 const (
 	CONFIG_EMAIL         ConfigCate = "email"         //email
-	CONFIG_OSS           ConfigCate = "oss"           //oss
 	CONFIG_DEPEND        ConfigCate = "depend"        //依赖
 	CONFIG_ELASTICSEARCH ConfigCate = "elasticsearch" //全文搜索
 	CONFIG_LOGS          ConfigCate = "logs"          //日志配置管理
+
+	// 存储类型
+
+	STORE_OSS   ConfigCate = "oss"   //oss存储
+	STORE_LOCAL ConfigCate = "local" //本地存储
+	STORE_COS   ConfigCate = "cos"   //腾讯云存储
+	STORE_BOS   ConfigCate = "bos"   //百度云存储
+	STORE_QINIU ConfigCate = "qiniu" //七牛云储存
 )
 const (
 	INPUT_STRING string = "string"   //对应input的text
