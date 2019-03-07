@@ -197,6 +197,8 @@ textarea{resize: none;}
 #wenku-index .wenku-item a.wenku-text-ellipsis img{display: none;}
 #wenku-index .wenku-loginbox .panel-body{padding-bottom: 0px;}
 #wenku-index .wenku-loginbox{padding: 11px 0px 0px;}
+#wenku-index .wenku-loginbox .btn-primary{margin-bottom: 15px;}
+#wenku-index .wenku-loginbox .panel-body{padding-bottom: 8px;}
 #wenku-index .quick-login{height: 40px;line-height: 40px;margin-bottom: 0px;}
 #wenku-index .quick-login .iconfont{font-size: 25px;margin-left: 5px;}
 #wenku-index .quick-login .icon-weixin{font-size: 23px;color: #00bf75;}

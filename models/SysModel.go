@@ -40,6 +40,8 @@ type Sys struct {
 	Watermark         string `orm:"column(Watermark);default()"`                         //水印文案
 	ReportReasons     string `orm:"column(ReportReasons);default();size(2048)"`          //举报原因
 	IsCloseReg        bool   `orm:"default(false);column(IsCloseReg)"`                   //是否关闭注册
+	StoreWay          string `orm:"default(oss);column(StoreWay);size(15)"`              //文档存储方式
+	CheckRegEmail     bool   `orm:"default(true);column(CheckRegEmail);"`                //是否需要验证注册邮箱，如果需要验证注册邮箱，提要求发送注册验证码
 	//Price             int    `orm:"default(1);column(Price)"`                            //会员下载一篇文档需要的最大金币【会员在上传分享文档时允许设置的最大金币上限】
 }
 

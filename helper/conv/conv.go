@@ -26,8 +26,7 @@ func UpperFirst(str string) string {
 //把url路径中的path请求，变成key val，path参数值形式：/user/list/p/1，转成map[string]string
 func Path2Map(path string) map[string]string {
 	var data = make(map[string]string)
-	path = strings.Trim(path, "/")
-	slice := strings.Split(path, "/")
+	slice := strings.Split(strings.Trim(path, "/"), "/")
 	cnt := len(slice)
 	if cnt%2 == 1 {
 		cnt = cnt - 1
@@ -36,22 +35,6 @@ func Path2Map(path string) map[string]string {
 		for i := 0; i < cnt; {
 			data[slice[i]] = slice[(i + 1)]
 			i = i + 2
-		}
-	}
-	return data
-}
-
-//把url中的query请求参数变成key val，query参数形式：p=1&listRows=10&aaa=bbb，转成map[string]string
-func Query2Map(query string) map[string]string {
-	var data = make(map[string]string)
-	query = strings.Trim(query, "=&")
-	slice := strings.Split(query, "&")
-	if len(slice) > 0 {
-		for _, v := range slice {
-			vv := strings.Split(v, "=")
-			if len(vv) == 2 {
-				data[vv[0]] = data[vv[1]]
-			}
 		}
 	}
 	return data

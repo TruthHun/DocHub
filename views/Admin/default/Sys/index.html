@@ -64,8 +64,6 @@
                                 </div>
                             </div>
 
-
-
                             <!--<div class="col-xs-6 hide" style="padding-left: 0px;">-->
                                 <!--<div class="form-group">-->
                                     <!--<label >PC端域名</label>-->
@@ -114,6 +112,15 @@
 
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
+                                    <label >注册时是否要求验证邮箱</label>
+                                    <select name="CheckRegEmail" class="form-control">
+                                        <option {{if .CheckRegEmail}}selected{{end}} value="true">是</option>
+                                        <option {{if .CheckRegEmail}}{{else}}selected{{end}} value="false">否</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-6" style="padding-left: 0px;">
+                                <div class="form-group">
                                     <label >新用户注册奖励金币</label>
                                     <input type="number" class="form-control" name="CoinReg" value="{{.CoinReg}}" />
                                 </div>
@@ -151,20 +158,21 @@
                             </div>
 
 
-                            <div class="col-xs-6" style="padding-left: 0px;">
-                                <div class="form-group">
-                                    <label >相关文档时间周期</label>
-                                    <select name="TimeExpireRelate" class="form-control">
-                                        <option  value="31536000" {{if eq .TimeExpireRelate 31536000}}selected="selected"{{end}}>一年</option>
-                                        <option  value="15552000" {{if eq .TimeExpireRelate 15552000}}selected="selected"{{end}}>半年</option>
-                                        <option  value="7776000" {{if eq .TimeExpireRelate 7776000}}selected="selected"{{end}}>三月</option>
-                                        <option value="2592000" {{if eq .TimeExpireRelate 2592000}}selected="selected"{{end}}>一月</option>
-                                        <option  value="604800" {{if eq .TimeExpireRelate 604800}}selected="selected"{{end}}>一周</option>
-                                        <option value="86400" {{if eq .TimeExpireRelate 86400}}selected="selected"{{end}}>一天</option>
-                                        <option  value="0" {{if eq .TimeExpireRelate 0}}selected="selected"{{end}}>关闭</option>
-                                    </select>
-                                </div>
-                            </div>
+                            {{/*相关文档功能暂时还没开发，先注释掉*/}}
+                            {{/*<div class="col-xs-6" style="padding-left: 0px;">*/}}
+                                {{/*<div class="form-group">*/}}
+                                    {{/*<label >相关文档时间周期</label>*/}}
+                                    {{/*<select name="TimeExpireRelate" class="form-control">*/}}
+                                        {{/*<option  value="31536000" {{if eq .TimeExpireRelate 31536000}}selected="selected"{{end}}>一年</option>*/}}
+                                        {{/*<option  value="15552000" {{if eq .TimeExpireRelate 15552000}}selected="selected"{{end}}>半年</option>*/}}
+                                        {{/*<option  value="7776000" {{if eq .TimeExpireRelate 7776000}}selected="selected"{{end}}>三月</option>*/}}
+                                        {{/*<option value="2592000" {{if eq .TimeExpireRelate 2592000}}selected="selected"{{end}}>一月</option>*/}}
+                                        {{/*<option  value="604800" {{if eq .TimeExpireRelate 604800}}selected="selected"{{end}}>一周</option>*/}}
+                                        {{/*<option value="86400" {{if eq .TimeExpireRelate 86400}}selected="selected"{{end}}>一天</option>*/}}
+                                        {{/*<option  value="0" {{if eq .TimeExpireRelate 0}}selected="selected"{{end}}>关闭</option>*/}}
+                                    {{/*</select>*/}}
+                                {{/*</div>*/}}
+                            {{/*</div>*/}}
 
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
@@ -180,7 +188,6 @@
                                     </select>
                                 </div>
                             </div>
-
 
 
                             <div class="form-group">

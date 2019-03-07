@@ -336,11 +336,14 @@ func (this *UserController) Reg() {
 	//先验证邮箱验证码是否正确
 	email := this.GetString("email")
 	code := this.GetString("code")
-	sessEmail := fmt.Sprintf("%v", this.GetSession("RegMail"))
-	sessCode := fmt.Sprintf("%v", this.GetSession("RegCode"))
-	if sessEmail != email || sessCode != code {
-		this.ResponseJson(false, "邮箱验证码不正确，请重新输入或重新获取")
+	if this.Sys.CheckRegEmail {
+		sessEmail := fmt.Sprintf("%v", this.GetSession("RegMail"))
+		sessCode := fmt.Sprintf("%v", this.GetSession("RegCode"))
+		if sessEmail != email || sessCode != code {
+			this.ResponseJson(false, "邮箱验证码不正确，请重新输入或重新获取")
+		}
 	}
+
 	// 注册
 	err, uid := models.NewUser().Reg(
 		email,

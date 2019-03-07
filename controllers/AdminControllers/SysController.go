@@ -1,6 +1,7 @@
 package AdminControllers
 
 import (
+	"net/http"
 	"strings"
 
 	"fmt"
@@ -36,7 +37,7 @@ func (this *SysController) Get() {
 	default:
 		tab = "default"
 	}
-	if this.Ctx.Request.Method == "POST" {
+	if this.Ctx.Request.Method == http.MethodPost {
 		if tab == "default" {
 			var sys models.Sys
 			this.ParseForm(&sys)
