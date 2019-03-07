@@ -34,6 +34,9 @@ const (
 	EXT_CATE_OTHER_EPUB = "epub"
 	EXT_CATE_OTHER_CHM  = "chm"
 	EXT_CATE_OTHER_UMD  = "umd"
+
+	// 根目录
+	RootPath = "./static/virtualroot"
 )
 
 var (

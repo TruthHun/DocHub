@@ -7,10 +7,6 @@ import (
 	"fmt"
 	"time"
 
-	"path/filepath"
-
-	"io/ioutil"
-
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego"
@@ -128,37 +124,6 @@ func (this *BaseController) SetCookieLogin(uid interface{}) {
 	this.Ctx.SetSecureCookie(secret+timestamp, "token", fmt.Sprintf("%v", uid), expire)
 }
 
-//404
-func (this *BaseController) Error404() {
-	referer := this.Ctx.Request.Referer()
-	this.Layout = ""
-	this.Data["content"] = "Page Not Foud"
-	this.Data["code"] = "404"
-	this.Data["content_zh"] = "页面被外星人带走了"
-	this.Data["Referer"] = referer
-	if len(referer) > 0 {
-		this.Data["IsReferer"] = true
-	}
-	this.TplName = "error.html"
-}
-
-//501
-func (this *BaseController) Error501() {
-	this.Layout = ""
-	this.Data["code"] = "501"
-	this.Data["content"] = "Server Error"
-	this.Data["content_zh"] = "服务器被外星人戳炸了"
-	this.TplName = "error.html"
-}
-
-//数据库错误
-func (this *BaseController) ErrorDb() {
-	this.Layout = ""
-	this.Data["content"] = "Database is now down"
-	this.Data["content_zh"] = "数据库被外星人抢走了"
-	this.TplName = "error.html"
-}
-
 //获取频道
 func (this *BaseController) Chanels() []orm.Params {
 	key := "chanels"
@@ -217,17 +182,4 @@ func (this *BaseController) Pages() {
 	this.Data["Lists"], _, _ = models.NewPages().List(20, 1)
 	this.Data["PageId"] = "wenku-content"
 	this.TplName = "pages.html"
-}
-
-//静态文件
-func (this *BaseController) StaticFile() {
-	splat := this.GetString(":splat")
-	ext := strings.ToLower(strings.TrimSpace(filepath.Ext(splat)))
-	if ok, _ := helper.StaticExt[strings.ToLower(ext)]; ok && ext != ".conf" {
-		if b, err := ioutil.ReadFile(splat); err == nil {
-			this.Ctx.ResponseWriter.Write(b)
-			return
-		}
-	}
-	this.Error404()
 }

@@ -45,13 +45,21 @@ import (
 
 func init() {
 	//如果存在配置文件，则表示程序已经安装
-	if _, err := os.Stat("conf/app.conf"); err == nil {
+	_, err := os.Stat("conf/app.conf")
+	if err == nil {
 		IsInstalled = true
 	}
 	setDefaultConfig()
 	exts := strings.Split(beego.AppConfig.DefaultString("StaticExt", DEFAULT_STATIC_EXT), ",")
 	for _, ext := range exts {
 		StaticExt[strings.ToLower(strings.TrimSpace(ext))] = true
+	}
+	if _, err = os.Stat(RootPath); err != nil {
+		err = os.MkdirAll(RootPath, os.ModePerm)
+		if err != nil {
+			Logger.Error(err.Error())
+			panic(err.Error())
+		}
 	}
 }
 

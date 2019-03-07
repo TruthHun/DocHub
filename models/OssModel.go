@@ -226,44 +226,48 @@ func (this *Oss) BuildSignDaily(object string) (url string) {
 //@param            htmlstr             html字符串
 //@param            forPreview          是否是供浏览的页面需求
 //@return           str                 处理后返回的字符串
-func (this *Oss) HandleContent(htmlstr string, forPreview bool) (str string) {
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlstr))
-	if err == nil {
-		doc.Find("img").Each(func(i int, s *goquery.Selection) {
-			// For each item found, get the band and title
-			if src, exist := s.Attr("src"); exist {
-				//预览
-				if forPreview {
-					//不存在http开头的图片链接，则更新为绝对链接
-					if !(strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://")) {
-						s.SetAttr("src", this.PreviewUrl+strings.TrimLeft(src, "./"))
-					}
-				} else {
-					s.SetAttr("src", strings.TrimPrefix(src, this.PreviewUrl))
-				}
-			}
-
-		})
-		str, _ = doc.Find("body").Html()
+func (this *Oss) HandleContent(htmlStr string, forPreview bool) (str string) {
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlStr))
+	if err != nil {
+		helper.Logger.Error(err.Error())
+		return
 	}
+	doc.Find("img").Each(func(i int, s *goquery.Selection) {
+		// For each item found, get the band and title
+		if src, exist := s.Attr("src"); exist {
+			//预览
+			if forPreview {
+				//不存在http开头的图片链接，则更新为绝对链接
+				if !(strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://")) {
+					s.SetAttr("src", this.PreviewUrl+strings.TrimLeft(src, "./"))
+				}
+			} else {
+				s.SetAttr("src", strings.TrimPrefix(src, this.PreviewUrl))
+			}
+		}
+
+	})
+	str, _ = doc.Find("body").Html()
 	return
 }
 
 //从HTML中提取图片文件，并删除
-func (this *Oss) DelByHtmlPics(htmlstr string) {
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlstr))
-	if err == nil {
-		doc.Find("img").Each(func(i int, s *goquery.Selection) {
-			// For each item found, get the band and title
-			if src, exist := s.Attr("src"); exist {
-				//不存在http开头的图片链接，则更新为绝对链接
-				if !(strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://")) {
-					this.DelFromOss(true, strings.TrimLeft(src, "./")) //删除
-				} else if strings.HasPrefix(src, this.PreviewUrl) {
-					this.DelFromOss(true, strings.TrimPrefix(src, this.PreviewUrl)) //删除
-				}
-			}
-		})
+func (this *Oss) DelByHtmlPics(htmlStr string) {
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlStr))
+	if err != nil {
+		helper.Logger.Error(err.Error())
+		return
 	}
+	doc.Find("img").Each(func(i int, s *goquery.Selection) {
+		// For each item found, get the band and title
+		if src, exist := s.Attr("src"); exist {
+			//不存在http开头的图片链接，则更新为绝对链接
+			if !(strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://")) {
+				this.DelFromOss(true, strings.TrimLeft(src, "./")) //删除
+			} else if strings.HasPrefix(src, this.PreviewUrl) {
+				this.DelFromOss(true, strings.TrimPrefix(src, this.PreviewUrl)) //删除
+			}
+		}
+	})
 	return
 }

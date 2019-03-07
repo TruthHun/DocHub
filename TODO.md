@@ -23,9 +23,11 @@
 
 ## DocHub v2.2
 - [ ] 多样化存储实现
-    - [ ] 本地存储
-    - [ ] 腾讯云存储
-    - [ ] 七牛云存储
+    - [ ] 本地存储 - `local`
+    - [ ] 腾讯云存储 - `cos`
+    - [ ] 七牛云存储 - `qiniu`
+    - [ ] 百度云存储 - `bos`
+    - [ ] 华为云存储（暂时没开发，因为目前网上还没有对应Go SDK，时间有限，暂缓实现支持）
 - [x] SEO优化，参考新浪爱问文库，从文档中提取文本，放到HTML页面隐藏显示的div中
 - [x] 积分问题[#40](https://github.com/TruthHun/DocHub/issues/40)
 - [x] 封面、横幅裁剪，不再依赖云存储做图片处理
@@ -37,6 +39,7 @@
 - [ ] 管理后台增加一个上传文档必须达到的最低积分要求，避免一些新用户上传垃圾文档
 - [ ] 更换[KindEditor](https://www.oschina.net/news/104631/kindeditor-upload-vulnerability)
 - [x] 把引入的外部js、css公共资源库替换成本地资源库，以方便内网部署
+- [x] 增加虚拟根目录，路径为`./virtualroot`，并把`.well-known`加入到默认静态目录中，以便申请`let's encrypt`证书
 
 
 ## DocHub v2.1

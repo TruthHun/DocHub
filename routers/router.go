@@ -51,8 +51,8 @@ func front() {
 	beego.Router("/user/reg", &HomeControllers.UserController{}, "get,post:Reg")
 	beego.Router("/user/sendmail", &HomeControllers.UserController{}, "get:SendMail")
 	beego.Router("/upload", &HomeControllers.UploadController{}, "get:Get")
-	beego.Router("/segwd", &HomeControllers.UploadController{}, "get:SegWord")
 	beego.Router("/upload", &HomeControllers.UploadController{}, "post:Post")
+	beego.Router("/segwd", &HomeControllers.UploadController{}, "get:SegWord")
 	beego.Router("/search/*", &HomeControllers.SearchController{})
 	beego.Router("/view/:id", &HomeControllers.ViewController{})
 	beego.Router("/comment/:id", &HomeControllers.ViewController{}, "post:Comment")
@@ -61,7 +61,7 @@ func front() {
 	beego.Router("/downfree", &HomeControllers.ViewController{}, "get:DownFree")
 	beego.Router("/doc/check", &HomeControllers.BaseController{}, "get:DocExist")
 	beego.Router("/pages/:page", &HomeControllers.BaseController{}, "get:Pages")
-	beego.Router("/*", &HomeControllers.BaseController{}, "get:StaticFile")
+	beego.Router("/*", &HomeControllers.StaticController{}, "get:Static")
 }
 
 //后台路由
