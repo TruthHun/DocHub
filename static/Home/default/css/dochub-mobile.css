@@ -70,7 +70,9 @@
     #wenku-list .wenku-left .panel-body li.clearfix .help-block>span{display: inline-block;}
     .pagination{padding: 0px;margin: 5px 0px;}
     .pagination li{margin-right: 1px;}
-    .pagination li>a, .pagination li>span{border-left: 0px;}
+    .pagination li>a, .pagination li>span{
+        border-left: 0px;min-width: auto;
+    }
     #wenku-list .wenku-left .col-xs-11 .help-block{margin-top: 5px;}
 
 
