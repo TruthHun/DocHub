@@ -143,5 +143,6 @@
     #wenku-search .container .col-xs-3 .panel-default > .panel-heading{border-color:#ffffff;}
     #wenku-search .wenku-left .panel-body li a.active, #wenku-search .wenku-left .panel-body li a:hover{background-color: #ffffff;}
     #wenku-search .wenku-left ul{margin-bottom: 10px;}
+    #wenku-search .wenku-result{min-height: auto;}
 }
 

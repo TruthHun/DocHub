@@ -345,6 +345,7 @@ textarea{resize: none;}
 #wenku-search .wenku-left .panel-body li a.active,#wenku-search .wenku-left .panel-body li a:hover{background-color: #efefef;color:#16a085;}
 #wenku-search .wenku-left .panel-body li a:hover{font-weight: normal;}
 #wenku-search .col-xs-7{padding-left: 0px;}
+#wenku-search .wenku-result{min-height: 538px;}
 #wenku-search .wenku-result .wenku-title{word-break: break-all;text-overflow: ellipsis;overflow: hidden;white-space: nowrap;}
 #wenku-search .wenku-result a{color: #16a085;font-size: 18px;}
 #wenku-search .wenku-result a img{height: 18px;position: relative;top: -2px;}
