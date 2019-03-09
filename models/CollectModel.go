@@ -61,7 +61,7 @@ func GetTableCollect() string {
 //@param                err             返回错误
 func (this *Collect) Cancel(did, cid interface{}, uid int) (err error) {
 	var affected int64
-	if affected, err = orm.NewOrm().QueryTable(GetTableCollect()).Filter("Did", did).Filter("Cid", cid).Filter("Uid", uid).Delete(); err == nil && affected > 0 {
+	if affected, err = orm.NewOrm().QueryTable(GetTableCollect()).Filter("Did", did).Filter("Cid", cid).Delete(); err == nil && affected > 0 {
 		Regulate(GetTableCollectFolder(), "Cnt", -1, "Id=?", cid) //收藏夹收藏的文档数量-1
 		Regulate(GetTableDocumentInfo(), "Ccnt", -1, "Id=?", did) //文档被收藏次数-1
 	}
@@ -86,7 +86,7 @@ func (this *Collect) DelFolder(id, uid int) (err error) {
 				if len(cf.Cover) > 0 {
 					go NewOss().DelFromOss(true, cf.Cover)
 				}
-				err = Regulate("user_info", "Collect", -1, "Uid=?", uid)
+				err = Regulate(GetTableUserInfo(), "Collect", -1, "Id=?", uid)
 			}
 		}
 	}

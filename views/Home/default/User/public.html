@@ -1,7 +1,7 @@
 {{define "Tabs"}}
 <ul class="nav nav-tabs">
     <li {{if eq .Tab "doc"}}class="active"{{end}}><a href="/user/{{.User.Id}}/doc">分享文档</a></li>
-    <li {{if eq .Tab "collect"}}class="active"{{end}}><a href="/user/{{.User.Id}}/collect">收藏文档</a></li>
+    <li {{if eq .Tab "collect"}}class="active"{{end}}><a href="/user/{{.User.Id}}/collect">收藏夹</a></li>
     <li {{if eq .Tab "coin"}}class="active"{{end}}><a href="/user/{{.User.Id}}/coin">财富记录</a></li>
 </ul>
 {{end}}
@@ -56,7 +56,7 @@
                         </div>
                         <div class="col-xs-4">
                             {{/*收藏: <a href="/user/{{.User.Id}}/collect" class="text-primary">{{.User.Collect}}</a>*/}}
-                            <div>收藏</div>
+                            <div>收藏夹</div>
                             <div class="text-primary">{{.User.Collect}}</div>
                         </div>
                     </div>
