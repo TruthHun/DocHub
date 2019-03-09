@@ -33,6 +33,27 @@
                                 <input type="text" class="form-control" name="Icp" placeholder="请输入网站备案号，如 桂ICP备 xxxx" value="{{.Icp}}" />
                             </div>
 
+
+                            <div class="col-xs-4" style="padding-left: 0px;">
+                                <div class="form-group">
+                                    <label >新用户注册奖励金币</label>
+                                    <input type="number" class="form-control" name="CoinReg" value="{{.CoinReg}}" />
+                                </div>
+                            </div>
+                            <div class="col-xs-4" style="padding-left: 0px;">
+                                <div class="form-group">
+                                    <label >文档上传金币奖励</label>
+                                    <input type="number" class="form-control" name="Reward" value="{{.Reward}}" />
+                                </div>
+                            </div>
+                            <div class="col-xs-4" style="padding-left: 0px;">
+                                <div class="form-group">
+                                    <label >每日签到金币奖励</label>
+                                    <input type="number" class="form-control" name="Sign" value="{{.Sign}}" />
+                                </div>
+                            </div>
+
+
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >文档水印文本</label>
@@ -50,12 +71,12 @@
                                 </div>
                             </div>
 
-                            <div class="col-xs-6" style="padding-left: 0px">
-                                <div class="form-group">
-                                    <label >首页分类(按照顺序输入频道id)</label>
-                                    <input type="text" class="form-control" name="HomeCates" placeholder="请按顺序填写频道id，以便在首页显示，多个id用英文逗号分隔" value="{{.HomeCates}}" />
-                                </div>
-                            </div>
+                            {{/*<div class="col-xs-6" style="padding-left: 0px">*/}}
+                                {{/*<div class="form-group">*/}}
+                                    {{/*<label >首页分类(按照顺序输入频道id)</label>*/}}
+                                    {{/*<input type="text" class="form-control" name="HomeCates" placeholder="请按顺序填写频道id，以便在首页显示，多个id用英文逗号分隔" value="{{.HomeCates}}" />*/}}
+                                {{/*</div>*/}}
+                            {{/*</div>*/}}
 
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
@@ -110,6 +131,7 @@
                             </div>
 
 
+
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >注册时是否要求验证邮箱</label>
@@ -119,24 +141,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-xs-6" style="padding-left: 0px;">
-                                <div class="form-group">
-                                    <label >新用户注册奖励金币</label>
-                                    <input type="number" class="form-control" name="CoinReg" value="{{.CoinReg}}" />
-                                </div>
-                            </div>
-                            <div class="col-xs-6" style="padding-left: 0px;">
-                                <div class="form-group">
-                                    <label >文档上传金币奖励</label>
-                                    <input type="number" class="form-control" name="Reward" value="{{.Reward}}" />
-                                </div>
-                            </div>
-                            <div class="col-xs-6" style="padding-left: 0px;">
-                                <div class="form-group">
-                                    <label >每日签到金币奖励</label>
-                                    <input type="number" class="form-control" name="Sign" value="{{.Sign}}" />
-                                </div>
-                            </div>
+
                             <div class="col-xs-6" style="padding-left: 0px;">
                                 <div class="form-group">
                                     <label >允许上传的最大文件(字节，默认50M)</label>

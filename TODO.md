@@ -40,6 +40,9 @@
 - [ ] 更换[KindEditor](https://www.oschina.net/news/104631/kindeditor-upload-vulnerability)
 - [x] 把引入的外部js、css公共资源库替换成本地资源库，以方便内网部署
 - [x] 增加虚拟根目录，路径为`./virtualroot`，并把`.well-known`加入到默认静态目录中，以便申请`let's encrypt`证书
+- [x] 在管理后台增加注册邮箱验证开关，用户在注册的时候可以不验证邮箱
+- [ ] 移除管理后台系统设置的频道管理，直接根据频道排序，在首页展示，避免造成困扰
+
 
 
 ## DocHub v2.1

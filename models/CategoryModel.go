@@ -69,3 +69,19 @@ func (this *Category) GetSameLevelCategoryById(id interface{}) (cates []Category
 	o.QueryTable(GetTableCategory()).Filter("Pid", cate.Pid).All(&cates)
 	return
 }
+
+// 根据父级id获取分类
+func (this *Category) GetByPid(pid int) (categories []Category) {
+	orm.NewOrm().QueryTable(this).Filter("Pid", pid).OrderBy("Sort").All(&categories)
+	return
+}
+
+// get all categories
+func (this *Category) GetAll(status ...bool) (count int64, categories []Category) {
+	q := orm.NewOrm().QueryTable(this)
+	if len(status) > 0 {
+		q = q.Filter("status", status[0])
+	}
+	count, _ = q.OrderBy("sort").All(&categories)
+	return
+}

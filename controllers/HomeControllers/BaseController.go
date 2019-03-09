@@ -55,7 +55,7 @@ func (this *BaseController) Prepare() {
 	this.Data["Version"] = version
 	this.Data["Sys"] = this.Sys
 	this.Data["PreviewDomain"] = strings.TrimRight(helper.GetConfig("oss", "preview_url"), "/")
-	this.Data["Chanels"] = this.Chanels()
+	this.Data["Chanels"] = models.NewCategory().GetByPid(0)
 	this.Data["Pages"], _, _ = models.NewPages().List(beego.AppConfig.DefaultInt("pageslimit", 6), 1)
 	this.Data["AdminId"] = helper.Interface2Int(this.GetSession("AdminId"))
 	this.Data["CopyrightDate"] = time.Now().Format("2006")
@@ -122,20 +122,6 @@ func (this *BaseController) SetCookieLogin(uid interface{}) {
 	expire := 3600 * 24 * 365
 	this.Ctx.SetSecureCookie(secret, "uid", timestamp, expire)
 	this.Ctx.SetSecureCookie(secret+timestamp, "token", fmt.Sprintf("%v", uid), expire)
-}
-
-//获取频道
-func (this *BaseController) Chanels() []orm.Params {
-	key := "chanels"
-	cache, err := helper.CacheGet("key")
-	if fc, ok := cache.([]orm.Params); ok && err == nil && len(fc) > 0 {
-		return fc
-	}
-	params, rows, _ := models.GetList(models.GetTableCategory(), 1, 6, orm.NewCondition().And("Pid", 0), "Sort")
-	if rows > 0 {
-		helper.CacheSet(key, params, 10*time.Second)
-	}
-	return params
 }
 
 //校验文档是否已经存在

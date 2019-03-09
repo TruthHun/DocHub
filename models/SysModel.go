@@ -32,7 +32,6 @@ type Sys struct {
 	DomainMobile      string `orm:"size(100);default(m.dochub.me);column(DomainMobile)"` //移动端域名
 	PreviewPage       int    `orm:"default(50);column(PreviewPage)"`                     //文档共预览的最大页数，0表示不限制
 	Trends            string `orm:"default();column(Trends)"`                            //文库动态，填写文档的id
-	HomeCates         string `orm:"default();column(HomeCates);size(50)"`                //首页分类，填写频道ids
 	FreeDay           int    `orm:"default(7);column(FreeDay)"`                          //文档免费下载时长。即上次下载扣除金币后多长时间后下载需要收费。时间单位为天
 	Question          string `orm:"default(DocHub文库的中文名是？);column(Question)"`            //评论问答问题
 	Answer            string `orm:"default(多哈);column(Answer)"`                          //评论问答的问题
@@ -43,6 +42,7 @@ type Sys struct {
 	StoreWay          string `orm:"default(oss);column(StoreWay);size(15)"`              //文档存储方式
 	CheckRegEmail     bool   `orm:"default(true);column(CheckRegEmail);"`                //是否需要验证注册邮箱，如果需要验证注册邮箱，提要求发送注册验证码
 	//Price             int    `orm:"default(1);column(Price)"`                            //会员下载一篇文档需要的最大金币【会员在上传分享文档时允许设置的最大金币上限】
+	//HomeCates         string `orm:"default();column(HomeCates);size(50)"`                //首页分类，填写频道ids
 }
 
 func NewSys() *Sys {

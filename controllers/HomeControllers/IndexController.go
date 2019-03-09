@@ -5,8 +5,6 @@ import (
 
 	"strings"
 
-	"time"
-
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego/orm"
@@ -39,8 +37,9 @@ func (this *IndexController) Get() {
 		this.Xsrf()
 	}
 
+	modelCate := models.NewCategory()
 	//首页分类显示
-	this.Data["Cates"] = this.GetHomeCates(this.Sys.HomeCates)
+	_, this.Data["Cates"] = modelCate.GetAll(true)
 	//获取最新的文档数据，这里News不是新闻的意思
 	this.Data["Latest"], _, _ = models.NewDocument().SimpleList(fmt.Sprintf("d.`Id` in(%v)", strings.Trim(this.Sys.Trends, ",")), 5)
 	this.Data["Seo"] = models.NewSeo().GetByPage("PC-Index", "文库首页", "文库首页", "文库首页", this.Sys.Site)
@@ -49,26 +48,27 @@ func (this *IndexController) Get() {
 	this.TplName = "index.html"
 }
 
-//获取首页分类缓存
-//@param            catesId         string          频道ids
-//@return           map[int]interface{}             分类数据
-func (this *IndexController) GetHomeCates(catesId string) interface{} {
-	key := "home_cates"
-	cache, err := helper.CacheGet("home_cates")
-	if fc, ok := cache.([]orm.Params); ok && len(fc) > 0 && err == nil {
-		return fc
-	}
-	catesIdSlice := strings.Split(catesId, ",")
-	chanels, _, err := models.GetList(models.GetTableCategory(), 1, 23, orm.NewCondition().And("Id__in", catesIdSlice), "sort")
-	for _, v := range catesIdSlice {
-		for _, chanel := range chanels {
-			if fmt.Sprintf("%v", v) == fmt.Sprintf("%v", chanel["Id"]) {
-				chanel["child"], _, _ = models.GetList(models.GetTableCategory(), 1, 8, orm.NewCondition().And("Pid", chanel["Id"]), "sort")
-			}
-		}
-	}
-	if len(chanels) > 0 {
-		err = helper.CacheSet(key, chanels, 10*time.Second)
-	}
-	return chanels
-}
+//
+////获取首页分类缓存
+////@param            catesId         string          频道ids
+////@return           map[int]interface{}             分类数据
+//func (this *IndexController) GetHomeCates(catesId string) interface{} {
+//	key := "home_cates"
+//	cache, err := helper.CacheGet("home_cates")
+//	if fc, ok := cache.([]orm.Params); ok && len(fc) > 0 && err == nil {
+//		return fc
+//	}
+//	catesIdSlice := strings.Split(catesId, ",")
+//	chanels, _, err := models.GetList(models.GetTableCategory(), 1, 23, orm.NewCondition().And("Id__in", catesIdSlice), "sort")
+//	for _, v := range catesIdSlice {
+//		for _, chanel := range chanels {
+//			if fmt.Sprintf("%v", v) == fmt.Sprintf("%v", chanel["Id"]) {
+//				chanel["child"], _, _ = models.GetList(models.GetTableCategory(), 1, 8, orm.NewCondition().And("Pid", chanel["Id"]), "sort")
+//			}
+//		}
+//	}
+//	if len(chanels) > 0 {
+//		err = helper.CacheSet(key, chanels, 10*time.Second)
+//	}
+//	return chanels
+//}

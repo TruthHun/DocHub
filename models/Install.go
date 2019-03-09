@@ -54,7 +54,6 @@ func installSys() {
 			<p>您好，非常感谢您对DocHub文库(<a href="https://github.com/TruthHun/DocHub" target="_blank" title="DocHub文库">DocHub</a>)的关注和热爱</p>
 			<p>您本次申请找回密码的邮箱验证码是: <strong style="font-size: 30px;color: red;">{code}</strong></p>
 			<p>如果非您本人操作，请忽略该邮件。</p>`,
-		HomeCates:         "5,2,1,3,4",
 		Trends:            "1,2,3,4,5",
 		Site:              "DocHub(多哈)文库",
 		Reward:            5,

@@ -110,13 +110,15 @@
 <div class="container-fluid wenku-cate">
 	<div class="container">
 		<div class="row">
-			{{range $index,$val:=.Cates}}
+			{{range $index,$val:=.Chanels}}
 			{{if lt $index 4}}
 			<div class="col-xs-3">
-				<div class="h5">{{.Title}}</div>
+				<div class="h5">{{$val.Title}}</div>
 				<div class="wenku-cate-list">
-					{{range .child}}
-					<a href="/list/{{$val.Alias}}/pid/{{.Id}}">{{.Title}}</a>
+					{{range $idx,$item:=$.Cates}}
+                        {{if eq $item.Pid $val.Id}}
+					        <a href="/list/{{$val.Alias}}/pid/{{$item.Id}}">{{$item.Title}}</a>
+                        {{end}}
 					{{end}}
 				</div>
 			</div>
@@ -152,7 +154,7 @@
 			</div>
 		</div>
 
-		{{range $index,$val:=.Cates}}
+		{{range $index,$val:=.Chanels}}
 
 		<div {{if eq (CalcInt $index "%" 2) 0}}class="col-xs-6 wenku-mgl-15px"{{else}}class="col-xs-6"{{end}}>
 			<div class="panel panel-default wenku-noborder">
