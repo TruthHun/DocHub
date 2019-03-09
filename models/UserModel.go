@@ -6,9 +6,10 @@ import (
 	"reflect"
 	"strings"
 
+	"time"
+
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego/orm"
-	"time"
 )
 
 //用户表
@@ -132,6 +133,9 @@ func (u *User) Reg(email, username, password, repassword, intro string) (error, 
 	}
 	if o.QueryTable(GetTableUser()).Filter("Username", username).One(&user); user.Id > 0 {
 		return errors.New("用户名已被注册，请更换新的用户名"), 0
+	}
+	if o.QueryTable(GetTableUser()).Filter("Email", email).One(&user); user.Id > 0 {
+		return errors.New("邮箱已被注册，请更换新注册邮箱"), 0
 	}
 	pwd := helper.MyMD5(password)
 	if pwd != helper.MyMD5(repassword) {

@@ -352,11 +352,8 @@ func (this *UserController) Reg() {
 		this.GetString("repassword"),
 		this.GetString("intro"),
 	)
-	if err != nil || uid == 0 {
-		if err != nil {
-			helper.Logger.Error(err.Error())
-		}
-		this.ResponseJson(false, "注册失败")
+	if err != nil {
+		this.ResponseJson(false, err.Error())
 	}
 
 	models.Regulate(models.GetTableSys(), "CntUser", 1, "Id=1") //站点用户数量增加
