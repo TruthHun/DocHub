@@ -401,27 +401,6 @@ func ParseSvgWidthAndHeight(file string) (width, height int) {
 	return
 }
 
-//压缩svg文件
-//@param			file			需要压缩的svg文件
-//@return			err				错误
-func CompressSvg(file string) (err error) {
-	var b []byte
-	if b, err = ioutil.ReadFile(file); err == nil {
-		str := string(b)
-		str = strings.Replace(str, "\t", "", -1)
-		str = strings.Replace(str, "\n", "", -1)
-		str = strings.Replace(str, "\r", "", -1)
-		//去除标签之间的空格，如果是存在代码预览的页面，不要替换空格，否则预览的代码会错乱
-		r, _ := regexp.Compile(">\\s{1,}<")
-		str = r.ReplaceAllString(str, "><")
-		//多个空格替换成一个空格
-		r2, _ := regexp.Compile("\\s{1,}")
-		str = r2.ReplaceAllString(str, " ")
-		err = ioutil.WriteFile(file, []byte(str), os.ModePerm)
-	}
-	return
-}
-
 //解析svg的原始宽高(TODO:水印效果不是很好，待优化)
 //@param            file            svg文件
 //@param			text			水印文字

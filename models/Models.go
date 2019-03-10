@@ -19,7 +19,6 @@ import (
 
 	"os"
 
-	"os/exec"
 	"strconv"
 
 	"time"
@@ -491,56 +490,37 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	//文件夹
 	folder := strings.TrimSuffix(strings.ToLower(file), ".pdf")
 	folder = strings.TrimSuffix(folder, "/")
-	//os.MkdirAll(folder, 0777)//注意：这里不要创建文件夹！！
-	//如果文件夹folder已经存在了，则需要先删除
 	os.MkdirAll(folder, os.ModePerm)
 	defer os.RemoveAll(folder)
 
-	pdf2svg := strings.TrimSpace(helper.GetConfig("depend", "pdf2svg", "pdf2svg"))
-
-	//compress := beego.AppConfig.DefaultBool("compressSvg", false) //是否压缩svg
-	compress := true                                //强制为true
+	gzipCompress := true                            //强制为true
 	content = helper.ExtractTextFromPDF(file, 1, 5) //提取前5页的PDF文本内容
 	watermarkText := NewSys().GetByField("Watermark").Watermark
 	//处理pdf转svg
 	for i := 0; i < totalPage; i++ {
 		num := i + 1
-		svgfile := fmt.Sprintf("%v/%v.svg", folder, num)
-		//Usage: pdf2svg <in file.pdf> <out file.svg> [<page no>]
-		args := []string{file, svgfile, strconv.Itoa(num)}
-		cmd := exec.Command(pdf2svg, args...)
-		if strings.HasPrefix(pdf2svg, "sudo") {
-			args = append([]string{strings.TrimPrefix(pdf2svg, "sudo")}, args...)
-			cmd = exec.Command("sudo", args...)
-		}
-		if helper.Debug {
-			beego.Debug("pdf转svg参数", cmd.Args)
-		}
-		if err := cmd.Run(); err != nil {
-			helper.Logger.Error(err.Error())
-			helper.Logger.Error(strings.Join(cmd.Args, " "))
-		} else {
-			if num == 1 {
-				//封面处理
-				if cover, err := helper.ConvertToJPEG(svgfile); err == nil {
-					if err = helper.CropImage(cover, helper.CoverWidth, helper.CoverHeight); err != nil {
-						helper.Logger.Error("文档封面裁剪失败：%v", err.Error())
-					}
-					NewOss().MoveToOss(cover, md5str+".jpg", true, true)
+		svgFile := fmt.Sprintf("%v/%v.svg", folder, num)
+		helper.ConvertPDF2SVG(file, svgFile, num)
+		if num == 1 {
+			//封面处理
+			cover, err := helper.ConvertToJPEG(svgFile)
+			if err == nil {
+				err = helper.CropImage(cover, helper.CoverWidth, helper.CoverHeight)
+				if err != nil {
+					helper.Logger.Error("文档封面裁剪失败：%v", err.Error())
 				}
-				//获取svg的宽高(pt)
-				width, height = helper.ParseSvgWidthAndHeight(svgfile)
-				if _, err := UpdateByField(GetTableDocumentStore(), map[string]interface{}{"Width": width, "Height": height}, "Md5", md5str); err != nil {
-					helper.Logger.Error(err.Error())
-				}
+				NewOss().MoveToOss(cover, md5str+".jpg", true, true)
 			}
-			//添加文字水印
-			helper.SvgTextWatermark(svgfile, watermarkText, width/6, height/4)
-
-			//压缩svg内容
-			helper.CompressSvg(svgfile)
-			NewOss().MoveToOss(svgfile, md5str+"/"+strconv.Itoa(num)+".svg", true, true, compress)
+			//获取svg的宽高(pt)
+			width, height = helper.ParseSvgWidthAndHeight(svgFile)
+			_, err = UpdateByField(GetTableDocumentStore(), map[string]interface{}{"Width": width, "Height": height}, "Md5", md5str)
+			if err != nil {
+				helper.Logger.Error(err.Error())
+			}
 		}
+		//添加文字水印
+		helper.SvgTextWatermark(svgFile, watermarkText, width/6, height/4)
+		NewOss().MoveToOss(svgFile, md5str+"/"+strconv.Itoa(num)+".svg", true, true, gzipCompress)
 	}
 
 	//将内容更新到数据库
@@ -548,7 +528,8 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 		content = beego.Substr(content, 0, 4800)
 	}
 	var docText = DocText{Md5: md5str, Content: content}
-	if _, _, err := orm.NewOrm().ReadOrCreate(&docText, "Md5"); err != nil {
+	_, _, err = orm.NewOrm().ReadOrCreate(&docText, "Md5")
+	if err != nil {
 		helper.Logger.Error(err.Error())
 	}
 
@@ -563,7 +544,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 				//svg结尾
 				if strings.HasSuffix(file, ".svg") { //svg结尾的，都是文档页
 					slice := strings.Split(file, "/")
-					NewOss().MoveToOss(file, fmt.Sprintf("%v/%v", md5str, slice[len(slice)-1]), true, true, compress)
+					NewOss().MoveToOss(file, fmt.Sprintf("%v/%v", md5str, slice[len(slice)-1]), true, true, gzipCompress)
 					filenum++ //
 				} else if strings.HasSuffix(file, ".jpg") { //jpg结尾的，基本都是封面图片
 					NewOss().MoveToOss(file, md5str+".jpg", true, true)
@@ -574,10 +555,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 			break
 		}
 	}
-	//删除文件夹
-	if filenum == 0 {
-		go os.RemoveAll(folder)
-	}
+
 	return
 }
 
@@ -614,31 +592,6 @@ func Count(table string, cond *orm.Condition) (cnt int64) {
 	cnt, _ = orm.NewOrm().QueryTable(getTable(table)).SetCond(cond).Count()
 	return
 }
-
-//发送邮件
-//@param            to          string          收件人
-//@param            subject     string          邮件主题
-//@param            content     string          邮件内容
-//@return           error                       发送错误
-//func SendMail(to, subject, content string) error {
-//	port := beego.AppConfig.DefaultInt("email::port", 80)
-//	host := beego.AppConfig.String("email::host")
-//	username := beego.AppConfig.String("email::username")
-//	password := beego.AppConfig.String("email::password")
-//	msg := &mail.Message{
-//		mail.Header{
-//			"From":         {username},
-//			"To":           {to},
-//			"Reply-To":     {beego.AppConfig.DefaultString("mail::replyto", username)},
-//			"Subject":      {subject},
-//			"Content-Type": {"text/html"},
-//		},
-//		strings.NewReader(content),
-//	}
-//	m := mailer.NewMailer(host, username, password, port)
-//	err := m.Send(msg)
-//	return err
-//}
 
 //发送邮件
 //@param            to          string          收件人
