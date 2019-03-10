@@ -33,7 +33,8 @@ type logFile struct {
 func (this *SysController) Get() {
 	tab := models.ConfigCate(strings.ToLower(this.GetString("tab")))
 	switch tab {
-	case models.CONFIG_EMAIL, models.STORE_OSS, models.CONFIG_DEPEND, models.CONFIG_ELASTICSEARCH, models.CONFIG_LOGS:
+	case models.CONFIG_EMAIL, models.CONFIG_DEPEND, models.CONFIG_ELASTICSEARCH, models.CONFIG_LOGS:
+	case models.StoreOss, models.StoreLocal, models.StoreBos, models.StoreCos, models.StoreQiniu:
 	default:
 		tab = "default"
 	}
@@ -50,7 +51,7 @@ func (this *SysController) Get() {
 				this.ResponseJson(false, "更新失败，可能您未对内容做更改")
 			}
 		} else {
-			modelCfg := new(models.Config)
+			modelCfg := models.NewConfig()
 			for k, v := range this.Ctx.Request.Form {
 				modelCfg.UpdateByKey(models.ConfigCate(tab), k, v[0])
 			}
@@ -69,10 +70,11 @@ func (this *SysController) Get() {
 	this.Data["Tab"] = tab
 	this.Data["Title"] = "系统管理"
 	this.Data["IsSys"] = true
+	this.Data["Store"] = this.GetString("store", string(models.StoreOss))
 	if tab == "default" {
 		this.Data["Sys"], _ = models.NewSys().Get()
 	} else {
-		this.Data["Configs"] = new(models.Config).All()
+		this.Data["Configs"] = models.NewConfig().All()
 		if tab == models.CONFIG_ELASTICSEARCH {
 			count, errES := models.NewElasticSearchClient().Count()
 			this.Data["Count"] = count

@@ -6,7 +6,7 @@
                     <ul class="nav nav-tabs" style="margin-bottom: 15px;">
                         <li {{if eq .Tab "default"}}class="active"{{end}}><a href="/admin/sys">网站设置</a></li>
                         <li {{if eq .Tab "email"}}class="active"{{end}}><a href="/admin/sys?tab=email">邮箱设置</a></li>
-                        <li {{if eq .Tab "oss"}}class="active"{{end}}><a href="/admin/sys?tab=oss">OSS设置</a></li>
+                        <li {{if or (eq .Tab "oss") (eq .Tab "bos") (eq .Tab "local") (eq .Tab "qiniu") (eq .Tab "cos")}}class="active"{{end}}><a href="/admin/sys?tab=oss">存储设置</a></li>
                         <li {{if eq .Tab "depend"}}class="active"{{end}}><a href="/admin/sys?tab=depend">依赖设置</a></li>
                         <li {{if eq .Tab "logs"}}class="active"{{end}}><a href="/admin/sys?tab=logs">日志设置</a></li>
                         <li {{if eq .Tab "elasticsearch"}}class="active"{{end}}><a href="/admin/sys?tab=elasticsearch">全文搜索设置</a></li>
@@ -222,39 +222,53 @@
 
                     {{else}}
 
-                    {{if eq .Tab "logs"}}
-                        <div class="col-xs-12 col-sm-7">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-condensed table-hover">
-                                    <caption>日志文件管理</caption>
-                                    <thead>
-                                    <tr>
-                                        <th>文件</th>
-                                        <th>大小</th>
-                                        <th>时间</th>
-                                        <th>操作</th></tr>
-                                    </thead>
-                                    <tbody>
-                                    {{range .Logs}}
+                        {{if eq .Tab "logs"}}
+                            <div class="col-xs-12 col-sm-7">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-condensed table-hover">
+                                        <caption>日志文件管理</caption>
+                                        <thead>
                                         <tr>
-                                            <td>{{.Path}}</td>
-                                            <td>{{FormatByte .Size}}</td>
-                                            <td>{{dateformat .ModTime "2006-01-02 15:04:05"}}</td>
-                                            <td>
-                                                <a href="/admin/sys/handle-logs?action=download&file={{.Path}}" class="wenku-tooltip" title="下载日志"><i class="fa fa-cloud-download"></i></a>
-                                                {{/*logs/dochub.log日志文件禁止删除，否则程序无法写入日志*/}}
-                                                {{if ne .Path "logs/dochub.log"}}|
-                                                <a href="/admin/sys/handle-logs?action=del&file={{.Path}}" class="wenku-tooltip wenku-ajax-get wenku-confirm" title="删除日志"><i class="fa fa-recycle"></i></a>
-                                                {{end}}
-                                            </td>
-                                        </tr>
-                                    {{end}}
-                                </table>
-                        </div>
-                        </div>
-                    {{end}}
+                                            <th>文件</th>
+                                            <th>大小</th>
+                                            <th>时间</th>
+                                            <th>操作</th></tr>
+                                        </thead>
+                                        <tbody>
+                                        {{range .Logs}}
+                                            <tr>
+                                                <td>{{.Path}}</td>
+                                                <td>{{FormatByte .Size}}</td>
+                                                <td>{{dateformat .ModTime "2006-01-02 15:04:05"}}</td>
+                                                <td>
+                                                    <a href="/admin/sys/handle-logs?action=download&file={{.Path}}" class="wenku-tooltip" title="下载日志"><i class="fa fa-cloud-download"></i></a>
+                                                    {{/*logs/dochub.log日志文件禁止删除，否则程序无法写入日志*/}}
+                                                    {{if ne .Path "logs/dochub.log"}}|
+                                                    <a href="/admin/sys/handle-logs?action=del&file={{.Path}}" class="wenku-tooltip wenku-ajax-get wenku-confirm" title="删除日志"><i class="fa fa-recycle"></i></a>
+                                                    {{end}}
+                                                </td>
+                                            </tr>
+                                        {{end}}
+                                    </table>
+                            </div>
+                            </div>
+                        {{end}}
 
                         <form action="" class="wenku-ajax-form {{if eq .Tab "logs"}}col-xs-12 col-sm-5{{end}}" data-redirect="" method="post">
+                            {{if or (eq $.Tab "oss") (eq $.Tab "bos") (eq $.Tab "local") (eq $.Tab "qiniu") (eq $.Tab "cos")}}
+                                <ul class="nav nav-tabs" style="margin-bottom: 15px;">
+                                    <li {{if eq $.Tab "oss"}}class="active"{{end}}><a href="/admin/sys?tab=oss">阿里云OSS存储</a></li>
+                                    <li {{if eq $.Tab "local"}}class="active"{{end}}><a href="/admin/sys?tab=local">本地存储</a></li>
+                                    <li {{if eq $.Tab "cos"}}class="active"{{end}}><a href="/admin/sys?tab=cos">腾讯云COS存储</a></li>
+                                    <li {{if eq $.Tab "bos"}}class="active"{{end}}><a href="/admin/sys?tab=bos">百度云BOS存储</a></li>
+                                    <li {{if eq $.Tab "qiniu"}}class="active"{{end}}><a href="/admin/sys?tab=qiniu">七牛云存储</a></li>
+                                </ul>
+
+                                {{if eq $.Tab "local"}}
+                                    <div class="help-block">如果选择本地存储，则不需要进行任何配置，文档存储到程序目录下的 <strong class="text-muted">./store</strong> 文件夹，请确保该文件夹拥有读写权限</div>
+                                {{end}}
+
+                            {{end}}
                             {{range .Configs}}
                                 {{if eq $.Tab .Category}}
                                     <div class="form-group">

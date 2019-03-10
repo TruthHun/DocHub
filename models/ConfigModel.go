@@ -20,11 +20,11 @@ const (
 
 	// 存储类型
 
-	STORE_OSS   ConfigCate = "oss"   //oss存储
-	STORE_LOCAL ConfigCate = "local" //本地存储
-	STORE_COS   ConfigCate = "cos"   //腾讯云存储
-	STORE_BOS   ConfigCate = "bos"   //百度云存储
-	STORE_QINIU ConfigCate = "qiniu" //七牛云储存
+	StoreOss   ConfigCate = "oss"   //oss存储
+	StoreLocal ConfigCate = "local" //本地存储
+	StoreCos   ConfigCate = "cos"   //腾讯云存储
+	StoreBos   ConfigCate = "bos"   //百度云存储
+	StoreQiniu ConfigCate = "qiniu" //七牛云储存
 )
 const (
 	INPUT_STRING string = "string"   //对应input的text
