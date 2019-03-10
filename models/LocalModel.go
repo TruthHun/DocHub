@@ -12,36 +12,22 @@ import (
 )
 
 type LocalStore struct {
-	PrivateDir string // 存储路径
-	PublicDir  string // 静态文件夹
-	IsPublic   bool   //是否是存到公共目录
-	headerExt  string
+	StoreDir  string // 存储路径
+	HeaderExt string
 }
 
 // 新建本地存储
-func NewLocalStore(isPublic bool) (store *LocalStore, err error) {
-	var (
-		private = "./store/private"
-		public  = "./store/public"
-	)
-
-	if _, err = os.Stat(private); err != nil {
-		err = os.MkdirAll(private, os.ModePerm)
-		if err != nil {
-			return
-		}
-	}
-	if _, err = os.Stat(public); err != nil {
-		err = os.MkdirAll(public, os.ModePerm)
+func NewLocalStore() (store *LocalStore, err error) {
+	storeDir := "./store"
+	if _, err = os.Stat(storeDir); err != nil {
+		err = os.MkdirAll(storeDir, os.ModePerm)
 		if err != nil {
 			return
 		}
 	}
 	store = &LocalStore{
-		PrivateDir: private,
-		PublicDir:  public,
-		IsPublic:   isPublic,
-		headerExt:  ".header",
+		StoreDir:  storeDir,
+		HeaderExt: ".header.json",
 	}
 	return
 }
@@ -49,7 +35,7 @@ func NewLocalStore(isPublic bool) (store *LocalStore, err error) {
 // 判断文件是否存在
 // @param       object      文件是否存在
 func (l *LocalStore) IsExist(object string) (err error) {
-	_, err = os.Stat(l.getRealPath(object))
+	_, err = os.Stat(l.RealPath(object))
 	return
 }
 
@@ -61,7 +47,7 @@ func (l *LocalStore) IsExist(object string) (err error) {
 //@param            IsGzip           是否做gzip压缩，做gzip压缩的话，需要修改oss中对象的响应头，设置gzip响应
 func (l *LocalStore) MoveToStore(local, save string, IsPreview, IsDel bool, IsGzip ...bool) (err error) {
 	var bs []byte
-	save = l.getRealPath(save)
+	save = l.RealPath(save)
 
 	isGzip := false //如果是开启了gzip，则需要设置文件对象的响应头
 	if len(IsGzip) > 0 && IsGzip[0] == true {
@@ -88,7 +74,7 @@ func (l *LocalStore) MoveToStore(local, save string, IsPreview, IsDel bool, IsGz
 		}
 		defer func() {
 			if err == nil {
-				headerFile := save + l.headerExt
+				headerFile := save + l.HeaderExt
 				headerContent := `{"content-encoding": "gzip"}`
 				ioutil.WriteFile(headerFile, []byte(headerContent), os.ModePerm)
 			}
@@ -100,21 +86,15 @@ func (l *LocalStore) MoveToStore(local, save string, IsPreview, IsDel bool, IsGz
 // 获取存储路径(dir)
 // @param           object          文件对象。
 func (l *LocalStore) getStoreDir(object string) (dir string) {
-	slice := strings.Split(object, "")
-	store := l.PrivateDir
-	if l.IsPublic {
-		store = l.PublicDir
-	}
 	dir = "./store/error"
+	slice := strings.Split(object, "")
 	if len(slice) > 5 {
-		dir := strings.Join(slice[:5], "/")
-		dir = filepath.Join(store, dir)
-		os.MkdirAll(dir, os.ModePerm)
+		dir = filepath.Join(l.StoreDir, strings.Join(slice[:5], "/"))
 	}
 	return
 }
 
 // 获取文件的真实存储路径
-func (l *LocalStore) getRealPath(object string) (path string) {
+func (l *LocalStore) RealPath(object string) (path string) {
 	return filepath.Join(l.getStoreDir(object), object)
 }

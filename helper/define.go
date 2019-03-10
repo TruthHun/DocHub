@@ -36,7 +36,7 @@ const (
 	EXT_CATE_OTHER_UMD  = "umd"
 
 	// 根目录
-	RootPath = "./static/virtualroot"
+	RootPath = "./virtualroot"
 )
 
 var (
@@ -56,7 +56,14 @@ var (
 	IsInstalled = false
 
 	//允许上传的文档扩展名
-	AllowedUploadExt = ",doc,docx,rtf,wps,odt,ppt,pptx,pps,ppsx,dps,odp,pot,xls,xlsx,et,ods,txt,pdf,chm,epub,umd,mobi,"
+	//AllowedUploadExt = ",doc,docx,rtf,wps,odt,ppt,pptx,pps,ppsx,dps,odp,pot,xls,xlsx,et,ods,txt,pdf,chm,epub,umd,mobi,"
+	AllowedUploadDocsExt = map[string]bool{
+		".doc": true, ".docx": true, ".rtf": true, ".wps": true, ".odt": true, //word
+		".ppt": true, ".pptx": true, ".pps": true, ".ppsx": true, ".dps": true, ".odp": true, ".pot": true, // power point
+		".xls": true, ".xlsx": true, ".et": true, ".ods": true, // excel
+		".pdf": true,                                                           //pdf
+		".chm": true, ".epub": true, ".umd": true, ".mobi": true, ".txt": true, //other
+	}
 
 	// 图片尺寸
 	CoverWidth   = beego.AppConfig.DefaultInt("cover_width", 140)

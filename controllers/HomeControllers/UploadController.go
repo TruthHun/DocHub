@@ -99,8 +99,8 @@ func (this *UploadController) Post() {
 		defer f.Close()
 		//判断文档格式是否被允许
 
-		ext = strings.TrimLeft(strings.ToLower(filepath.Ext(fh.Filename)), ".")
-		if !strings.Contains(helper.AllowedUploadExt, fmt.Sprintf(",%v,", ext)) {
+		ext = strings.ToLower(filepath.Ext(fh.Filename))
+		if _, ok := helper.AllowedUploadDocsExt[ext]; !ok {
 			this.ResponseJson(false, "您上传的文档格式不正确，请上传正确格式的文档")
 		}
 		//获取文件MD5
