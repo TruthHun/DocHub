@@ -55,7 +55,7 @@ func (l *LocalStore) MoveToStore(local, save string, IsPreview, IsDel bool, IsGz
 	}
 
 	if strings.ToLower(filepath.Ext(local)) == ".svg" && helper.GetConfigBool("depend", "svgo-on") {
-		if err = helper.SvgoCompress(local, local); err != nil {
+		if err = helper.CompressBySVGO(local, local); err != nil {
 			return
 		}
 	}

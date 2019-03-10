@@ -374,7 +374,7 @@ func HandlePdf(uid int, tmpfile string, form FormUpload) (err error) {
 //@param        form        上传表单
 func HandleOffice(uid int, tmpfile string, form FormUpload) (err error) {
 	//转化成PDF文档，转换成功之后，调用pdf文档处理
-	if err = helper.OfficeToPdf(tmpfile); err != nil {
+	if err = helper.OfficeToPDF(tmpfile); err != nil {
 		helper.Logger.Error("office文档（%v）处理失败：%v", tmpfile, err.Error())
 		return err
 	}
@@ -405,7 +405,7 @@ func HandleUnOffice(uid int, tmpfile string, form FormUpload) (err error) {
 	)
 	if form.Ext != ".umd" { //calibre暂时无法转换umd文档
 		//非umd文档，转PDF
-		if pdfFile, err = helper.UnofficeToPdf(tmpfile); err == nil {
+		if pdfFile, err = helper.UnOfficeToPDF(tmpfile); err == nil {
 			//如果转成pdf文档成功，则把原文档移动到OSS存储服务器
 			defer NewOss().MoveToOss(tmpfile, form.Md5+"."+form.Ext, false, true)
 			return HandlePdf(uid, pdfFile, form)

@@ -499,8 +499,8 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 	pdf2svg := strings.TrimSpace(helper.GetConfig("depend", "pdf2svg", "pdf2svg"))
 
 	//compress := beego.AppConfig.DefaultBool("compressSvg", false) //是否压缩svg
-	compress := true                            //强制为true
-	content = helper.ExtractPdfText(file, 1, 5) //提取前5页的PDF文本内容
+	compress := true                                //强制为true
+	content = helper.ExtractTextFromPDF(file, 1, 5) //提取前5页的PDF文本内容
 	watermarkText := NewSys().GetByField("Watermark").Watermark
 	//处理pdf转svg
 	for i := 0; i < totalPage; i++ {
@@ -522,7 +522,7 @@ func Pdf2Svg(file string, totalPage int, md5str string) (err error) {
 		} else {
 			if num == 1 {
 				//封面处理
-				if cover, err := helper.ConvertToJpeg(svgfile, false); err == nil {
+				if cover, err := helper.ConvertToJPEG(svgfile); err == nil {
 					if err = helper.CropImage(cover, helper.CoverWidth, helper.CoverHeight); err != nil {
 						helper.Logger.Error("文档封面裁剪失败：%v", err.Error())
 					}

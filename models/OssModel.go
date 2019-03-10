@@ -135,7 +135,7 @@ func (this *Oss) MoveToOss(local, save string, IsPreview, IsDel bool, IsGzip ...
 	}
 
 	if strings.ToLower(filepath.Ext(local)) == ".svg" && helper.GetConfigBool("depend", "svgo-on") {
-		if errCompress := helper.SvgoCompress(local, local); errCompress != nil {
+		if errCompress := helper.CompressBySVGO(local, local); errCompress != nil {
 			helper.Logger.Error(errCompress.Error())
 		}
 	}

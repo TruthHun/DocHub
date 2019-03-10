@@ -1,6 +1,8 @@
 package helper
 
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/hex"
 	"fmt"
 	"html/template"
@@ -373,85 +375,6 @@ func GetPdfPagesNum(file string) (pages int, err error) {
 	if reader, err := pdf.Open(file); err == nil {
 		pages = reader.NumPage()
 	}
-	return
-}
-
-//将PDF文件转成jpg图片格式。注意：如果pdf只有一页，则文件后缀不会出现"-0.jpg"这种情况，否则会出现"-0.jpg,-1.jpg"等
-//@param            coverFile       imagick可以转化成jpg的封面文件，如svg、pdf文件
-//@param            removeFile      最后是否删除原文件
-//@return           cover           封面文件
-//@return           err             错误
-func ConvertToJpeg(pdffile string, removeFile bool) (cover string, err error) {
-	//convert := beego.AppConfig.DefaultString("imagick", "convert")
-	convert := strings.TrimSpace(GetConfig("depend", "imagemagick", "convert"))
-	cover = pdffile + ".jpg"
-	args := []string{"-density", "150", "-quality", "100", pdffile, cover}
-	if strings.HasPrefix(convert, "sudo") {
-		args = append([]string{strings.TrimPrefix(convert, "sudo")}, args...)
-		convert = "sudo"
-	}
-	cmd := exec.Command(convert, args...)
-	if Debug {
-		beego.Debug("转化封面图片：", cmd.Args)
-	}
-	err = cmd.Run()
-	if err == nil && removeFile {
-		os.Remove(pdffile)
-	}
-	return cover, err
-}
-
-//office文档转pdf，返回转化后的文档路径和错误
-func OfficeToPdf(office string) (err error) {
-	soffice := strings.TrimSpace(GetConfig("depend", "soffice", "soffice"))
-	dirSlice := strings.Split(office, "/")
-	dir := strings.Join(dirSlice[0:(len(dirSlice)-1)], "/")
-	args := []string{"--headless", "--invisible", "--convert-to", "pdf", office, "--outdir", dir}
-	if strings.HasPrefix(soffice, "sudo") {
-		args = append([]string{strings.TrimPrefix(soffice, "sudo")}, args...)
-		soffice = "sudo"
-	}
-	cmd := exec.Command(soffice, args...)
-	if Debug {
-		Logger.Debug("office 文档转 PDF:%v", cmd.Args)
-	}
-	go func() { //超时关闭程序
-		expire := GetConfigInt64("depend", "soffice-expire")
-		if expire <= 0 {
-			expire = 1800
-		}
-		time.Sleep(time.Duration(expire) * time.Second)
-		cmd.Process.Kill()
-	}()
-	err = cmd.Run()
-	return
-}
-
-//非office文档(.txt,.mobi,.epub)转pdf文档
-func UnofficeToPdf(file string) (pdfFile string, err error) {
-	//calibre := beego.AppConfig.DefaultString("calibre", "ebook-convert")
-	calibre := strings.TrimSpace(GetConfig("depend", "calibre", "ebook-convert"))
-	pdfFile = filepath.Dir(file) + "/" + strings.TrimSuffix(filepath.Base(file), filepath.Ext(file)) + ".pdf"
-	args := []string{
-		file,
-		pdfFile,
-		"--paper-size", "a4",
-		"--pdf-default-font-size", "16",
-		"--pdf-page-margin-bottom", "36",
-		"--pdf-page-margin-left", "36",
-		"--pdf-page-margin-right", "36",
-		"--pdf-page-margin-top", "36",
-	}
-	cmd := exec.Command(calibre, args...)
-	if strings.HasPrefix(calibre, "sudo") {
-		calibre = strings.TrimPrefix(calibre, "sudo")
-		args = append([]string{calibre}, args...)
-		cmd = exec.Command("sudo", args...)
-	}
-	if Debug {
-		beego.Debug("非Office文档转成PDF：", cmd.Args)
-	}
-	err = cmd.Run()
 	return
 }
 
@@ -839,35 +762,6 @@ func UpperFirst(str string) string {
 	return str
 }
 
-//获取PDF中指定页面的文本内容
-//@param			file		PDF文件
-//@param			from		起始页
-//@param			to			截止页
-func ExtractPdfText(file string, from, to int) (content string) {
-	//pdftotext := beego.AppConfig.DefaultString("pdftotext", "pdftotext")
-	pdftotext := strings.TrimSpace(GetConfig("depend", "pdftotext"))
-	textfile := file + ".txt"
-	defer os.Remove(textfile)
-	args := []string{"-f", strconv.Itoa(from), "-l", strconv.Itoa(to), file, textfile}
-	if strings.HasPrefix(pdftotext, "sudo") {
-		args = append([]string{strings.TrimPrefix(pdftotext, "sudo")}, args...)
-		pdftotext = "sudo"
-	}
-	if err := exec.Command(pdftotext, args...).Run(); err != nil {
-		Logger.Error(err.Error())
-	} else {
-		if b, err := ioutil.ReadFile(textfile); err == nil {
-			content = string(b)
-			content = strings.Replace(content, "\t", " ", -1)
-			content = strings.Replace(content, "\n", " ", -1)
-			content = strings.Replace(content, "\r", " ", -1)
-		} else {
-			Logger.Error(err.Error())
-		}
-	}
-	return
-}
-
 //页数处理，处理页数为0或者页数为空的时候的显示
 func HandlePageNum(PageNum interface{}) string {
 	pn := strings.TrimSpace(fmt.Sprintf("%v", PageNum))
@@ -881,7 +775,7 @@ func HandlePageNum(PageNum interface{}) string {
 //@param            input           需要压缩的原文件
 //@param            output          压缩后的文件路径
 //@param            err             压缩错误
-func SvgoCompress(input, output string) (err error) {
+func CompressBySVGO(input, output string) (err error) {
 	svgo := strings.TrimSpace(GetConfig("depend", "svgo", "svgo"))
 	args := []string{input, "-o", output}
 	if strings.HasPrefix(svgo, "sudo") {
@@ -889,6 +783,22 @@ func SvgoCompress(input, output string) (err error) {
 		svgo = "sudo"
 	}
 	return exec.Command(svgo, args...).Run()
+}
+
+// 使用GZIP压缩文件
+func CompressByGzip(file string) (err error) {
+	var bs []byte
+	bs, err = ioutil.ReadFile(file)
+	if err != nil {
+		return
+	}
+	var by bytes.Buffer
+	w := gzip.NewWriter(&by)
+	defer w.Close()
+	w.Write(bs)
+	w.Flush()
+	err = ioutil.WriteFile(file, by.Bytes(), 0777)
+	return
 }
 
 // 图片缩放居中裁剪
