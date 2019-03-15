@@ -25,34 +25,25 @@ import (
 	oss2 "github.com/denverdino/aliyungo/oss"
 )
 
-//OSS配置【这个不再作为数据库表，直接在oss.conf文件中进行配置】
 type Oss struct {
-	EndpointInternal string //内网的endpoint
-	EndpointOuter    string //外网的endpoint
-	AccessKeyId      string //key
-	AccessKeySecret  string //secret
-	BucketPreview    string //供文档预览的bucket
-	BucketStore      string //供文档存储的bucket
-	IsInternal       bool   //是否内网，内网则启用内网endpoint，否则启用外网endpoint
-	PreviewUrl       string //预览链接
-	DownloadUrl      string //下载链接
-	UrlExpire        int    //签名链接默认有效期时间，单位为秒
+	AccessKeyId     string //key
+	AccessKeySecret string //secret
+	Endpoint        string
+	Bucket          string
+	Domain          string //私有bucket
 }
 
 //获取oss的配置
 //@return               oss             Oss配置信息
 func NewOss() (oss *Oss) {
 	oss = &Oss{
-		IsInternal:       helper.GetConfigBool("oss", "is_internal"),
-		EndpointInternal: helper.GetConfig("oss", "endpoint_internal"),
-		EndpointOuter:    helper.GetConfig("oss", "endpoint_outer"),
-		AccessKeyId:      helper.GetConfig("oss", "access_key_id"),
-		AccessKeySecret:  helper.GetConfig("oss", "access_key_secret"),
-		BucketPreview:    helper.GetConfig("oss", "bucket_preview"),
-		BucketStore:      helper.GetConfig("oss", "bucket_store"),
-		UrlExpire:        int(helper.GetConfigInt64("oss", "url_expire")),
-		PreviewUrl:       strings.TrimRight(helper.GetConfig("oss", "preview_url"), "/") + "/",
-		DownloadUrl:      strings.TrimRight(helper.GetConfig("oss", "download_url"), "/") + "/",
+		AccessKeyId:     helper.GetConfig("oss", "access_key_id"),
+		AccessKeySecret: helper.GetConfig("oss", "access_key_secret"),
+		Endpoint:        helper.GetConfig("oss", "endpoint"),
+		PublicBucket:    helper.GetConfig("oss", "public_bucket"),
+		PrivateBucket:   helper.GetConfig("oss", "private_bucket"),
+		PublicDomain:    strings.TrimRight(helper.GetConfig("oss", "public_domain"), "/") + "/",
+		PrivateDomain:   strings.TrimRight(helper.GetConfig("oss", "private_domain"), "/") + "/",
 	}
 	return oss
 }
@@ -64,11 +55,6 @@ func (this *Oss) NewBucket(IsPreview bool) (bucket *oss.Bucket, err error) {
 		client   *oss.Client
 		endpoint string
 	)
-	if this.IsInternal {
-		endpoint = this.EndpointInternal
-	} else {
-		endpoint = this.EndpointOuter
-	}
 	if client, err = oss.New(endpoint, this.AccessKeyId, this.AccessKeySecret); err == nil {
 		if IsPreview {
 			bucket, err = client.Bucket(this.BucketPreview)
