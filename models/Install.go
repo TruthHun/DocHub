@@ -691,7 +691,7 @@ func installCfg() {
 			Description: "日志保留时长，至少一天",
 			Key:         "max_days",
 			Value:       "7",
-			InputType:   INPUT_NUMBER,
+			InputType:   InputNumber,
 			Category:    cateLogs,
 		},
 		Config{
@@ -725,7 +725,7 @@ func installCfg() {
 			Description: "转换office文档的超时时间，避免转化失败还占用服务器资源，默认1800秒",
 			Key:         "soffice-expire",
 			Value:       "1800",
-			InputType:   INPUT_NUMBER,
+			InputType:   InputNumber,
 			Category:    cateDepend,
 		},
 		Config{
@@ -761,7 +761,7 @@ func installCfg() {
 			Description: "是否启用svgo，默认为false",
 			Key:         "svgo-on",
 			Value:       "false",
-			InputType:   INPUT_BOOL,
+			InputType:   InputBool,
 			Category:    cateDepend,
 		},
 	}
@@ -774,7 +774,7 @@ func installCfg() {
 			Description: "是否开启ElasticSearch作为全文搜索引擎",
 			Key:         "on",
 			Value:       "false",
-			InputType:   INPUT_BOOL,
+			InputType:   InputBool,
 			Category:    cateES,
 		},
 		Config{
@@ -793,92 +793,523 @@ func installCfg() {
 		},
 	}
 
-	//oss
-	storeOss := string(StoreOss)
+	// 阿里云
+	cateOss := string(StoreOss)
 	cfgOss := []Config{
 		Config{
-			Title:       "AccessKeyId",
-			Description: "",
-			Key:         "access_key_id",
+			Title:       "AccessKey",
+			Description: "阿里云 AccessKey",
+			Key:         "access-key",
 			Value:       "",
-			Category:    storeOss,
+			InputType:   InputText,
+			Category:    cateOss,
 		},
 		Config{
-			Title:       "AccessKeySecret",
-			Description: "",
-			Key:         "access_key_secret",
+			Title:       "SecretKey",
+			Description: "阿里云 SecretKey",
+			Key:         "secret-key",
 			Value:       "",
-			Category:    storeOss,
+			InputType:   InputText,
+			Category:    cateOss,
 		},
 		Config{
-			Title:       "是否内网",
-			Description: "当前环境是否内网，内网则使用内网endpoint，否则使用外网endpoint",
-			Key:         "is_internal",
-			Value:       "false",
-			Category:    storeOss,
-			InputType:   INPUT_BOOL,
-		},
-		Config{
-			Title:       "内网Endpoint",
-			Description: "",
-			Key:         "endpoint_internal",
+			Title:       "Endpoint",
+			Description: "阿里云 OSS endpoint，如果与服务器同属于同一内网，建议填内网 endpoint",
+			Key:         "endpoint",
 			Value:       "",
-			Category:    storeOss,
-		},
-		Config{
-			Title:       "外网Endpoint",
-			Description: "",
-			Key:         "endpoint_outer",
-			Value:       "",
-			Category:    storeOss,
+			InputType:   InputText,
+			Category:    cateOss,
 		},
 		Config{
 			Title:       "公共读Bucket",
-			Description: "提供图片和文档预览，如：dochub-public",
-			Key:         "bucket_preview",
+			Description: "阿里云 OSS 具有公共读权限的 Bucket",
+			Key:         "public-bucket",
 			Value:       "",
-			Category:    storeOss,
+			InputType:   InputText,
+			Category:    cateOss,
 		},
+		Config{
+			Title:       "公共读Bucket域名",
+			Description: "阿里云 OSS 具有公共读权限的 Bucket 所绑定的域名",
+			Key:         "public-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateOss,
+		},
+
 		Config{
 			Title:       "私有Bucket",
-			Description: "存储文档，无法直接访问，如：dochub-private",
-			Key:         "bucket_store",
+			Description: "阿里云 OSS 创建的私有 Bucket",
+			Key:         "private-bucket",
 			Value:       "",
-			Category:    storeOss,
+			InputType:   InputText,
+			Category:    cateOss,
 		},
 		Config{
-			Title:       "预览链接",
-			Description: "如：https://dochub-public.oss-cn-hongkong.aliyuncs.com",
-			Key:         "preview_url",
+			Title:       "私有Bucket域名",
+			Description: "阿里云 OSS 创建的私有 Bucket 所绑定的域名",
+			Key:         "private-bucket-domain",
 			Value:       "",
-			Category:    storeOss,
+			InputType:   InputText,
+			Category:    cateOss,
 		},
 		Config{
-			Title:       "下载链接",
-			Description: "如：https://dochub-private.oss-cn-hongkong.aliyuncs.com",
-			Key:         "download_url",
-			Value:       "",
-			Category:    storeOss,
-		},
-		Config{
-			Title:       "下载链接过期时长(秒)",
-			Description: "",
-			Key:         "url_expire",
-			Value:       "600",
-			InputType:   INPUT_NUMBER,
-			Category:    storeOss,
+			Title:       "过期时间",
+			Description: "文档下载签名链接有效时长(秒)",
+			Key:         "expire",
+			Value:       "3600",
+			InputType:   InputNumber,
+			Category:    cateOss,
 		},
 	}
 
+	// 百度云
+	cateBos := string(StoreOss)
+	cfgBos := []Config{
+		Config{
+			Title:       "AccessKey",
+			Description: "百度云 AccessKey",
+			Key:         "access-key",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateBos,
+		},
+		Config{
+			Title:       "SecretKey",
+			Description: "百度云 SecretKey",
+			Key:         "secret-key",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateBos,
+		},
+		Config{
+			Title:       "Endpoint",
+			Description: "百度云 BOS endpoint",
+			Key:         "endpoint",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateBos,
+		},
+		Config{
+			Title:       "公共读Bucket",
+			Description: "百度云 BOS 具有公共读权限的 Bucket",
+			Key:         "public-bucket",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateBos,
+		},
+		Config{
+			Title:       "公共读Bucket域名",
+			Description: "百度云 BOS 具有公共读权限的 Bucket 所绑定的域名",
+			Key:         "public-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateBos,
+		},
+
+		Config{
+			Title:       "私有Bucket",
+			Description: "百度云 BOS 创建的私有 Bucket",
+			Key:         "private-bucket",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateBos,
+		},
+		Config{
+			Title:       "私有Bucket域名",
+			Description: "百度云 BOS 创建的私有 Bucket 所绑定的域名",
+			Key:         "private-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateBos,
+		},
+		Config{
+			Title:       "过期时间",
+			Description: "文档下载签名链接有效时长(秒)",
+			Key:         "expire",
+			Value:       "3600",
+			InputType:   InputNumber,
+			Category:    cateBos,
+		},
+	}
+
+	// 腾讯云
+	cateCos := string(StoreOss)
+	cfgCos := []Config{
+		Config{
+			Title:       "AccessKey",
+			Description: "AccessKey",
+			Key:         "access-key",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateCos,
+		},
+		Config{
+			Title:       "SecretKey",
+			Description: "SecretKey",
+			Key:         "secret-key",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateCos,
+		},
+		Config{
+			Title:       "AppID",
+			Description: "腾讯云 COS AppID",
+			Key:         "app-id",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateCos,
+		},
+		Config{
+			Title:       "区域",
+			Description: "COS 区域，即 Region",
+			Key:         "region",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateCos,
+		},
+		Config{
+			Title:       "公共读Bucket",
+			Description: "具有公共读权限的 Bucket",
+			Key:         "public-bucket",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateCos,
+		},
+		Config{
+			Title:       "公共读Bucket域名",
+			Description: "具有公共读权限的 Bucket 所绑定的域名",
+			Key:         "public-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateCos,
+		},
+
+		Config{
+			Title:       "私有Bucket",
+			Description: "私有 Bucket",
+			Key:         "private-bucket",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateCos,
+		},
+		Config{
+			Title:       "私有Bucket域名",
+			Description: "私有 Bucket 所绑定的域名",
+			Key:         "private-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateCos,
+		},
+		Config{
+			Title:       "过期时间",
+			Description: "文档下载签名链接有效时长(秒)",
+			Key:         "expire",
+			Value:       "3600",
+			InputType:   InputNumber,
+			Category:    cateCos,
+		},
+	}
+
+	// 华为云
+	cateObs := string(StoreObs)
+	cfgObs := []Config{
+		Config{
+			Title:       "AccessKey",
+			Description: "AccessKey",
+			Key:         "access-key",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateObs,
+		},
+		Config{
+			Title:       "SecretKey",
+			Description: "SecretKey",
+			Key:         "secret-key",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateObs,
+		},
+		Config{
+			Title:       "Endpoint",
+			Description: "endpoint",
+			Key:         "endpoint",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateObs,
+		},
+		Config{
+			Title:       "公共读Bucket",
+			Description: "具有公共读权限的 Bucket",
+			Key:         "public-bucket",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateObs,
+		},
+		Config{
+			Title:       "公共读Bucket域名",
+			Description: "具有公共读权限的 Bucket 所绑定的域名",
+			Key:         "public-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateObs,
+		},
+
+		Config{
+			Title:       "私有Bucket",
+			Description: "私有 Bucket",
+			Key:         "private-bucket",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateObs,
+		},
+		Config{
+			Title:       "私有Bucket域名",
+			Description: "私有 Bucket 所绑定的域名",
+			Key:         "private-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateObs,
+		},
+		Config{
+			Title:       "过期时间",
+			Description: "文档下载签名链接有效时长(秒)",
+			Key:         "expire",
+			Value:       "3600",
+			InputType:   InputNumber,
+			Category:    cateObs,
+		},
+	}
+
+	// Minio
+	cateMinio := string(StoreMinio)
+	cfgMinio := []Config{
+		Config{
+			Title:       "AccessKey",
+			Description: "Minio AccessKey",
+			Key:         "access-key",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateMinio,
+		},
+		Config{
+			Title:       "SecretKey",
+			Description: "Minio SecretKey",
+			Key:         "secret-key",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateMinio,
+		},
+		Config{
+			Title:       "Endpoint",
+			Description: "Minio endpoint",
+			Key:         "endpoint",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateMinio,
+		},
+		Config{
+			Title:       "公共读Bucket",
+			Description: "具有公共读权限的 Bucket",
+			Key:         "public-bucket",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateMinio,
+		},
+		Config{
+			Title:       "公共读Bucket域名",
+			Description: "具有公共读权限的 Bucket 所绑定的域名",
+			Key:         "public-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateMinio,
+		},
+
+		Config{
+			Title:       "私有Bucket",
+			Description: "私有Bucket",
+			Key:         "private-bucket",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateMinio,
+		},
+		Config{
+			Title:       "私有Bucket域名",
+			Description: "私有 Bucket 所绑定的域名",
+			Key:         "private-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateMinio,
+		},
+		Config{
+			Title:       "过期时间",
+			Description: "文档下载签名链接有效时长(秒)",
+			Key:         "expire",
+			Value:       "3600",
+			InputType:   InputNumber,
+			Category:    cateMinio,
+		},
+	}
+
+	// Qiniu
+	cateQiniu := string(StoreQiniu)
+	cfgQiniu := []Config{
+		Config{
+			Title:       "AccessKey",
+			Description: "AccessKey",
+			Key:         "access-key",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateQiniu,
+		},
+		Config{
+			Title:       "SecretKey",
+			Description: "SecretKey",
+			Key:         "secret-key",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateQiniu,
+		},
+		Config{
+			Title:       "Endpoint",
+			Description: "endpoint",
+			Key:         "endpoint",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateQiniu,
+		},
+		Config{
+			Title:       "公共读Bucket",
+			Description: "具有公共读权限的 Bucket",
+			Key:         "public-bucket",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateQiniu,
+		},
+		Config{
+			Title:       "公共读Bucket域名",
+			Description: "具有公共读权限的 Bucket 所绑定的域名",
+			Key:         "public-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateQiniu,
+		},
+
+		Config{
+			Title:       "私有Bucket",
+			Description: "私有Bucket",
+			Key:         "private-bucket",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateQiniu,
+		},
+		Config{
+			Title:       "私有Bucket域名",
+			Description: "私有 Bucket 所绑定的域名",
+			Key:         "private-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateQiniu,
+		},
+		Config{
+			Title:       "过期时间",
+			Description: "文档下载签名链接有效时长(秒)",
+			Key:         "expire",
+			Value:       "3600",
+			InputType:   InputNumber,
+			Category:    cateQiniu,
+		},
+	}
+
+	// 又拍云
+	cateUpyun := string(StoreUpyun)
+	cfgUpyun := []Config{
+		Config{
+			Title:       "Operator",
+			Description: "又拍云操作员",
+			Key:         "operator",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateUpyun,
+		},
+		Config{
+			Title:       "Password",
+			Description: "又拍云操作员密码",
+			Key:         "password",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateUpyun,
+		},
+		Config{
+			Title:       "公共读Bucket",
+			Description: "具有公共读权限的 Bucket",
+			Key:         "public-bucket",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateUpyun,
+		},
+		Config{
+			Title:       "公共读Bucket域名",
+			Description: "具有公共读权限的 Bucket 所绑定的域名",
+			Key:         "public-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateUpyun,
+		},
+
+		Config{
+			Title:       "私有Bucket",
+			Description: "私有Bucket，需要URL签名才能访问",
+			Key:         "private-bucket",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateUpyun,
+		},
+		Config{
+			Title:       "私有Bucket Secret",
+			Description: "即 访问控制 的 Token 防盗链密钥",
+			Key:         "secret",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateUpyun,
+		},
+		Config{
+			Title:       "私有Bucket域名",
+			Description: "私有 Bucket 所绑定的域名",
+			Key:         "private-bucket-domain",
+			Value:       "",
+			InputType:   InputText,
+			Category:    cateUpyun,
+		},
+		Config{
+			Title:       "过期时间",
+			Description: "文档下载签名链接有效时长(秒)",
+			Key:         "expire",
+			Value:       "3600",
+			InputType:   InputNumber,
+			Category:    cateUpyun,
+		},
+	}
+
+	//[upyun]
+	//	bucket          =
+	//	operator        =
+	//	password        =
+
 	configs = append(configs, cfgEmail...)
-	configs = append(configs, cfgOss...)
 	configs = append(configs, cfgLogs...)
 	configs = append(configs, cfgDepend...)
 	configs = append(configs, cfgES...)
-	//注意：这里使用逐项写入，以便有升级的时候，存在了的配置项不再写入，不存在的则写入
-	//O.InsertMulti(len(configs), &configs)
+	configs = append(configs, cfgOss...)
+	configs = append(configs, cfgBos...)
+	configs = append(configs, cfgCos...)
+	configs = append(configs, cfgObs...)
+	configs = append(configs, cfgMinio...)
+	configs = append(configs, cfgQiniu...)
+
 	o := orm.NewOrm()
 	for _, cfg := range configs {
+		// 逐条写入数据库
 		o.Insert(&cfg)
 	}
 	//全局变量赋值
