@@ -1291,11 +1291,6 @@ func installCfg() {
 		},
 	}
 
-	//[upyun]
-	//	bucket          =
-	//	operator        =
-	//	password        =
-
 	configs = append(configs, cfgEmail...)
 	configs = append(configs, cfgLogs...)
 	configs = append(configs, cfgDepend...)
@@ -1306,6 +1301,7 @@ func installCfg() {
 	configs = append(configs, cfgObs...)
 	configs = append(configs, cfgMinio...)
 	configs = append(configs, cfgQiniu...)
+	configs = append(configs, cfgUpyun...)
 
 	o := orm.NewOrm()
 	for _, cfg := range configs {
