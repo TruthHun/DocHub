@@ -802,3 +802,22 @@ func CropImage(file string, width, height int) (err error) {
 	}
 	return imaging.Save(img, file)
 }
+
+// 删除切片中的指定key，并返回
+func DeleteSlice(slice []string, keys ...string) []string {
+	if len(keys) == 0 {
+		return slice
+	}
+
+	for _, key := range keys {
+		var tmpSlice []string
+		for _, item := range slice {
+			if item != key {
+				tmpSlice = append(tmpSlice, item)
+			}
+		}
+		slice = tmpSlice
+	}
+
+	return slice
+}

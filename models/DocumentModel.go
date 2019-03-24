@@ -146,7 +146,7 @@ func (this *Document) GetById(id interface{}) (params orm.Params, rows int64, er
 	var data []orm.Params
 	tables := []string{GetTableDocumentInfo() + " info", GetTableDocument() + " doc", GetTableDocumentStore() + " ds", GetTableUser() + " u"}
 	fields := map[string][]string{
-		"ds":   GetFields(NewDocumentStore()),
+		"ds":   helper.DeleteSlice(GetFields(NewDocumentStore()), "Id"),
 		"info": GetFields(NewDocumentInfo()),
 		"u":    {"Username", "Id Uid"},
 		"doc":  GetFields(NewDocument()),
@@ -155,6 +155,9 @@ func (this *Document) GetById(id interface{}) (params orm.Params, rows int64, er
 		{"ds.Id": "info.DsId"},
 		{"doc.Id": "info.Id"},
 		{"u.Id": "info.Uid"},
+	}
+	if helper.Debug {
+		helper.Logger.Debug("查询字段：%+v", fields)
 	}
 	if sql, err := LeftJoinSqlBuild(tables, on, fields, 1, 1, nil, nil, "info.Id=?"); err == nil {
 		if rows, err = orm.NewOrm().Raw(sql, id).Values(&data); len(data) > 0 {
