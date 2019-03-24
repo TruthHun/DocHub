@@ -36,8 +36,7 @@ const (
 	EXT_CATE_OTHER_CHM  = "chm"
 	EXT_CATE_OTHER_UMD  = "umd"
 
-	// 根目录
-	RootPath = "./virtualroot"
+	RootPath = "./virtualroot" // 虚拟根目录
 )
 
 type ConfigCate string
@@ -78,8 +77,8 @@ var (
 )
 
 var (
-	HeaderSVG  = map[string]string{"Content-Type": ""}
 	HeaderGzip = map[string]string{"Content-Encoding": "gzip"}
+	HeaderSVG  = map[string]string{"Content-Type": "image/svg+xml"}
 )
 
 func HeaderDisposition(name string) map[string]string {

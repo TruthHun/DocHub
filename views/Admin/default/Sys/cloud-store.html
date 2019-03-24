@@ -1,0 +1,44 @@
+    <div class="row">
+            <h1 class="page-header">系统设置</h1>
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                    <ul class="nav nav-tabs" style="margin-bottom: 15px;">
+                        <li><a href="https://www.bookstack.cn/read/dochub/cloud-store.md" target="_blank" class="text-danger">配置帮助</a></li>
+                        <li {{if eq .Tab "cs-oss"}}class="active"{{end}}><a href="/admin/cloud-store?tab=cs-oss">OSS(阿里云)</a></li>
+                        <li {{if eq .Tab "cs-minio"}}class="active"{{end}}><a href="/admin/cloud-store?tab=cs-minio">Minio(本地云存储)</a></li>
+                        <li {{if eq .Tab "cs-cos"}}class="active"{{end}}><a href="/admin/cloud-store?tab=cs-cos">COS(腾讯云)</a></li>
+                        <li {{if eq .Tab "cs-bos"}}class="active"{{end}}><a href="/admin/cloud-store?tab=cs-bos">BOS(百度云)</a></li>
+                        <li {{if eq .Tab "cs-obs"}}class="active"{{end}}><a href="/admin/cloud-store?tab=cs-obs">OBS(华为云)</a></li>
+                        <li {{if eq .Tab "cs-qiniu"}}class="active"{{end}}><a href="/admin/cloud-store?tab=cs-qiniu">Qiniu(七牛云)</a></li>
+                        <li {{if eq .Tab "cs-upyun"}}class="active"{{end}}><a href="/admin/cloud-store?tab=cs-upyun">UpYun(又拍云)</a></li>
+                    </ul>
+                    <form action="" class="wenku-ajax-form" data-redirect="" method="post">
+                        {{range .Config}}
+                            {{if eq $.Tab .Category}}
+                                <div class="form-group">
+                                    <label >{{.Title}}</label>
+                                    {{if eq .InputType "bool"}}
+                                    <div>
+                                        <label style="font-weight: normal;margin-right: 20px;"><input type="radio" name="{{.Key}}" value="1" {{if eq .Value "1"}}checked{{end}}> 是 </label>
+                                        <label style="font-weight: normal"><input type="radio" name="{{.Key}}" value="0" {{if eq .Value "1"}}{{else}}checked{{end}}> 否</label>
+                                    </div>
+                                    {{else if eq .InputType "number"}}
+                                        <input type="number" class="form-control" name="{{.Key}}" placeholder="" value="{{.Value}}" />
+                                    {{else if eq .InputType "textarea"}}
+                                    <textarea name="{{.Key}}" class="form-control" rows="3">{{.Value}}</textarea>
+                                    {{else}}
+                                        <input type="text" class="form-control" name="{{.Key}}" placeholder="" value="{{.Value}}" />
+                                    {{end}}
+                                    <div class="help-block">{{.Description}}</div>
+                                </div>
+                            {{end}}
+                        {{end}}
+                            <input type="hidden" name="Tab" value="{{.Tab}}">
+                        <input type="submit" class="btn btn-success" value="提交更改"/>
+                        <div class="help-block"> <span class="text-danger">每次提交配置变更，程序自动做连通测试。如果连通成功，则配置更改成功，否则更改失败，保留原有配置项.</span> </div>
+                    </form>
+                </div>
+            </div>
+
+    </div>

@@ -6,7 +6,6 @@
                     <ul class="nav nav-tabs" style="margin-bottom: 15px;">
                         <li {{if eq .Tab "default"}}class="active"{{end}}><a href="/admin/sys">网站设置</a></li>
                         <li {{if eq .Tab "email"}}class="active"{{end}}><a href="/admin/sys?tab=email">邮箱设置</a></li>
-                        <li {{if or (eq .Tab "oss") (eq .Tab "bos") (eq .Tab "local") (eq .Tab "qiniu") (eq .Tab "cos")}}class="active"{{end}}><a href="/admin/sys?tab=oss">存储设置</a></li>
                         <li {{if eq .Tab "depend"}}class="active"{{end}}><a href="/admin/sys?tab=depend">依赖设置</a></li>
                         <li {{if eq .Tab "logs"}}class="active"{{end}}><a href="/admin/sys?tab=logs">日志设置</a></li>
                         <li {{if eq .Tab "elasticsearch"}}class="active"{{end}}><a href="/admin/sys?tab=elasticsearch">全文搜索设置</a></li>
@@ -304,8 +303,7 @@
                             {{end}}
                             <input type="submit" class="btn btn-success" value="提交更改"/>
                             {{if eq $.Tab "email"}}
-                                <a href="/admin/test/send-email" class="btn btn-default wenku-ajax-get">测试邮件发送</a>
-                                <div class="help-block text-danger"><span class="text-danger">请先保存更改再进行测试</span> </div>
+                                <div class="help-block text-danger"><span class="text-danger">每次变更邮箱配置，程序均自动发送一封测试邮件到测试邮箱以验证配置</span> </div>
                             {{end}}
                             {{if eq $.Tab "oss"}}
                                 <a href="/admin/test/ping-oss" class="btn btn-default wenku-ajax-get">测试OSS连通</a>

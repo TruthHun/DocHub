@@ -18,7 +18,7 @@ func install() {
 	installSys()
 	installCfg()
 
-	NewSys().UpdateGlobal() //更新系统配置的全局变量
+	NewSys().UpdateGlobalConfig() //更新系统配置的全局变量
 }
 
 //安装管理员初始数据
@@ -830,7 +830,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "公共读Bucket域名",
-			Description: "阿里云 OSS 具有公共读权限的 Bucket 所绑定的域名",
+			Description: "阿里云 OSS 具有公共读权限的 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "public-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -847,7 +847,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "私有Bucket域名",
-			Description: "阿里云 OSS 创建的私有 Bucket 所绑定的域名",
+			Description: "阿里云 OSS 创建的私有 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "private-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -864,7 +864,7 @@ func installCfg() {
 	}
 
 	// 百度云
-	cateBos := string(StoreOss)
+	cateBos := string(StoreBos)
 	cfgBos := []Config{
 		Config{
 			Title:       "AccessKey",
@@ -900,7 +900,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "公共读Bucket域名",
-			Description: "百度云 BOS 具有公共读权限的 Bucket 所绑定的域名",
+			Description: "百度云 BOS 具有公共读权限的 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "public-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -917,7 +917,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "私有Bucket域名",
-			Description: "百度云 BOS 创建的私有 Bucket 所绑定的域名",
+			Description: "百度云 BOS 创建的私有 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "private-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -934,7 +934,7 @@ func installCfg() {
 	}
 
 	// 腾讯云
-	cateCos := string(StoreOss)
+	cateCos := string(StoreCos)
 	cfgCos := []Config{
 		Config{
 			Title:       "AccessKey",
@@ -978,7 +978,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "公共读Bucket域名",
-			Description: "具有公共读权限的 Bucket 所绑定的域名",
+			Description: "具有公共读权限的 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "public-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -995,7 +995,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "私有Bucket域名",
-			Description: "私有 Bucket 所绑定的域名",
+			Description: "私有 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "private-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -1048,7 +1048,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "公共读Bucket域名",
-			Description: "具有公共读权限的 Bucket 所绑定的域名",
+			Description: "具有公共读权限的 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "public-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -1065,7 +1065,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "私有Bucket域名",
-			Description: "私有 Bucket 所绑定的域名",
+			Description: "私有 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "private-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -1118,7 +1118,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "公共读Bucket域名",
-			Description: "具有公共读权限的 Bucket 所绑定的域名",
+			Description: "具有公共读权限的 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "public-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -1136,7 +1136,7 @@ func installCfg() {
 		Config{
 			Title:       "私有Bucket域名",
 			Description: "私有 Bucket 所绑定的域名",
-			Key:         "private-bucket-domain",
+			Key:         "private-bucket-domain，带 http:// 或者 https://",
 			Value:       "",
 			InputType:   InputText,
 			Category:    cateMinio,
@@ -1171,14 +1171,6 @@ func installCfg() {
 			Category:    cateQiniu,
 		},
 		Config{
-			Title:       "Endpoint",
-			Description: "endpoint",
-			Key:         "endpoint",
-			Value:       "",
-			InputType:   InputText,
-			Category:    cateQiniu,
-		},
-		Config{
 			Title:       "公共读Bucket",
 			Description: "具有公共读权限的 Bucket",
 			Key:         "public-bucket",
@@ -1188,7 +1180,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "公共读Bucket域名",
-			Description: "具有公共读权限的 Bucket 所绑定的域名",
+			Description: "具有公共读权限的 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "public-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -1205,7 +1197,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "私有Bucket域名",
-			Description: "私有 Bucket 所绑定的域名",
+			Description: "私有 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "private-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -1250,7 +1242,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "公共读Bucket域名",
-			Description: "具有公共读权限的 Bucket 所绑定的域名",
+			Description: "具有公共读权限的 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "public-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -1275,7 +1267,7 @@ func installCfg() {
 		},
 		Config{
 			Title:       "私有Bucket域名",
-			Description: "私有 Bucket 所绑定的域名",
+			Description: "私有 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Key:         "private-bucket-domain",
 			Value:       "",
 			InputType:   InputText,
@@ -1309,5 +1301,5 @@ func installCfg() {
 		o.Insert(&cfg)
 	}
 	//全局变量赋值
-	NewConfig().UpdateGlobal() //配置文件全局变量更新
+	NewConfig().UpdateGlobalConfig() //配置文件全局变量更新
 }

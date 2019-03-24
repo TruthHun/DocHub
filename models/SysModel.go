@@ -63,7 +63,7 @@ func (this *Sys) Get() (sys Sys, err error) {
 //更新系统全局变量
 //@return           sys         返回的系统信息
 //@return           err         错误
-func (this *Sys) UpdateGlobal() {
+func (this *Sys) UpdateGlobalConfig() {
 	GlobalSys, _ = this.Get()
 }
 

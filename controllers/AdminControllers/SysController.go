@@ -43,7 +43,7 @@ func (this *SysController) Get() {
 			var sys models.Sys
 			this.ParseForm(&sys)
 			if i, err := orm.NewOrm().Update(&sys); i > 0 && err == nil {
-				models.NewSys().UpdateGlobal() //更新全局变量
+				models.NewSys().UpdateGlobalConfig() //更新全局变量
 			} else {
 				if err != nil {
 					helper.Logger.Error(err.Error())
@@ -56,7 +56,7 @@ func (this *SysController) Get() {
 				modelCfg.UpdateByKey(helper.ConfigCate(tab), k, v[0])
 			}
 			//最后更新全局配置
-			modelCfg.UpdateGlobal()
+			modelCfg.UpdateGlobalConfig()
 			if tab == models.ConfigCateElasticSearch {
 				if err := models.NewElasticSearchClient().Init(); err != nil {
 					this.ResponseJson(false, "ElasticSearch初始化失败："+err.Error())
@@ -197,4 +197,31 @@ func (this *SysController) TestOSS() {
 	private.DeleteObject(testFile)
 
 	this.Response(map[string]interface{}{"status": 1, "msg": "OSS连通成功"})
+}
+
+// 云存储配置
+func (this *SysController) CloudStore() {
+	tab := this.GetString("tab", "cs-oss")
+	modelConfig := models.NewConfig()
+	this.Data["Config"] = modelConfig.GetByCate(helper.ConfigCate(tab))
+	this.Data["Tab"] = tab
+	this.Data["IsCloudStore"] = true
+	this.TplName = "cloud-store.html"
+}
+
+func (this *SysController) SetCloudStore() {
+	cate := helper.ConfigCate(this.GetString("tab", "cs-oss"))
+	if cate == "" {
+		this.ResponseJson(false, "参数错误：存储类别不正确")
+	}
+	modelConfig := models.NewConfig()
+	form, err := modelConfig.ParseForm(cate, this.Ctx.Request.Form)
+	if err != nil {
+		this.ResponseJson(false, err.Error())
+	}
+	err = modelConfig.UpdateCloudStore(cate, form)
+	if err != nil {
+		this.ResponseJson(false, err.Error())
+	}
+	this.ResponseJson(false, "sss", form)
 }
