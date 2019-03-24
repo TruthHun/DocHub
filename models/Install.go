@@ -73,7 +73,7 @@ func installSys() {
 5:人身攻击
 6:骚扰他人`, //举报原因
 		Watermark:     "DocHub", //文档水印
-		StoreWay:      string(StoreOss),
+		StoreType:     string(StoreOss),
 		CheckRegEmail: true,
 	}
 	orm.NewOrm().ReadOrCreate(&sys, "Id")

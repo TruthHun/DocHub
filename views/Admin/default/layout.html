@@ -88,6 +88,9 @@
                         <a {{if .IsCrawl}}class="active-menu"{{end}} href="/admin/crawl"><i class="fa fa-gg"></i> 采集管理</a>
                     </li>
                     <li>
+                        <a {{if .IsCloudStore}}class="active-menu"{{end}} href="/admin/cloud-store"><i class="fa fa-cloud-upload"></i> 云存储配置</a>
+                    </li>
+                    <li>
                         <a {{if .IsSys}}class="active-menu"{{end}} href="/admin/sys"><i class="fa fa-cogs"></i> 系统设置</a>
                     </li>
                 </ul>

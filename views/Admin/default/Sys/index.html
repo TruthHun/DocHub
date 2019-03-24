@@ -25,12 +25,25 @@
                                 <input type="text" class="form-control" name="Site" placeholder="请输入站点名称" value="{{.Site}}" />
                             </div>
                             <div class="form-group">
-                                <label >绑定域名( <small class="text-muted">[必填]生成sitemap需要用到。示例：https://www.dochub.me</small> )</label>
+                                <label >绑定域名( <small class="text-muted">[必填]生成sitemap需要用到。示例：https://www.bookstack.cn</small> )</label>
                                 <input type="text" class="form-control" name="DomainPc" value="{{.DomainPc}}" />
                             </div>
                             <div class="form-group">
                                 <label >网站备案号</label>
                                 <input type="text" class="form-control" name="Icp" placeholder="请输入网站备案号，如 桂ICP备 xxxx" value="{{.Icp}}" />
+                            </div>
+
+                            <div class="form-group">
+                                <label >请选择存储类型( <small class="text-muted">选择存储类型之前，请务必先 <a href="/admin/cloud-store">配置云存储</a></small> )</label>
+                                <select name="StoreType" class="form-control">
+                                    <option {{if eq .StoreType "cs-oss"}}selected{{end}} value="cs-oss">OSS（阿里云存储）</option>
+                                    <option {{if eq .StoreType "cs-minio"}}selected{{end}} value="cs-minio">Minio（本地云存储）</option>
+                                    <option {{if eq .StoreType "cs-cos"}}selected{{end}} value="cs-cos">COS（腾讯云存储）</option>
+                                    <option {{if eq .StoreType "cs-bos"}}selected{{end}} value="cs-bos">BOS（百度云存储）</option>
+                                    <option {{if eq .StoreType "cs-obs"}}selected{{end}} value="cs-obs">OBS（华为云存储）</option>
+                                    <option {{if eq .StoreType "cs-qiniu"}}selected{{end}} value="cs-qiniu">QINIU（七牛云存储）</option>
+                                    <option {{if eq .StoreType "cs-upyun"}}selected{{end}} value="cs-upyun">UpYun（又拍云存储）</option>
+                                </select>
                             </div>
 
 
