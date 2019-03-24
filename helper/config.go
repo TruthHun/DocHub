@@ -18,7 +18,7 @@ import (
 //@param            key             键
 //@param			def				default，即默认值
 //@return           val             值
-func GetConfig(cate string, key string, def ...string) string {
+func GetConfig(cate ConfigCate, key string, def ...string) string {
 	if val, ok := ConfigMap.Load(fmt.Sprintf("%v.%v", cate, key)); ok {
 		return val.(string)
 	}
@@ -32,7 +32,7 @@ func GetConfig(cate string, key string, def ...string) string {
 //@param            cate            配置分类
 //@param            key             键
 //@return           val             值
-func GetConfigBool(cate string, key string) (val bool) {
+func GetConfigBool(cate ConfigCate, key string) (val bool) {
 	value := GetConfig(cate, key)
 	if value == "true" || value == "1" {
 		val = true
@@ -44,7 +44,7 @@ func GetConfigBool(cate string, key string) (val bool) {
 //@param            cate            配置分类
 //@param            key             键
 //@return           val             值
-func GetConfigInt64(cate string, key string) (val int64) {
+func GetConfigInt64(cate ConfigCate, key string) (val int64) {
 	val, _ = strconv.ParseInt(GetConfig(cate, key), 10, 64)
 	return
 }
@@ -53,7 +53,7 @@ func GetConfigInt64(cate string, key string) (val int64) {
 //@param            cate            配置分类
 //@param            key             键
 //@return           val             值
-func GetConfigFloat64(cate string, key string) (val float64) {
+func GetConfigFloat64(cate ConfigCate, key string) (val float64) {
 	val, _ = strconv.ParseFloat(GetConfig(cate, key), 64)
 	return
 }
@@ -70,9 +70,9 @@ func setDefaultConfig() {
 		beego.BConfig.EnableGzip = true //开启gzip压缩
 
 		//程序安装的时候不启用，安装完成之后必须启用
-		beego.BConfig.WebConfig.EnableXSRF = false                                                        //启用XSRF
-		beego.BConfig.WebConfig.XSRFKey = MyMD5(fmt.Sprintf("%v", time.Now().UnixNano()) + RandStr(5, 3)) //生成随机key
-		beego.BConfig.WebConfig.XSRFExpire = 3600                                                         //过期时间
+		beego.BConfig.WebConfig.EnableXSRF = false                                                           //启用XSRF
+		beego.BConfig.WebConfig.XSRFKey = MD5Crypt(fmt.Sprintf("%v", time.Now().UnixNano()) + RandStr(5, 3)) //生成随机key
+		beego.BConfig.WebConfig.XSRFExpire = 3600                                                            //过期时间
 
 		//SESSION基本配置
 		beego.BConfig.WebConfig.Session.SessionOn = true

@@ -104,17 +104,16 @@ type ElasticSearchResult struct {
 
 //创建全文搜索客户端
 func NewElasticSearchClient() (client *ElasticSearchClient) {
-	cateES := string(CONFIG_ELASTICSEARCH)
 	//并未设置超时配置项
-	timeout := helper.GetConfigInt64(cateES, "timeout")
+	timeout := helper.GetConfigInt64(ConfigCateElasticSearch, "timeout")
 	if timeout <= 0 { //默认超时时间为10秒
 		timeout = 10
 	}
 	client = &ElasticSearchClient{
-		Host:    helper.GetConfig(cateES, "host", "http://localhost:920/"),
-		Index:   helper.GetConfig(cateES, "index", "dochub"),
+		Host:    helper.GetConfig(ConfigCateElasticSearch, "host", "http://localhost:920/"),
+		Index:   helper.GetConfig(ConfigCateElasticSearch, "index", "dochub"),
 		Type:    "fulltext",
-		On:      helper.GetConfigBool(cateES, "on"),
+		On:      helper.GetConfigBool(ConfigCateElasticSearch, "on"),
 		Timeout: time.Duration(timeout) * time.Second,
 	}
 	client.Host = strings.TrimRight(client.Host, "/") + "/"

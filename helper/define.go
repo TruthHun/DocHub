@@ -2,6 +2,7 @@
 package helper
 
 import (
+	"net/url"
 	"sync"
 
 	"github.com/astaxie/beego"
@@ -10,7 +11,7 @@ import (
 
 const (
 	//DocHub Version
-	VERSION = "v2.1"
+	VERSION = "v2.2"
 	//Cache Config
 	CACHE_CONF = `{"CachePath":"./cache/runtime","FileSuffix":".cache","DirectoryLevel":2,"EmbedExpiry":120}`
 
@@ -38,6 +39,8 @@ const (
 	// 根目录
 	RootPath = "./virtualroot"
 )
+
+type ConfigCate string
 
 var (
 	//develop mode
@@ -73,3 +76,12 @@ var (
 	AvatarWidth  = beego.AppConfig.DefaultInt("avatar_width", 120)
 	AvatarHeight = beego.AppConfig.DefaultInt("avatar_height", 120)
 )
+
+var (
+	HeaderSVG  = map[string]string{"Content-Type": ""}
+	HeaderGzip = map[string]string{"Content-Encoding": "gzip"}
+)
+
+func HeaderDisposition(name string) map[string]string {
+	return map[string]string{"Content-Disposition": "attachment; filename=" + url.PathEscape(name)}
+}

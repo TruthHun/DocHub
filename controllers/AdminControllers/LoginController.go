@@ -57,9 +57,9 @@ func (this *LoginController) UpdatePwd() {
 		if PwdOld == PwdNew || PwdNew != PwdEnsure {
 			this.ResponseJson(false, "新密码不能与原密码相同，且确认密码必须与新密码一致")
 		} else {
-			var admin = models.Admin{Password: helper.MyMD5(PwdOld)}
+			var admin = models.Admin{Password: helper.MD5Crypt(PwdOld)}
 			if orm.NewOrm().Read(&admin, "Password"); admin.Id > 0 {
-				admin.Password = helper.MyMD5(PwdNew)
+				admin.Password = helper.MD5Crypt(PwdNew)
 				if rows, err := orm.NewOrm().Update(&admin); rows > 0 {
 					this.ResponseJson(true, "密码更新成功")
 				} else {

@@ -137,8 +137,8 @@ func (u *User) Reg(email, username, password, repassword, intro string) (error, 
 	if o.QueryTable(GetTableUser()).Filter("Email", email).One(&user); user.Id > 0 {
 		return errors.New("邮箱已被注册，请更换新注册邮箱"), 0
 	}
-	pwd := helper.MyMD5(password)
-	if pwd != helper.MyMD5(repassword) {
+	pwd := helper.MD5Crypt(password)
+	if pwd != helper.MD5Crypt(repassword) {
 		return errors.New("密码和确认密码不一致"), 0
 	}
 	user = User{Email: email, Username: username, Password: pwd, Intro: intro}

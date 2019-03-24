@@ -279,7 +279,7 @@ func (this *UserController) Login() {
 	}
 
 	ModelUser := models.NewUser()
-	users, rows, err := ModelUser.UserList(1, 1, "", "", "u.`email`=? and u.`password`=?", post.Email, helper.MyMD5(post.Password))
+	users, rows, err := ModelUser.UserList(1, 1, "", "", "u.`email`=? and u.`password`=?", post.Email, helper.MD5Crypt(post.Password))
 	if rows == 0 || err != nil {
 		if err != nil {
 			helper.Logger.Error(err.Error())
@@ -474,7 +474,7 @@ func (this *UserController) CreateCollectFolder() {
 		ext := slice[len(slice)-1]
 		dir := fmt.Sprintf("./uploads/%v/%v/", time.Now().Format("2006-01-02"), this.IsLogin)
 		os.MkdirAll(dir, 0777)
-		file := helper.MyMD5(fmt.Sprintf("%v-%v-%v", timestamp, this.IsLogin, fh.Filename)) + "." + ext
+		file := helper.MD5Crypt(fmt.Sprintf("%v-%v-%v", timestamp, this.IsLogin, fh.Filename)) + "." + ext
 
 		tmpFile := dir + file
 
@@ -580,8 +580,8 @@ func (this *UserController) FindPwd() {
 	if fmt.Sprintf("%v", this.GetSession("FindPwdMail")) != params["email"].(string) || fmt.Sprintf("%v", this.GetSession("FindPwdCode")) != params["code"].(string) {
 		this.ResponseJson(false, "验证码不正确，修改密码失败")
 	}
-	pwd := helper.MyMD5(params["password"].(string))
-	repwd := helper.MyMD5(params["repassword"].(string))
+	pwd := helper.MD5Crypt(params["password"].(string))
+	repwd := helper.MD5Crypt(params["repassword"].(string))
 	if pwd != repwd {
 		this.ResponseJson(false, "确认密码和密码不一致")
 	}
@@ -747,8 +747,8 @@ func (this *UserController) Avatar() {
 	if !(ext == "jpg" || ext == "jpeg" || ext == "png" || ext == "gif") {
 		this.ResponseJson(false, "头像图片格式只支持jpg、jpeg、png和gif")
 	}
-	tmpFile := dir + "/" + helper.MyMD5(fmt.Sprintf("%v-%v-%v", fh.Filename, this.IsLogin, time.Now().Unix())) + "." + ext
-	saveFile := helper.MyMD5(tmpFile) + "." + ext
+	tmpFile := dir + "/" + helper.MD5Crypt(fmt.Sprintf("%v-%v-%v", fh.Filename, this.IsLogin, time.Now().Unix())) + "." + ext
+	saveFile := helper.MD5Crypt(tmpFile) + "." + ext
 	err = this.SaveToFile("Avatar", tmpFile)
 	if err != nil {
 		helper.Logger.Error("用户(%v)头像保存失败：%v", this.IsLogin, err.Error())
@@ -806,9 +806,9 @@ func (this *UserController) Edit() {
 		if len(params["NewPassword"].(string)) < 6 || len(params["RePassword"].(string)) < 6 {
 			this.ResponseJson(false, "密码长度必须至少6个字符")
 		}
-		opwd := helper.MyMD5(params["OldPassword"].(string))
-		npwd := helper.MyMD5(params["NewPassword"].(string))
-		rpwd := helper.MyMD5(params["RePassword"].(string))
+		opwd := helper.MD5Crypt(params["OldPassword"].(string))
+		npwd := helper.MD5Crypt(params["NewPassword"].(string))
+		rpwd := helper.MD5Crypt(params["RePassword"].(string))
 		if user.Password != opwd {
 			this.ResponseJson(false, "原密码不正确")
 		}

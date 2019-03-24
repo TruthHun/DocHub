@@ -8,40 +8,39 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-type (
-	ConfigCate string
-)
-
 const (
-	CONFIG_EMAIL         ConfigCate = "email"         //email
-	CONFIG_DEPEND        ConfigCate = "depend"        //依赖
-	CONFIG_ELASTICSEARCH ConfigCate = "elasticsearch" //全文搜索
-	CONFIG_LOGS          ConfigCate = "logs"          //日志配置管理
+	ConfigCateEmail         helper.ConfigCate = "email"         //email
+	ConfigCateDepend        helper.ConfigCate = "depend"        //依赖
+	ConfigCateElasticSearch helper.ConfigCate = "elasticsearch" //全文搜索
+	ConfigCateLog           helper.ConfigCate = "logs"          //日志配置管理
 
-	// 存储类型
-
-	StoreOss   ConfigCate = "oss"   //oss存储
-	StoreLocal ConfigCate = "local" //本地存储
-	StoreCos   ConfigCate = "cos"   //腾讯云存储
-	StoreBos   ConfigCate = "bos"   //百度云存储
-	StoreQiniu ConfigCate = "qiniu" //七牛云储存
+	// 存储类型, cs 前缀表示 CloudStore
+	StoreOss   helper.ConfigCate = "cs-oss"   //oss存储
+	StoreMinio helper.ConfigCate = "cs-minio" //minio存储
+	StoreCos   helper.ConfigCate = "cs-cos"   //腾讯云存储
+	StoreObs   helper.ConfigCate = "cs-obs"   //华为云存储
+	StoreBos   helper.ConfigCate = "cs-bos"   //百度云存储
+	StoreQiniu helper.ConfigCate = "cs-qiniu" //七牛云储存
+	StoreUpyun helper.ConfigCate = "cs-upyun" //又拍云存储
 )
 const (
-	INPUT_STRING string = "string"   //对应input的text
-	INPUT_BOOL   string = "bool"     //对应input的radio，两个选项
-	INPUT_NUMBER string = "number"   //对应input的number
-	INPUT_TEXT   string = "textarea" //对应textarea
+	InputText     string = "string"   //对应input的text
+	InputBool     string = "bool"     //对应input的radio，两个选项
+	InputNumber   string = "number"   //对应input的number
+	InputTextarea string = "textarea" //对应textarea
+	IinputSelect  string = "select"   //对应textarea
 )
 
 //配置管理表
 type Config struct {
 	Id          int    `orm:"column(Id)"`                                //主键
 	Title       string `orm:"column(Title);default()"`                   //名称
-	InputType   string `orm:"column(BoolType);default();size(10)"`       //类型：float、int、bool，string(空表示字符串类型)
+	InputType   string `orm:"column(InputType);default();size(10)"`      //类型：float、int、bool，string, textarea (空表示字符串类型)
 	Description string `orm:"column(Description);default()"`             //说明
 	Key         string `orm:"column(Key);default();size(30)"`            //键
 	Value       string `orm:"column(Value);default()"`                   //值
 	Category    string `orm:"column(Category);default();index;size(30)"` //分类，如oss、email、redis等
+	Options     string `orm:"column(Options);default();size(4096)"`      //枚举值列举
 }
 
 func NewConfig() *Config {
@@ -82,7 +81,7 @@ func (this *Config) UpdateGlobal() {
 //@param            key             配置项
 //@param            val             配置项的值
 //@return           err             错误
-func (this *Config) UpdateByKey(cate ConfigCate, key, val string) (err error) {
+func (this *Config) UpdateByKey(cate helper.ConfigCate, key, val string) (err error) {
 	_, err = orm.NewOrm().QueryTable(GetTableConfig()).Filter("Category", cate).Filter("Key", key).Update(orm.Params{
 		"Value": val,
 	})

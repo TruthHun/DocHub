@@ -42,7 +42,7 @@ func (this *BannerController) Add() {
 	dir := "uploads/" + time.Now().Format("2006-01-02")
 	os.MkdirAll(dir, 0777)
 	ext := helper.GetSuffix(h.Filename, ".")
-	filePath := dir + "/" + helper.MyMD5(fmt.Sprintf("%v-%v", h.Filename, time.Now().Unix())) + "." + ext
+	filePath := dir + "/" + helper.MD5Crypt(fmt.Sprintf("%v-%v", h.Filename, time.Now().Unix())) + "." + ext
 
 	err = this.SaveToFile("Picture", filePath) // 保存位置
 	if err != nil {

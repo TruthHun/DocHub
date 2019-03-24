@@ -25,25 +25,34 @@ import (
 	oss2 "github.com/denverdino/aliyungo/oss"
 )
 
+//OSS配置【这个不再作为数据库表，直接在oss.conf文件中进行配置】
 type Oss struct {
-	AccessKeyId     string //key
-	AccessKeySecret string //secret
-	Endpoint        string
-	Bucket          string
-	Domain          string //私有bucket
+	EndpointInternal string //内网的endpoint
+	EndpointOuter    string //外网的endpoint
+	AccessKeyId      string //key
+	AccessKeySecret  string //secret
+	BucketPreview    string //供文档预览的bucket
+	BucketStore      string //供文档存储的bucket
+	IsInternal       bool   //是否内网，内网则启用内网endpoint，否则启用外网endpoint
+	PreviewUrl       string //预览链接
+	DownloadUrl      string //下载链接
+	UrlExpire        int    //签名链接默认有效期时间，单位为秒
 }
 
 //获取oss的配置
 //@return               oss             Oss配置信息
 func NewOss() (oss *Oss) {
 	oss = &Oss{
-		AccessKeyId:     helper.GetConfig("oss", "access_key_id"),
-		AccessKeySecret: helper.GetConfig("oss", "access_key_secret"),
-		Endpoint:        helper.GetConfig("oss", "endpoint"),
-		PublicBucket:    helper.GetConfig("oss", "public_bucket"),
-		PrivateBucket:   helper.GetConfig("oss", "private_bucket"),
-		PublicDomain:    strings.TrimRight(helper.GetConfig("oss", "public_domain"), "/") + "/",
-		PrivateDomain:   strings.TrimRight(helper.GetConfig("oss", "private_domain"), "/") + "/",
+		IsInternal:       helper.GetConfigBool("oss", "is_internal"),
+		EndpointInternal: helper.GetConfig("oss", "endpoint_internal"),
+		EndpointOuter:    helper.GetConfig("oss", "endpoint_outer"),
+		AccessKeyId:      helper.GetConfig("oss", "access_key_id"),
+		AccessKeySecret:  helper.GetConfig("oss", "access_key_secret"),
+		BucketPreview:    helper.GetConfig("oss", "bucket_preview"),
+		BucketStore:      helper.GetConfig("oss", "bucket_store"),
+		UrlExpire:        int(helper.GetConfigInt64("oss", "url_expire")),
+		PreviewUrl:       strings.TrimRight(helper.GetConfig("oss", "preview_url"), "/") + "/",
+		DownloadUrl:      strings.TrimRight(helper.GetConfig("oss", "download_url"), "/") + "/",
 	}
 	return oss
 }
@@ -55,6 +64,11 @@ func (this *Oss) NewBucket(IsPreview bool) (bucket *oss.Bucket, err error) {
 		client   *oss.Client
 		endpoint string
 	)
+	if this.IsInternal {
+		endpoint = this.EndpointInternal
+	} else {
+		endpoint = this.EndpointOuter
+	}
 	if client, err = oss.New(endpoint, this.AccessKeyId, this.AccessKeySecret); err == nil {
 		if IsPreview {
 			bucket, err = client.Bucket(this.BucketPreview)
@@ -93,11 +107,6 @@ func (*Oss) DefaultPicture(picture string, ext ...string) (url string) {
 		picture = picture + ".jpg"
 	}
 	picture = strings.Trim(picture, "/")
-	//style = strings.ToLower(style)
-	//switch style {
-	//case "avatar", "cover", "banner":
-	//	return NewOss().PreviewUrl + picture + "/" + style
-	//}
 	return NewOss().PreviewUrl + picture //返回默认图片
 }
 
@@ -212,48 +221,44 @@ func (this *Oss) BuildSignDaily(object string) (url string) {
 //@param            htmlstr             html字符串
 //@param            forPreview          是否是供浏览的页面需求
 //@return           str                 处理后返回的字符串
-func (this *Oss) HandleContent(htmlStr string, forPreview bool) (str string) {
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlStr))
-	if err != nil {
-		helper.Logger.Error(err.Error())
-		return
-	}
-	doc.Find("img").Each(func(i int, s *goquery.Selection) {
-		// For each item found, get the band and title
-		if src, exist := s.Attr("src"); exist {
-			//预览
-			if forPreview {
-				//不存在http开头的图片链接，则更新为绝对链接
-				if !(strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://")) {
-					s.SetAttr("src", this.PreviewUrl+strings.TrimLeft(src, "./"))
+func (this *Oss) HandleContent(htmlstr string, forPreview bool) (str string) {
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlstr))
+	if err == nil {
+		doc.Find("img").Each(func(i int, s *goquery.Selection) {
+			// For each item found, get the band and title
+			if src, exist := s.Attr("src"); exist {
+				//预览
+				if forPreview {
+					//不存在http开头的图片链接，则更新为绝对链接
+					if !(strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://")) {
+						s.SetAttr("src", this.PreviewUrl+strings.TrimLeft(src, "./"))
+					}
+				} else {
+					s.SetAttr("src", strings.TrimPrefix(src, this.PreviewUrl))
 				}
-			} else {
-				s.SetAttr("src", strings.TrimPrefix(src, this.PreviewUrl))
 			}
-		}
 
-	})
-	str, _ = doc.Find("body").Html()
+		})
+		str, _ = doc.Find("body").Html()
+	}
 	return
 }
 
 //从HTML中提取图片文件，并删除
-func (this *Oss) DelByHtmlPics(htmlStr string) {
-	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlStr))
-	if err != nil {
-		helper.Logger.Error(err.Error())
-		return
-	}
-	doc.Find("img").Each(func(i int, s *goquery.Selection) {
-		// For each item found, get the band and title
-		if src, exist := s.Attr("src"); exist {
-			//不存在http开头的图片链接，则更新为绝对链接
-			if !(strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://")) {
-				this.DelFromOss(true, strings.TrimLeft(src, "./")) //删除
-			} else if strings.HasPrefix(src, this.PreviewUrl) {
-				this.DelFromOss(true, strings.TrimPrefix(src, this.PreviewUrl)) //删除
+func (this *Oss) DelByHtmlPics(htmlstr string) {
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlstr))
+	if err == nil {
+		doc.Find("img").Each(func(i int, s *goquery.Selection) {
+			// For each item found, get the band and title
+			if src, exist := s.Attr("src"); exist {
+				//不存在http开头的图片链接，则更新为绝对链接
+				if !(strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://")) {
+					this.DelFromOss(true, strings.TrimLeft(src, "./")) //删除
+				} else if strings.HasPrefix(src, this.PreviewUrl) {
+					this.DelFromOss(true, strings.TrimPrefix(src, this.PreviewUrl)) //删除
+				}
 			}
-		}
-	})
+		})
+	}
 	return
 }

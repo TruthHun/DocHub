@@ -86,7 +86,7 @@ func I18n(tag string, lang ...string) string {
 
 //MD5加密函数
 //@str          string          需要进行加密的字符串
-func MyMD5(str string) string {
+func MD5Crypt(str string) string {
 	h := md5.New()
 	h.Write([]byte(str))
 	return hex.EncodeToString(h.Sum(nil))
@@ -695,7 +695,7 @@ func DownFile(fileUrl, savePath string, cookies string) (md5str, localFile, file
 	}
 	ext = strings.ToLower(ext)
 	os.MkdirAll(savePath, 0777)
-	tmpFile := strings.TrimSuffix(savePath, "/") + "/" + MyMD5(filename) + ext
+	tmpFile := strings.TrimSuffix(savePath, "/") + "/" + MD5Crypt(filename) + ext
 	if err = req.ToFile(tmpFile); err != nil {
 		return
 	}

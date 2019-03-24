@@ -28,7 +28,7 @@ func GetTableAdmin() string {
 //@return           admin               管理员数据结构，如果登录成功，管理员id大于0
 //@return           err                 SQL查询过程中出现的错误
 func (this *Admin) Login(username, password, code string) (admin Admin, err error) {
-	admin = Admin{Username: username, Password: helper.MyMD5(password), Code: code}
+	admin = Admin{Username: username, Password: helper.MD5Crypt(password), Code: code}
 	err = orm.NewOrm().Read(&admin, "Username", "Password", "Code")
 	return
 }

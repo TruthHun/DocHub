@@ -33,7 +33,7 @@ func (this *KindEditorController) Upload() {
 	dir := fmt.Sprintf("uploads/kindeditor/%v", now.Format("2006/01/02"))
 	os.MkdirAll(dir, 0777)
 	ext := helper.GetSuffix(fh.Filename, ".")
-	ossfile := "article." + helper.MyMD5(fmt.Sprintf("%v-%v-%v", now, fh.Filename, this.AdminId)) + "." + ext
+	ossfile := "article." + helper.MD5Crypt(fmt.Sprintf("%v-%v-%v", now, fh.Filename, this.AdminId)) + "." + ext
 	//存储文件
 	savefile := dir + "/" + ossfile
 	err = this.SaveToFile("imgFile", savefile)

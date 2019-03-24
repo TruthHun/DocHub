@@ -26,7 +26,7 @@ func installAdmin() {
 	var admin = Admin{
 		Id:       1,
 		Username: "admin",
-		Password: helper.MyMD5("admin"),
+		Password: helper.MD5Crypt("admin"),
 		Email:    "TruthHun@QQ.COM",
 		Code:     "芝麻开门",
 	}
@@ -637,7 +637,7 @@ func installCfg() {
 	var configs []Config
 
 	//邮箱
-	cateEmail := string(CONFIG_EMAIL)
+	cateEmail := string(ConfigCateEmail)
 	cfgEmail := []Config{
 		Config{
 			Title:       "主机",
@@ -684,7 +684,7 @@ func installCfg() {
 	}
 
 	//日志
-	cateLogs := string(CONFIG_LOGS)
+	cateLogs := string(ConfigCateLog)
 	cfgLogs := []Config{
 		Config{
 			Title:       "保留时长(天)",
@@ -704,7 +704,7 @@ func installCfg() {
 	}
 
 	//依赖
-	cateDepend := string(CONFIG_DEPEND)
+	cateDepend := string(ConfigCateDepend)
 	cfgDepend := []Config{
 		Config{
 			Title:       "PDF2SVG",
@@ -767,7 +767,7 @@ func installCfg() {
 	}
 
 	//全文搜索
-	cateES := string(CONFIG_ELASTICSEARCH)
+	cateES := string(ConfigCateElasticSearch)
 	cfgES := []Config{
 		Config{
 			Title:       "是否开启",

@@ -31,10 +31,10 @@ type logFile struct {
 
 //系统配置管理
 func (this *SysController) Get() {
-	tab := models.ConfigCate(strings.ToLower(this.GetString("tab")))
+	tab := helper.ConfigCate(strings.ToLower(this.GetString("tab")))
 	switch tab {
-	case models.CONFIG_EMAIL, models.CONFIG_DEPEND, models.CONFIG_ELASTICSEARCH, models.CONFIG_LOGS:
-	case models.StoreOss, models.StoreLocal, models.StoreBos, models.StoreCos, models.StoreQiniu:
+	case models.ConfigCateEmail, models.ConfigCateDepend, models.ConfigCateElasticSearch, models.ConfigCateLog:
+	case models.StoreOss, models.StoreMinio, models.StoreBos, models.StoreCos, models.StoreQiniu:
 	default:
 		tab = "default"
 	}
@@ -53,11 +53,11 @@ func (this *SysController) Get() {
 		} else {
 			modelCfg := models.NewConfig()
 			for k, v := range this.Ctx.Request.Form {
-				modelCfg.UpdateByKey(models.ConfigCate(tab), k, v[0])
+				modelCfg.UpdateByKey(helper.ConfigCate(tab), k, v[0])
 			}
 			//最后更新全局配置
 			modelCfg.UpdateGlobal()
-			if tab == models.CONFIG_ELASTICSEARCH {
+			if tab == models.ConfigCateElasticSearch {
 				if err := models.NewElasticSearchClient().Init(); err != nil {
 					this.ResponseJson(false, "ElasticSearch初始化失败："+err.Error())
 				}
@@ -75,7 +75,7 @@ func (this *SysController) Get() {
 		this.Data["Sys"], _ = models.NewSys().Get()
 	} else {
 		this.Data["Configs"] = models.NewConfig().All()
-		if tab == models.CONFIG_ELASTICSEARCH {
+		if tab == models.ConfigCateElasticSearch {
 			count, errES := models.NewElasticSearchClient().Count()
 			this.Data["Count"] = count
 			if errES != nil {
@@ -163,7 +163,7 @@ func (this *SysController) RebuildAllIndex() {
 //测试邮箱是否能发件成功
 func (this *SysController) TestForSendingEmail() {
 	//邮件接收人
-	to := helper.GetConfig(string(models.CONFIG_EMAIL), "test")
+	to := helper.GetConfig(models.ConfigCateEmail, "test")
 	if err := models.SendMail(to, "测试邮件", "这是一封测试邮件，用于检测是否能正常发送邮件"); err != nil {
 		this.Response(map[string]interface{}{"status": 0, "msg": "邮件发送失败：" + err.Error()})
 	}
