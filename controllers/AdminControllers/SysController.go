@@ -210,18 +210,37 @@ func (this *SysController) CloudStore() {
 }
 
 func (this *SysController) SetCloudStore() {
-	cate := helper.ConfigCate(this.GetString("tab", "cs-oss"))
-	if cate == "" {
+	storeType := helper.ConfigCate(this.GetString("tab", "cs-oss"))
+	if storeType == "" {
 		this.ResponseJson(false, "参数错误：存储类别不正确")
 	}
 	modelConfig := models.NewConfig()
-	form, err := modelConfig.ParseForm(cate, this.Ctx.Request.Form)
+	config, err := modelConfig.ParseForm(storeType, this.Ctx.Request.Form)
 	if err != nil {
-		this.ResponseJson(false, err.Error())
+		this.ResponseJson(false, err.Error(), config)
 	}
-	err = modelConfig.UpdateCloudStore(cate, form)
+
+	csPublic, err := models.NewCloudStoreWithConfig(config, storeType, false)
 	if err != nil {
-		this.ResponseJson(false, err.Error())
+		this.ResponseJson(false, err.Error(), config)
 	}
-	this.ResponseJson(false, "sss", form)
+
+	if err = csPublic.PingTest(); err != nil {
+		this.ResponseJson(false, err.Error(), config)
+	}
+
+	csPrivate, err := models.NewCloudStoreWithConfig(config, storeType, true)
+	if err != nil {
+		this.ResponseJson(false, err.Error(), config)
+	}
+
+	if err = csPrivate.PingTest(); err != nil {
+		this.ResponseJson(false, err.Error(), config)
+	}
+
+	err = modelConfig.UpdateCloudStore(storeType, config)
+	if err != nil {
+		this.ResponseJson(false, err.Error(), config)
+	}
+	this.ResponseJson(true, "更新成功", config)
 }

@@ -41,7 +41,9 @@ $(function(){
 	
 	$(".wenku-ajax-form [type=submit]").click(function(e){
 		e.preventDefault();
-		var form=$(this).parents("form"),method=form.attr("method"),action=form.attr("action"),data=form.serialize(),_url=form.attr("data-url");
+		var _this=$(this);
+        _this.addClass("disabled");
+		var form=_this.parents("form"),method=form.attr("method"),action=form.attr("action"),data=form.serialize(),_url=form.attr("data-url");
 		var require=form.find("[required=required]"),l=require.length;
 		$.each(require, function() {    
 			if (!$(this).val()){
@@ -64,8 +66,9 @@ $(function(){
                     if (rt.status==1) {
                         wenku_alert("success",rt.msg,2000,_url);
                     } else{
-                        wenku_alert("error",rt.msg,3000,"");
+                        wenku_alert("error",rt.msg,5000,"");
                     }
+                    _this.removeClass("disabled");
                 });
 			}
 
@@ -74,9 +77,10 @@ $(function(){
 				if (rt.status==1) {
                     wenku_alert("success",rt.msg,2000,_url);
 				} else{
-                    wenku_alert("error",rt.msg,3000,"");
+                    wenku_alert("error",rt.msg,5000,"");
 				}
-			});
+                _this.removeClass("disabled");
+            });
 		}
 	});
 	

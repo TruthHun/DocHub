@@ -1135,8 +1135,8 @@ func installCfg() {
 		},
 		Config{
 			Title:       "私有Bucket域名",
-			Description: "私有 Bucket 所绑定的域名",
-			Key:         "private-bucket-domain，带 http:// 或者 https://",
+			Key:         "private-bucket-domain",
+			Description: "私有 Bucket 所绑定的域名，带 http:// 或者 https://",
 			Value:       "",
 			InputType:   InputText,
 			Category:    cateMinio,

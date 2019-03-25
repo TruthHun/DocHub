@@ -794,6 +794,7 @@ $(function(){
 
     $(".wenku-ajax-form [type=submit]").click(function(e){
         e.preventDefault();
+        $(this).addClass("disabled");
         var _this=$(this),form=$(this).parents("form"),method=form.attr("method"),action=form.attr("action"),data=form.serialize(),_url=form.attr("data-url");
         var require=form.find("[required=required]"),l=require.length;
         $.each(require, function() {
@@ -833,6 +834,7 @@ $(function(){
                 }
             });
         }
+        $(this).removeClass("disabled");
     });
 
 

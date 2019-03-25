@@ -245,6 +245,7 @@ func (this *Config) UpdateCloudStore(storeType helper.ConfigCate, cfg interface{
 	defer func() {
 		if err == nil {
 			o.Commit()
+			this.UpdateGlobalConfig()
 		} else {
 			o.Rollback()
 		}
@@ -257,7 +258,6 @@ func (this *Config) UpdateCloudStore(storeType helper.ConfigCate, cfg interface{
 			return
 		}
 	}
-	this.UpdateGlobalConfig()
 	return
 }
 

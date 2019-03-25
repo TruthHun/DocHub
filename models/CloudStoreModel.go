@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
@@ -23,16 +26,21 @@ type CloudStore struct {
 func NewCloudStore(private ...bool) (cs *CloudStore, err error) {
 	storeType := helper.ConfigCate(GlobalSys.StoreType)
 	modelConfig := NewConfig()
+	config := modelConfig.GetCloudStoreConfig(storeType)
+	return NewCloudStoreWithConfig(config, storeType, private...)
+}
+
+func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCate, private ...bool) (cs *CloudStore, err error) {
 	cs = &CloudStore{
 		StoreType: storeType,
-		config:    modelConfig.GetCloudStoreConfig(storeType),
+		config:    storeConfig,
 	}
 	if len(private) > 0 {
 		cs.Private = private[0]
 	}
 	switch cs.StoreType {
 	case StoreOss:
-		cfg := cs.config.(ConfigOss)
+		cfg := cs.config.(*ConfigOss)
 		bucket := cfg.PublicBucket
 		domain := cfg.PublicBucketDomain
 		if cs.Private {
@@ -47,7 +55,7 @@ func NewCloudStore(private ...bool) (cs *CloudStore, err error) {
 		cs.publicDomain = cfg.PublicBucketDomain
 		cs.client, err = CloudStore2.NewOSS(cfg.AccessKey, cfg.SecretKey, cfg.Endpoint, bucket, domain)
 	case StoreObs:
-		cfg := cs.config.(ConfigObs)
+		cfg := cs.config.(*ConfigObs)
 		bucket := cfg.PublicBucket
 		domain := cfg.PublicBucketDomain
 		if cs.Private {
@@ -60,9 +68,9 @@ func NewCloudStore(private ...bool) (cs *CloudStore, err error) {
 		}
 		cs.privateDomain = cfg.PrivateBucketDomain
 		cs.publicDomain = cfg.PublicBucketDomain
-		cs.client, err = CloudStore2.NewOBS(cfg.AccessKey, cfg.SecretKey, cfg.Endpoint, bucket, domain)
+		cs.client, err = CloudStore2.NewOBS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
 	case StoreQiniu:
-		cfg := cs.config.(ConfigQiniu)
+		cfg := cs.config.(*ConfigQiniu)
 		bucket := cfg.PublicBucket
 		domain := cfg.PublicBucketDomain
 		if cs.Private {
@@ -77,7 +85,7 @@ func NewCloudStore(private ...bool) (cs *CloudStore, err error) {
 		cs.publicDomain = cfg.PublicBucketDomain
 		cs.client, err = CloudStore2.NewQINIU(cfg.AccessKey, cfg.SecretKey, bucket, domain)
 	case StoreUpyun:
-		cfg := cs.config.(ConfigUpYun)
+		cfg := cs.config.(*ConfigUpYun)
 		bucket := cfg.PublicBucket
 		domain := cfg.PublicBucketDomain
 		if cs.Private {
@@ -92,7 +100,7 @@ func NewCloudStore(private ...bool) (cs *CloudStore, err error) {
 		cs.publicDomain = cfg.PublicBucketDomain
 		cs.client = CloudStore2.NewUpYun(bucket, cfg.Operator, cfg.Password, domain, cfg.Secret)
 	case StoreMinio:
-		cfg := cs.config.(ConfigMinio)
+		cfg := cs.config.(*ConfigMinio)
 		bucket := cfg.PublicBucket
 		domain := cfg.PublicBucketDomain
 		if cs.Private {
@@ -107,7 +115,7 @@ func NewCloudStore(private ...bool) (cs *CloudStore, err error) {
 		cs.publicDomain = cfg.PublicBucketDomain
 		cs.client, err = CloudStore2.NewMinIO(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
 	case StoreBos:
-		cfg := cs.config.(ConfigBos)
+		cfg := cs.config.(*ConfigBos)
 		bucket := cfg.PublicBucket
 		domain := cfg.PublicBucketDomain
 		if cs.Private {
@@ -122,7 +130,7 @@ func NewCloudStore(private ...bool) (cs *CloudStore, err error) {
 		cs.publicDomain = cfg.PublicBucketDomain
 		cs.client, err = CloudStore2.NewBOS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
 	case StoreCos:
-		cfg := cs.config.(ConfigCos)
+		cfg := cs.config.(*ConfigCos)
 		bucket := cfg.PublicBucket
 		domain := cfg.PublicBucketDomain
 		if cs.Private {
@@ -284,7 +292,34 @@ func (c *CloudStore) DeleteImageFromHtml(htmlStr string) {
 	}
 }
 
-// TODO: 云存储连通测试
-func (c *CloudStore) PingTest() {
+func (c *CloudStore) PingTest() (err error) {
+	tmpFile := "cloud-store-test-file.txt"
+	saveFile := "cloud-store-test-file.txt"
+	text := "hello world"
 
+	defer func() {
+		if err != nil {
+			err = fmt.Errorf("Bucket是否私有：%v，错误信息：%v", c.Private, err.Error())
+		}
+	}()
+
+	err = ioutil.WriteFile(tmpFile, []byte(text), os.ModePerm)
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tmpFile)
+
+	if err = c.Upload(tmpFile, saveFile); err != nil {
+		return
+	}
+	if err = c.IsExist(saveFile); err != nil {
+		return
+	}
+	if !helper.Debug {
+		if err = c.Delete(saveFile); err != nil {
+			return
+		}
+	}
+
+	return
 }
