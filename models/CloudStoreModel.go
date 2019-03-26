@@ -293,8 +293,8 @@ func (c *CloudStore) DeleteImageFromHtml(htmlStr string) {
 }
 
 func (c *CloudStore) PingTest() (err error) {
-	tmpFile := "cloud-store-test-file.txt"
-	saveFile := "cloud-store-test-file.txt"
+	tmpFile := "dochub-test-file.txt"
+	saveFile := "dochub-test-file.txt"
 	text := "hello world"
 
 	defer func() {

@@ -5,6 +5,7 @@ package models
 type FormUpload struct {
 	Title, Md5, Intro, Tags, Ext, Filename string
 	Chanel, Pid, Cid, Exist, Size, Price   int
+	TmpFile                                string // 临时文件
 }
 
 //默认的SEO结构

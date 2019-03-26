@@ -3,9 +3,6 @@ package HomeControllers
 import (
 	"fmt"
 
-	"crypto/md5"
-	"io"
-
 	"strings"
 
 	"time"
@@ -59,89 +56,85 @@ func (this *UploadController) Get() {
 func (this *UploadController) Post() {
 	var (
 		ext     string //文档扩展名
-		tmpfile string //存在服务器的临时文件
+		tmpFile string //存在服务器的临时文件
 		dir     = fmt.Sprintf("./uploads/%v/%v", time.Now().Format("2006/01/02"), this.IsLogin)
 		form    models.FormUpload
 		err     error
 	)
 
-	//1、用户是否已登录
 	if this.IsLogin == 0 {
 		this.ResponseJson(false, "您当前未登录，请先登录")
 	}
 
 	this.ParseForm(&form)
-	//检查必填字段是否已经填写完毕
+
 	if len(form.Title) == 0 || form.Chanel*form.Pid*form.Cid == 0 {
 		this.ResponseJson(false, "文档名称、频道、一级文档分类、二级文档分类均不能为空")
 	}
 
-	//写死的范围，0-20，即文档收费范围
-	form.Price = helper.NumberRange(form.Price, 0, 20)
+	//写死的范围，-1 ~ 20，即文档收费范围，其中 -1 表示禁止下载
+	form.Price = helper.NumberRange(form.Price, -1, 20)
 
-	//创建文档模型对象
-	//ModelDoc := models.Document{}
-	//文件在文档存档表中已存在，则不接收文档处理
+	//非法文件，提示不允许上传，这里再检测一次
+	if models.NewDocument().IsIllegal(form.Md5) {
+		this.ResponseJson(false, "您上传的文档已被站点标记为不符合要求的文档，暂时不允许上传。")
+	}
 
-	//非法文件，提示不允许上传，这里检测一次
+	// 文档已存在
+	if len(form.Md5) == 32 && form.Exist == 1 {
+		if err = models.HandleExistDoc(this.IsLogin, form); err != nil {
+			helper.Logger.Error("用户(%v)文档上传失败：%v", this.IsLogin, err.Error())
+			this.ResponseJson(false, "啊哦，文档上传失败...重试一下吧。")
+		}
+		this.ResponseJson(true, "恭喜您，文档上传成功")
+	}
+
+	// 文档不存在：1、文档信息入库; 2、
+
+	//文件在文档库中未存在，则接收文件并做处理
+	f, fh, err := this.GetFile("File")
+	if err != nil {
+		this.ResponseJson(false, err.Error())
+	}
+	defer f.Close()
+	//判断文档格式是否被允许
+
+	ext = strings.ToLower(filepath.Ext(fh.Filename))
+	if _, ok := helper.AllowedUploadDocsExt[ext]; !ok {
+		this.ResponseJson(false, "您上传的文档格式不正确，请上传正确格式的文档")
+	}
+	form.Md5 = helper.ComputeFileMD5(f)
+	form.Exist = 0 //哪怕存在了，这里也设置为0
+	form.Ext = ext
+	form.Filename = fh.Filename
+
+	//非法文件，提示不允许上传。这里再检测一次，同时删除文档
 	if models.NewDocument().IsIllegal(form.Md5) {
 		this.ResponseJson(false, "您上传的文档已被站点标记为不符合要求的文档，暂时不允许上传分享。")
 	}
 
-	if len(form.Md5) == 32 && form.Exist == 1 {
-		err = models.HandleExistDoc(this.IsLogin, form)
-	} else {
-		//文件在文档库中未存在，则接收文件并做处理
-		f, fh, err := this.GetFile("File")
-		if err != nil {
-			this.ResponseJson(false, err.Error())
-		}
-		defer f.Close()
-		//判断文档格式是否被允许
+	//如果文档已经存在，则直接调用处理
+	if models.NewDocument().IsExistByMd5(form.Md5) > 0 {
+		models.HandleExistDoc(this.IsLogin, form)
+		this.ResponseJson(true, "文档上传成功")
+	}
 
-		ext = strings.ToLower(filepath.Ext(fh.Filename))
-		if _, ok := helper.AllowedUploadDocsExt[ext]; !ok {
-			this.ResponseJson(false, "您上传的文档格式不正确，请上传正确格式的文档")
-		}
-		//获取文件MD5
-		md5func := func(file io.Reader) string {
-			md5h := md5.New()
-			io.Copy(md5h, file)
-			return fmt.Sprintf("%x", md5h.Sum(nil))
-		}
-		form.Md5 = md5func(f)
-		form.Exist = 0 //哪怕存在了，这里也设置为0
-		form.Ext = ext
-		form.Filename = fh.Filename
-
-		//非法文件，提示不允许上传。这里再检测一次，同时删除文档
-		if models.NewDocument().IsIllegal(form.Md5) {
-			this.ResponseJson(false, "您上传的文档已被站点标记为不符合要求的文档，暂时不允许上传分享。")
-		}
-
-		//如果文档已经存在，则直接调用处理
-		if models.NewDocument().IsExistByMd5(form.Md5) > 0 {
-			models.HandleExistDoc(this.IsLogin, form)
-			this.ResponseJson(true, "文档上传成功")
-		}
-
-		os.MkdirAll(dir, 0777)
-		tmpfile = dir + "/" + form.Md5 + "." + ext
-		err = this.SaveToFile("File", tmpfile)
-		if err != nil {
-			this.ResponseJson(false, "文档存储失败，请重新上传")
-		}
-		if info, err := os.Stat(tmpfile); err == nil {
-			form.Size = int(info.Size())
-		}
-		switch ext {
-		case "pdf": //处理pdf文档
-			go models.HandlePdf(this.IsLogin, tmpfile, form)
-		case "umd", "epub", "chm", "txt", "mobi": //处理无法转码实现在线浏览的文档
-			go models.HandleUnOffice(this.IsLogin, tmpfile, form)
-		default: //处理office文档
-			go models.HandleOffice(this.IsLogin, tmpfile, form)
-		}
+	os.MkdirAll(dir, 0777)
+	tmpFile = dir + "/" + form.Md5 + "." + ext
+	err = this.SaveToFile("File", tmpFile)
+	if err != nil {
+		this.ResponseJson(false, "文档存储失败，请重新上传")
+	}
+	if info, err := os.Stat(tmpFile); err == nil {
+		form.Size = int(info.Size())
+	}
+	switch ext {
+	case "pdf": //处理pdf文档
+		go models.HandlePdf(this.IsLogin, tmpFile, form)
+	case "umd", "epub", "chm", "txt", "mobi": //处理无法转码实现在线浏览的文档
+		go models.HandleUnOffice(this.IsLogin, tmpFile, form)
+	default: //处理office文档
+		go models.HandleOffice(this.IsLogin, tmpFile, form)
 	}
 
 	if err != nil {

@@ -821,3 +821,9 @@ func DeleteSlice(slice []string, keys ...string) []string {
 
 	return slice
 }
+
+func ComputeFileMD5(file io.Reader) string {
+	md5h := md5.New()
+	io.Copy(md5h, file)
+	return fmt.Sprintf("%x", md5h.Sum(nil))
+}
