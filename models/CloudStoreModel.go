@@ -15,6 +15,7 @@ import (
 type CloudStore struct {
 	Private       bool
 	StoreType     helper.ConfigCate
+	CanGZIP       bool
 	client        interface{}
 	config        interface{}
 	expire        int64
@@ -54,6 +55,7 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 		cs.privateDomain = cfg.PrivateBucketDomain
 		cs.publicDomain = cfg.PublicBucketDomain
 		cs.client, err = CloudStore2.NewOSS(cfg.AccessKey, cfg.SecretKey, cfg.Endpoint, bucket, domain)
+		cs.CanGZIP = true
 	case StoreObs:
 		cfg := cs.config.(*ConfigObs)
 		bucket := cfg.PublicBucket
@@ -114,6 +116,7 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 		cs.privateDomain = cfg.PrivateBucketDomain
 		cs.publicDomain = cfg.PublicBucketDomain
 		cs.client, err = CloudStore2.NewMinIO(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
+		cs.CanGZIP = true
 	case StoreBos:
 		cfg := cs.config.(*ConfigBos)
 		bucket := cfg.PublicBucket
@@ -129,6 +132,7 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 		cs.privateDomain = cfg.PrivateBucketDomain
 		cs.publicDomain = cfg.PublicBucketDomain
 		cs.client, err = CloudStore2.NewBOS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
+		cs.CanGZIP = true
 	case StoreCos:
 		cfg := cs.config.(*ConfigCos)
 		bucket := cfg.PublicBucket
@@ -144,6 +148,7 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 		cs.privateDomain = cfg.PrivateBucketDomain
 		cs.publicDomain = cfg.PublicBucketDomain
 		cs.client, err = CloudStore2.NewCOS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.AppId, cfg.Region, domain)
+		cs.CanGZIP = true
 	}
 	return
 }

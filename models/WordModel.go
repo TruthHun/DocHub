@@ -8,7 +8,13 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-//关键字记录表，后期用这个来做相关资源功能
+// ============================ //
+// 废弃！
+// 相关文档的功能，以后通过 ElasticSearch 来实现
+// 废弃！
+// ============================ //
+
+// 关键字记录表，后期用这个来做相关资源功能
 type Word struct {
 	Id     int    `orm:"column(Id)"`
 	Wd     string `orm:"column(Wd);size(20);unique"`       //关键字

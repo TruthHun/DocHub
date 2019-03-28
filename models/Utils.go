@@ -1,10 +1,14 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/astaxie/beego"
 
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego/orm"
@@ -12,18 +16,18 @@ import (
 
 // 文档处理
 func DocumentProcess(uid int, form FormUpload) (err error) {
-	o := orm.NewOrm()
-	o.Begin()
-	defer func() {
-		if err != nil {
-			o.Rollback()
-		} else {
-			o.Commit()
-		}
-	}()
+	// 1. 计算文档 md5
+	// 2. 判断文档是否合法
+	// 3. 存入 document_store
+	// 4. 存入 document
+	// 5. 存入 document_info
+	// 6. 文档分类数量增加 category 表
+	// 7. 总文档数增加
+	// 8. 用户积分和文档数量增加
+	// 9. 积分记录
 
-	now := int(time.Now().Unix())
-	isExist := false
+	sys, _ := NewSys().Get()
+	score := 0 // 文档已被上传的话，获得的积分为0
 
 	var doc = &Document{
 		Title:       form.Title,
@@ -31,6 +35,53 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 		Keywords:    form.Tags,
 		Description: form.Intro,
 	}
+
+	o := orm.NewOrm()
+	o.Begin()
+	defer func() {
+		if err != nil {
+			o.Rollback()
+			os.Remove(form.TmpFile)
+		} else {
+			o.Commit()
+			if helper.Debug {
+				beego.Debug("============")
+				beego.Debug("form: %+v", form)
+				beego.Debug("doc: %+v", doc)
+				beego.Debug("============")
+			}
+			if score > 0 {
+				go DocumentConvert(form.TmpFile, form.Md5, sys.PreviewPage)
+			}
+			go func() {
+				if errIndex := NewElasticSearchClient().BuildIndexById(doc.Id); err != nil {
+					helper.Logger.Error("重建索引失败：%v", errIndex.Error())
+				}
+			}()
+		}
+	}()
+
+	var (
+		errForbidden = errors.New("您上传的文档已被管理员禁止上传")
+		errRetry     = errors.New("文档上传失败，请重新上传")
+	)
+
+	var file *os.File
+	file, err = os.Open(form.TmpFile)
+	if err == nil {
+		defer file.Close()
+		form.Md5 = helper.ComputeFileMD5(file)
+	}
+
+	if len(form.Md5) != 32 {
+		return errRetry
+	}
+
+	if illegal := doc.IsIllegal(form.Md5); illegal {
+		return errForbidden
+	}
+
+	now := int(time.Now().Unix())
 
 	var info = &DocumentInfo{
 		Uid:         uid,
@@ -50,29 +101,141 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 
 	var store = &DocumentStore{}
 
-	if form.Exist == 1 && len(form.Md5) == 32 {
-		o.QueryTable(GetTableDocumentStore()).Filter("Md5", form.Md5).One(store)
-		if store.Id > 0 {
-			isExist = true
+	o.QueryTable(GetTableDocumentStore()).Filter("Md5", form.Md5).One(store)
+	if store.Id == 0 {
+		// 文档未被上传过，设置用户获得的积分
+		score = sys.Reward
+
+		var fileInfo os.FileInfo
+		fileInfo, err = os.Stat(form.TmpFile)
+		if err != nil {
+			return errRetry
+		}
+		store = &DocumentStore{
+			Md5:         form.Md5,
+			Ext:         strings.TrimLeft(form.Ext, "."),
+			Size:        int(fileInfo.Size()),
+			ModTime:     int(fileInfo.ModTime().Unix()),
+			PreviewPage: sys.PreviewPage,
+			PreviewExt:  "svg",
+			Page:        0, //文档正在转换中，页码数设置为 0
+		}
+		store.ExtCate, store.ExtNum = helper.GetExtCate(form.Ext)
+		_, err = o.Insert(store)
+		if err != nil {
+			helper.Logger.Error(err.Error())
+			return errRetry
 		}
 	}
 
-	if store.Id == 0 { // 计算文档md5，并入库
-
+	if _, err = o.Insert(doc); err != nil {
+		helper.Logger.Error(err.Error())
+		return errRetry
 	}
 
 	info.DsId = store.Id
+	info.Id = doc.Id
+	_, err = o.Insert(info)
+	if err != nil {
+		helper.Logger.Error(err.Error())
+		return errRetry
+	}
 
-	var (
-		word = &Word{}
-	)
+	// 分类统计数增加
+	sqlCate := fmt.Sprintf("update `%v` set `Cnt`=`Cnt`+1 where `Id` in(?,?,?) limit 3", GetTableCategory())
+	if _, err = o.Raw(sqlCate, form.Cid, form.Chanel, form.Pid).Exec(); err != nil {
+		helper.Logger.Error(err.Error())
+		return errRetry
+	}
+	// 总文档数增加
+	sqlSys := fmt.Sprintf("update `%v` set `CntDoc`=`CntDoc`+1 where `Id`=1", GetTableSys())
+	if _, err = o.Raw(sqlSys).Exec(); err != nil {
+		helper.Logger.Error(err.Error())
+		return errRetry
+	}
 
+	// 用户文档数量和积分数量增加
+	sqlUser := fmt.Sprintf("update `%v` set `Document`=`Document`+1,`Coin`=`Coin`+? where `Id`=?", GetTableUserInfo())
+	if _, err = o.Raw(sqlUser, score, uid).Exec(); err != nil {
+		helper.Logger.Error(err.Error())
+		return errRetry
+	}
+
+	coinLog := &CoinLog{
+		Uid:        uid,
+		Coin:       score,
+		TimeCreate: now,
+	}
+
+	// 增加积分变更记录
+	coinLog.Log = "分享了一篇已被分享过的文档，获得 %v 个积分"
+	if score > 0 {
+		coinLog.Log = "分享了一篇未被分享过的文档，获得 %v 个积分"
+	}
+	coinLog.Log = fmt.Sprintf(coinLog.Log, score)
+	if _, err = o.Insert(coinLog); err != nil {
+		helper.Logger.Error(err.Error())
+		return errRetry
+	}
 	return
 }
 
 // 文档转换
-func DocumentConvert(tmpFile string, fileMD5 string) {
+// @param           tmpFile         临时存储的文件
+// @param           fileMD5         文件md5
+// @param           page            需要转换的页数，0表示全部转换
+func DocumentConvert(tmpFile string, fileMD5 string, page ...int) (err error) {
+	// 1. 先把原文档上传到云存储
+	// 2. 把文档转成 PDF（如果原文档不是PDF的话）
+	// 3. 提取 PDF 文档中的部分文本内容
+	// 4. 把 PDF 转 svg
+	// 5. 把 SVG 转 JPG 封面（封面需要裁剪）
+	// 6. 判断云存储类型，以确定是否需要压缩 svg 成gzip（先加水印再压缩）
+	// 7. 上传 svg、jpeg 等到云存储
+	// 8. 更新 document_store 表的信息，如页数、SVG宽高
+	// 9. 更新 document_info 中的文档转换状态为正常状态
 
+	if _, err = os.Stat(tmpFile); err != nil {
+		helper.Logger.Error(err.Error())
+		return
+	}
+
+	ext := filepath.Ext(tmpFile)
+	extLower := strings.ToLower(ext)
+	tmpDir := strings.TrimSuffix(tmpFile, ext)
+	pdfFile := tmpDir + ".pdf"
+	defer func() {
+		os.Remove(tmpFile)
+		os.Remove(pdfFile)
+		os.RemoveAll(tmpDir)
+	}()
+
+	var (
+		clientPrivate *CloudStore
+		clientPublic  *CloudStore
+	)
+
+	if clientPrivate, err = NewCloudStore(true); err != nil {
+		helper.Logger.Error(err.Error())
+		return
+	}
+
+	if clientPublic, err = NewCloudStore(true); err != nil {
+		helper.Logger.Error(err.Error())
+		return
+	}
+
+	if err = clientPrivate.Upload(tmpFile, fileMD5+ext, helper.HeaderDisposition(filepath.Base(tmpFile))); err != nil {
+		helper.Logger.Error(err.Error())
+		return
+	}
+
+	// TODO: 判断当前文档是否需要转 PDF
+	switch extLower {
+
+	}
+
+	return
 }
 
 //处理已经存在了的文档
