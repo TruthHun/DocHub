@@ -17,6 +17,8 @@ func ConvertPDF2SVG(pdfFile, svgFile string, pageNO int) (err error) {
 	pdf2svg := strings.TrimSpace(GetConfig("depend", "pdf2svg", "pdf2svg"))
 
 	//Usage: pdf2svg <in file.pdf> <out file.svg> [<page no>]
+	pdfFile, _ = filepath.Abs(pdfFile)
+	svgFile, _ = filepath.Abs(svgFile)
 	args := []string{pdfFile, svgFile, strconv.Itoa(pageNO)}
 	cmd := exec.Command(pdf2svg, args...)
 	if strings.HasPrefix(pdf2svg, "sudo") {
@@ -36,11 +38,10 @@ func ConvertPDF2SVG(pdfFile, svgFile string, pageNO int) (err error) {
 }
 
 //office文档转pdf，返回转化后的文档路径和错误
-func OfficeToPDF(office string) (err error) {
+func OfficeToPDF(file string) (err error) {
 	soffice := strings.TrimSpace(GetConfig("depend", "soffice", "soffice"))
-	dirSlice := strings.Split(office, "/")
-	dir := strings.Join(dirSlice[0:(len(dirSlice)-1)], "/")
-	args := []string{"--headless", "--invisible", "--convert-to", "pdf", office, "--outdir", dir}
+	file, _ = filepath.Abs(file)
+	args := []string{"--headless", "--invisible", "--convert-to", "pdf", file, "--outdir", filepath.Dir(file)}
 	if strings.HasPrefix(soffice, "sudo") {
 		args = append([]string{strings.TrimPrefix(soffice, "sudo")}, args...)
 		soffice = "sudo"
@@ -63,13 +64,18 @@ func OfficeToPDF(office string) (err error) {
 }
 
 //非office文档(.txt,.mobi,.epub)转pdf文档
-func UnOfficeToPDF(file string) (pdfFile string, err error) {
+func ConvertByCalibre(file string, ext ...string) (resFile string, err error) {
 	//calibre := beego.AppConfig.DefaultString("calibre", "ebook-convert")
+	e := ".pdf"
+	if len(ext) > 0 {
+		e = ext[0]
+	}
+	file, _ = filepath.Abs(file)
 	calibre := strings.TrimSpace(GetConfig("depend", "calibre", "ebook-convert"))
-	pdfFile = filepath.Dir(file) + "/" + strings.TrimSuffix(filepath.Base(file), filepath.Ext(file)) + ".pdf"
+	resFile = filepath.Dir(file) + "/" + strings.TrimSuffix(filepath.Base(file), filepath.Ext(file)) + e
 	args := []string{
 		file,
-		pdfFile,
+		resFile,
 		"--paper-size", "a4",
 		"--pdf-default-font-size", "16",
 		"--pdf-page-margin-bottom", "36",
@@ -98,6 +104,8 @@ func UnOfficeToPDF(file string) (pdfFile string, err error) {
 //将PDF、SVG文件转成jpg图片格式。注意：如果pdf只有一页，则文件后缀不会出现"-0.jpg"这种情况，否则会出现"-0.jpg,-1.jpg"等
 func ConvertToJPEG(file string) (cover string, err error) {
 	//convert := beego.AppConfig.DefaultString("imagick", "convert")
+	file, _ = filepath.Abs(file)
+
 	convert := strings.TrimSpace(GetConfig("depend", "imagemagick", "convert"))
 	cover = file + ".jpg"
 	args := []string{"-density", "150", "-quality", "100", file, cover}
@@ -123,26 +131,44 @@ func ConvertToJPEG(file string) (cover string, err error) {
 //@param			from		起始页
 //@param			to			截止页
 func ExtractTextFromPDF(file string, from, to int) (content string) {
+	file, _ = filepath.Abs(file)
 	pdftotext := strings.TrimSpace(GetConfig("depend", "pdftotext"))
 	textfile := file + ".txt"
-	defer os.Remove(textfile)
 	args := []string{"-f", strconv.Itoa(from), "-l", strconv.Itoa(to), file, textfile}
 	if strings.HasPrefix(pdftotext, "sudo") {
 		args = append([]string{strings.TrimPrefix(pdftotext, "sudo")}, args...)
 		pdftotext = "sudo"
 	}
+	if Debug {
+		beego.Debug(pdftotext, strings.Join(args, " "))
+	} else {
+		defer os.Remove(textfile)
+	}
 	err := exec.Command(pdftotext, args...).Run()
+	if err != nil {
+		Logger.Error(err.Error())
+	}
+	content = getTextFormTxtFile(textfile)
+	if content == "" {
+		os.Remove(textfile)
+		textfile, _ = ConvertByCalibre(file, ExtTXT)
+		content = getTextFormTxtFile(textfile)
+	}
+	return
+}
+
+func getTextFormTxtFile(textfile string) (content string) {
+	b, err := ioutil.ReadFile(textfile)
 	if err != nil {
 		Logger.Error(err.Error())
 		return
 	}
-	if b, err := ioutil.ReadFile(textfile); err == nil {
-		content = string(b)
+
+	content = string(b)
+	if len(content) > 0 {
 		content = strings.Replace(content, "\t", " ", -1)
 		content = strings.Replace(content, "\n", " ", -1)
 		content = strings.Replace(content, "\r", " ", -1)
-	} else {
-		Logger.Error(err.Error())
 	}
 	return
 }

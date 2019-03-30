@@ -365,7 +365,7 @@ type PdfRet struct {
 //@param            file            pdf文件
 //@return           pages           pdf文件页码
 //@return           err             错误
-func GetPdfPagesNum(file string) (pages int, err error) {
+func getPdfPagesNum(file string) (pages int, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = errors.New(fmt.Sprintf("%v", r))
@@ -443,27 +443,33 @@ func ScanDir(dir string) (files []string) {
 }
 
 //统计PDF的页数
-//@param            filepath            文件路径
+//@param            file                文件路径
 //@return           pagenum             页码，当返回错误时，页码为0
 //@return           err                 错误
-func CountPdfPages(filepath string) (pagenum int, err error) {
-	if bs, err := ioutil.ReadFile(filepath); err != nil {
-		return pagenum, err
-	} else {
-		content := string(bs)
-		arr := strings.Split(content, "/Pages")
-		l := len(arr)
-		if l > 0 {
-			arr = strings.Split(arr[l-1], "endobj")
-			if l = len(arr); l > 0 {
-				return len(strings.Split(arr[0], "0 R")) - 1, nil
-			} else {
-				return 0, errors.New(fmt.Sprintf(`%v:"endobj"分割时失败`, filepath))
-			}
-		} else {
-			return 0, errors.New(fmt.Sprintf(`%v:"/Pages"分割时失败`, filepath))
-		}
+func CountPDFPages(file string) (pageNum int, err error) {
+	// 优先使用这种PDF分页统计的方式，如果PDF版本比支持，则再使用下一种PDF统计方式。所以这里报错了的话，不返回
+	pageNum, err = getPdfPagesNum(file)
+	if err == nil {
+		return
 	}
+
+	var p []byte
+	p, err = ioutil.ReadFile(file)
+	if err != nil {
+		return
+	}
+
+	content := string(p)
+	arr := strings.Split(content, "/Pages")
+	l := len(arr)
+	if l > 0 {
+		arr = strings.Split(arr[l-1], "endobj")
+		if l = len(arr); l > 0 {
+			return len(strings.Split(arr[0], "0 R")) - 1, nil
+		}
+		return 0, errors.New(fmt.Sprintf(`%v:"endobj"分割时失败`, file))
+	}
+	return 0, errors.New(fmt.Sprintf(`%v:"/Pages"分割时失败`, file))
 }
 
 //文档评分处理

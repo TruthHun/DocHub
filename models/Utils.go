@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -94,7 +95,7 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 		Vcnt:        0,
 		Ccnt:        0,
 		Score:       30000,
-		ScorePeople: 1,
+		ScorePeople: 0,
 		Status:      DocStatusConverting,
 		Price:       form.Price,
 	}
@@ -120,6 +121,9 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 			PreviewExt:  "svg",
 			Page:        0, //文档正在转换中，页码数设置为 0
 		}
+		if form.Ext == "" {
+			form.Ext = filepath.Ext(form.TmpFile)
+		}
 		store.ExtCate, store.ExtNum = helper.GetExtCate(form.Ext)
 		_, err = o.Insert(store)
 		if err != nil {
@@ -135,6 +139,9 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 
 	info.DsId = store.Id
 	info.Id = doc.Id
+	if score > 0 {
+		info.Status = DocStatusNormal
+	}
 	_, err = o.Insert(info)
 	if err != nil {
 		helper.Logger.Error(err.Error())
@@ -168,11 +175,11 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 	}
 
 	// 增加积分变更记录
-	coinLog.Log = "分享了一篇已被分享过的文档，获得 %v 个积分"
+	coinLog.Log = "分享了一篇已被分享过的文档《%v》，获得 %v 个积分"
 	if score > 0 {
-		coinLog.Log = "分享了一篇未被分享过的文档，获得 %v 个积分"
+		coinLog.Log = "分享了一篇未被分享过的文档《%v》，获得 %v 个积分"
 	}
-	coinLog.Log = fmt.Sprintf(coinLog.Log, score)
+	coinLog.Log = fmt.Sprintf(coinLog.Log, doc.Filename, score)
 	if _, err = o.Insert(coinLog); err != nil {
 		helper.Logger.Error(err.Error())
 		return errRetry
@@ -194,19 +201,28 @@ func DocumentConvert(tmpFile string, fileMD5 string, page ...int) (err error) {
 	// 7. 上传 svg、jpeg 等到云存储
 	// 8. 更新 document_store 表的信息，如页数、SVG宽高
 	// 9. 更新 document_info 中的文档转换状态为正常状态
+	// 10. 更新 document_text 中的文档内容信息
 
 	if _, err = os.Stat(tmpFile); err != nil {
 		helper.Logger.Error(err.Error())
 		return
 	}
 
+	if helper.Debug {
+		helper.Logger.Debug("文档转换中: %v ==> %v", tmpFile, fileMD5)
+	}
+
 	ext := filepath.Ext(tmpFile)
 	extLower := strings.ToLower(ext)
 	tmpDir := strings.TrimSuffix(tmpFile, ext)
-	pdfFile := tmpDir + ".pdf"
+	os.MkdirAll(tmpDir, os.ModePerm)
+	pdfFile := tmpDir + helper.ExtPDF
+	coverJPG := tmpDir + ".jpg" //default
+
 	defer func() {
 		os.Remove(tmpFile)
 		os.Remove(pdfFile)
+		os.Remove(coverJPG)
 		os.RemoveAll(tmpDir)
 	}()
 
@@ -220,7 +236,7 @@ func DocumentConvert(tmpFile string, fileMD5 string, page ...int) (err error) {
 		return
 	}
 
-	if clientPublic, err = NewCloudStore(true); err != nil {
+	if clientPublic, err = NewCloudStore(false); err != nil {
 		helper.Logger.Error(err.Error())
 		return
 	}
@@ -230,9 +246,145 @@ func DocumentConvert(tmpFile string, fileMD5 string, page ...int) (err error) {
 		return
 	}
 
-	// TODO: 判断当前文档是否需要转 PDF
-	switch extLower {
+	if _, ok := helper.AllowedUploadDocsExt[extLower]; !ok {
+		return errors.New("不允许上传的文档类型")
+	}
 
+	store := &DocumentStore{}
+	text := &DocText{}
+
+	o := orm.NewOrm()
+	o.QueryTable(GetTableDocumentStore()).Filter("Md5", fileMD5).One(store)
+	o.QueryTable(GetTableDocText()).Filter("Md5", fileMD5).One(text)
+	text.Md5 = fileMD5
+
+	// 只需要更新下转换状态
+	if extLower == helper.ExtUMD || extLower == helper.ExtCHM {
+		o.QueryTable(GetTableDocumentInfo()).Filter("DsId", store.Id).Update(orm.Params{
+			"Status": DocStatusNormal,
+		})
+		return
+	}
+
+	if extLower != helper.ExtPDF {
+		switch extLower {
+		case helper.ExtMOBI, helper.ExtEPUB, helper.ExtTXT:
+			if pdfFile, err = helper.ConvertByCalibre(tmpFile, helper.ExtPDF); err != nil {
+				helper.Logger.Error("文件(%v)转PDF失败：%v", tmpFile, err.Error())
+				return
+			}
+		default: // office
+			if err = helper.OfficeToPDF(tmpFile); err != nil {
+				helper.Logger.Error("文件(%v)转PDF失败：%v", tmpFile, err.Error())
+				return
+			}
+		}
+	} else {
+		pdfFile = tmpFile
+	}
+
+	store.Page, err = helper.CountPDFPages(pdfFile)
+	if err != nil {
+		return
+	}
+
+	maxPreview := store.Page
+
+	helper.Logger.Debug("store信息：", fmt.Sprintf("%+v", store))
+
+	if store.PreviewPage > 0 && store.PreviewPage < store.Page {
+		maxPreview = store.PreviewPage
+	}
+
+	text.Content = helper.ExtractTextFromPDF(pdfFile, 1, 10)
+	text.Content = beego.Substr(text.Content, 0, 4500)
+
+	ch := make(chan bool, 1)
+	go func() {
+		select {
+		case <-ch:
+			o.Begin()
+			_, errOrm := o.QueryTable(GetTableDocumentInfo()).Filter("DsId", store.Id).Update(orm.Params{
+				"Status": DocStatusNormal,
+			})
+
+			if errOrm == nil {
+				_, errOrm = o.Update(store)
+			}
+
+			if text.Id > 0 {
+				_, errOrm = o.Update(text)
+			} else {
+				_, errOrm = o.Insert(text)
+			}
+
+			if errOrm == nil {
+				o.Commit()
+			} else {
+				helper.Logger.Error(errOrm.Error())
+				o.Rollback()
+			}
+			close(ch)
+		}
+
+	}()
+
+	// PDF 转 SVG
+	var svgPages = make(map[int]string)
+	for i := 0; i < maxPreview; i++ {
+		pageNO := i + 1
+		svg := filepath.Join(tmpDir, strconv.Itoa(pageNO)+".svg")
+		if err = helper.ConvertPDF2SVG(pdfFile, svg, pageNO); err == nil {
+			svgPages[pageNO] = svg
+			if i == 0 {
+				if coverJPG, err = helper.ConvertToJPEG(svg); err == nil {
+					err = helper.CropImage(coverJPG, helper.CoverWidth, helper.CoverHeight)
+				}
+				if err != nil {
+					helper.Logger.Error(err.Error())
+				}
+				store.Width, store.Height = helper.ParseSvgWidthAndHeight(svg)
+				ch <- true
+			}
+		} else {
+			helper.Logger.Error(err.Error())
+		}
+	}
+
+	// 重置 err
+	if err != nil {
+		err = nil
+	}
+
+	// 上传 svg、jpg到云存储
+	errUpload := clientPublic.Upload(coverJPG, fileMD5+".jpg", helper.HeaderJPEG)
+	if errUpload != nil {
+		helper.Logger.Error(errUpload.Error())
+	}
+
+	var headers []map[string]string
+	headers = append(headers, helper.HeaderSVG)
+	for pageNO, svg := range svgPages {
+
+		save := fmt.Sprintf("%v/%v.svg", fileMD5, pageNO)
+		if helper.Debug {
+			beego.Debug("存储svg文件", svg, "==>", save)
+		}
+
+		errCompress := helper.CompressBySVGO(svg, svg)
+		if errCompress != nil {
+			helper.Logger.Error("SVGO压缩SVG失败：%v", errCompress.Error())
+		}
+		if clientPublic.CanGZIP {
+			if errCompress = helper.CompressByGzip(svg); err != nil {
+				helper.Logger.Error("GZIP压缩SVG失败：%v", errCompress.Error())
+			} else {
+				headers = append(headers, helper.HeaderGzip)
+			}
+		}
+		if errUpload = clientPublic.Upload(svg, save, headers...); errUpload != nil {
+			helper.Logger.Error(errUpload.Error())
+		}
 	}
 
 	return
@@ -305,10 +457,8 @@ func HandlePdf(uid int, tmpfile string, form FormUpload) (err error) {
 	}()
 
 	//先用第三方包统计页码，如果不兼容，则在使用自己简单封装的函数获取pdf文档页码。但是好像也有些不兼容
-	if pageNum, err = helper.GetPdfPagesNum(tmpfile); err != nil || pageNum == 0 {
-		if pageNum, err = helper.CountPdfPages(tmpfile); err != nil {
-			helper.Logger.Error(err.Error())
-		}
+	if pageNum, err = helper.CountPDFPages(tmpfile); err != nil {
+		helper.Logger.Error(err.Error())
 	}
 
 	if fileInfo, err = os.Stat(tmpfile); err != nil {
@@ -437,7 +587,7 @@ func HandleUnOffice(uid int, tmpfile string, form FormUpload) (err error) {
 	)
 	if form.Ext != ".umd" { //calibre暂时无法转换umd文档
 		//非umd文档，转PDF
-		if pdfFile, err = helper.UnOfficeToPDF(tmpfile); err == nil {
+		if pdfFile, err = helper.ConvertToPDFByCalibre(tmpfile); err == nil {
 			//如果转成pdf文档成功，则把原文档移动到OSS存储服务器
 			defer NewOss().MoveToOss(tmpfile, form.Md5+"."+form.Ext, false, true)
 			return HandlePdf(uid, pdfFile, form)
@@ -493,7 +643,7 @@ func HandleUnOffice(uid int, tmpfile string, form FormUpload) (err error) {
 		Vcnt:        0,
 		Ccnt:        0,
 		Score:       30000,
-		ScorePeople: 1,
+		ScorePeople: 0,
 		Status:      1,
 		Price:       form.Price,
 	}

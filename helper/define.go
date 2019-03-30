@@ -41,6 +41,42 @@ const (
 
 type ConfigCate string
 
+const (
+	//word
+	ExtDOC  = ".doc"
+	ExtDOCX = ".docx"
+	ExtRTF  = ".rtf"
+	ExtWPS  = ".wps"
+	ExtODT  = ".odt"
+
+	// power point
+	ExtPPT  = ".ppt"
+	ExtPPTX = ".pptx"
+	ExtPPS  = ".pps"
+	ExtPPSX = ".ppsx"
+	ExtDPS  = ".dps"
+	ExtODP  = ".odp"
+	ExtPOT  = ".pot"
+
+	// excel
+	ExtXLS  = ".xls"
+	ExtXLSX = ".xlsx"
+	ExtET   = ".et"
+	ExtODS  = ".ods"
+
+	// PDF
+	ExtPDF = ".pdf"
+
+	// text
+	ExtTXT = ".txt"
+
+	// other
+	ExtEPUB = ".epub"
+	ExtUMD  = ".umd"
+	ExtMOBI = ".mobi"
+	ExtCHM  = ".chm"
+)
+
 var (
 	//develop mode
 	Debug = beego.AppConfig.String("runmode") == "dev"
@@ -63,8 +99,9 @@ var (
 		".doc": true, ".docx": true, ".rtf": true, ".wps": true, ".odt": true, //word
 		".ppt": true, ".pptx": true, ".pps": true, ".ppsx": true, ".dps": true, ".odp": true, ".pot": true, // power point
 		".xls": true, ".xlsx": true, ".et": true, ".ods": true, // excel
-		".pdf": true,                                                           //pdf
-		".chm": true, ".epub": true, ".umd": true, ".mobi": true, ".txt": true, //other
+		".pdf":  true,                              //pdf
+		".epub": true, ".mobi": true, ".txt": true, //other
+		".umd": true, ".chm": true, //不能转化的电子书
 	}
 
 	// 图片尺寸
@@ -79,6 +116,8 @@ var (
 var (
 	HeaderGzip = map[string]string{"Content-Encoding": "gzip"}
 	HeaderSVG  = map[string]string{"Content-Type": "image/svg+xml"}
+	HeaderPNG  = map[string]string{"Content-type": "image/png"}
+	HeaderJPEG = map[string]string{"Content-type": "image/jpeg"}
 )
 
 func HeaderDisposition(name string) map[string]string {

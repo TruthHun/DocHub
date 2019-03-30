@@ -10,7 +10,6 @@ type DocText struct {
 	Id      int    `orm:"Column(Id)"`
 	Md5     string `orm:"size(32);default();column(Md5)"`       //文档的md5，之所以存储md5而不是文档的存档id，主要是因为文档在这之前没录入数据库
 	Content string `orm:"size(5000);default();column(Content)"` //文档提取到的文档内容
-	Status  bool   `orm:default(false);column(Status)`          //内容状态是否可用，如果可用，则会用于文档摘要的显示，否则不用于摘要显示
 }
 
 func NewDocText() *DocText {

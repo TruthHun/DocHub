@@ -75,6 +75,7 @@ func (this *UploadController) Post() {
 		}
 		file := fmt.Sprintf("%v%v", time.Now().Unix(), ext)
 		form.TmpFile = filepath.Join(dir, file)
+		form.Ext = ext
 		err = this.SaveToFile("File", form.TmpFile)
 		if err != nil {
 			helper.Logger.Error(err.Error())
