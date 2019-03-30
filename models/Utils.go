@@ -587,7 +587,7 @@ func HandleUnOffice(uid int, tmpfile string, form FormUpload) (err error) {
 	)
 	if form.Ext != ".umd" { //calibre暂时无法转换umd文档
 		//非umd文档，转PDF
-		if pdfFile, err = helper.ConvertToPDFByCalibre(tmpfile); err == nil {
+		if pdfFile, err = helper.ConvertByCalibre(tmpfile, helper.ExtPDF); err == nil {
 			//如果转成pdf文档成功，则把原文档移动到OSS存储服务器
 			defer NewOss().MoveToOss(tmpfile, form.Md5+"."+form.Ext, false, true)
 			return HandlePdf(uid, pdfFile, form)
