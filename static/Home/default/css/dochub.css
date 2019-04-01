@@ -8,6 +8,7 @@
 .visible-mobile{display: none;}
 .hidden-mobile{display: block;}
 body{background-color: #f6f6f6;}
+.zero-height{height: 0px !important;overflow: hidden !important;}
 .navbar-fixed-bottom,.navbar-fixed-top{min-width:970px}
 .lead{font-size:16px}
 .page-header{margin-bottom:30px}

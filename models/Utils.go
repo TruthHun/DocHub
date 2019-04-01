@@ -296,7 +296,7 @@ func DocumentConvert(tmpFile string, fileMD5 string, page ...int) (err error) {
 		maxPreview = store.PreviewPage
 	}
 
-	text.Content = helper.ExtractTextFromPDF(pdfFile, 1, 10)
+	text.Content = helper.ExtractTextFromPDF(pdfFile, 1, 20)
 	text.Content = beego.Substr(text.Content, 0, 4500)
 
 	ch := make(chan bool, 1)
@@ -330,7 +330,10 @@ func DocumentConvert(tmpFile string, fileMD5 string, page ...int) (err error) {
 	}()
 
 	// PDF 转 SVG
-	var svgPages = make(map[int]string)
+	var (
+		svgPages = make(map[int]string)
+		pages    []int // svg 页面队列，使图片上传按照页面顺序进行
+	)
 	for i := 0; i < maxPreview; i++ {
 		pageNO := i + 1
 		svg := filepath.Join(tmpDir, strconv.Itoa(pageNO)+".svg")
@@ -346,6 +349,7 @@ func DocumentConvert(tmpFile string, fileMD5 string, page ...int) (err error) {
 				store.Width, store.Height = helper.ParseSvgWidthAndHeight(svg)
 				ch <- true
 			}
+			pages = append(pages, pageNO)
 		} else {
 			helper.Logger.Error(err.Error())
 		}
@@ -364,29 +368,30 @@ func DocumentConvert(tmpFile string, fileMD5 string, page ...int) (err error) {
 
 	var headers []map[string]string
 	headers = append(headers, helper.HeaderSVG)
-	for pageNO, svg := range svgPages {
 
-		save := fmt.Sprintf("%v/%v.svg", fileMD5, pageNO)
-		if helper.Debug {
-			beego.Debug("存储svg文件", svg, "==>", save)
-		}
+	for _, pageNO := range pages {
+		if svg, ok := svgPages[pageNO]; ok {
+			save := fmt.Sprintf("%v/%v.svg", fileMD5, pageNO)
+			if helper.Debug {
+				beego.Debug("存储svg文件", svg, "==>", save)
+			}
 
-		errCompress := helper.CompressBySVGO(svg, svg)
-		if errCompress != nil {
-			helper.Logger.Error("SVGO压缩SVG失败：%v", errCompress.Error())
-		}
-		if clientPublic.CanGZIP {
-			if errCompress = helper.CompressByGzip(svg); err != nil {
-				helper.Logger.Error("GZIP压缩SVG失败：%v", errCompress.Error())
-			} else {
-				headers = append(headers, helper.HeaderGzip)
+			errCompress := helper.CompressBySVGO(svg, svg)
+			if errCompress != nil {
+				helper.Logger.Error("SVGO压缩SVG失败：%v", errCompress.Error())
+			}
+			if clientPublic.CanGZIP {
+				if errCompress = helper.CompressByGzip(svg); err != nil {
+					helper.Logger.Error("GZIP压缩SVG失败：%v", errCompress.Error())
+				} else {
+					headers = append(headers, helper.HeaderGzip)
+				}
+			}
+			if errUpload = clientPublic.Upload(svg, save, headers...); errUpload != nil {
+				helper.Logger.Error(errUpload.Error())
 			}
 		}
-		if errUpload = clientPublic.Upload(svg, save, headers...); errUpload != nil {
-			helper.Logger.Error(errUpload.Error())
-		}
 	}
-
 	return
 }
 
