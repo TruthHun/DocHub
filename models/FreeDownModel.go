@@ -1,6 +1,10 @@
 package models
 
-import "github.com/astaxie/beego/orm"
+import (
+	"time"
+
+	"github.com/astaxie/beego/orm"
+)
 
 //免费下载，如果用户花费金币下载了一次文档，下次在下载则免费
 type FreeDown struct {
@@ -22,7 +26,11 @@ func GetTableFreeDown() string {
 //@param            uid         用户id
 //@param            did         文档id，document id
 //@return           isFree      是否免费
-func (this *FreeDown) IsFreeDown(uid, did interface{}) (free FreeDown) {
+func (this *FreeDown) IsFreeDown(uid, did interface{}) (isFree bool) {
+	var free FreeDown
 	orm.NewOrm().QueryTable(GetTableFreeDown()).Filter("Uid", uid).Filter("Did", did).One(&free)
+	if free.Id > 0 && free.TimeCreate+NewSys().GetByField("FreeDay").FreeDay > int(time.Now().Unix()) {
+		return true
+	}
 	return
 }

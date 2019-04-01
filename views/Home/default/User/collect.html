@@ -31,7 +31,7 @@
                                     {{if and (eq (Interface2Int $.User.Id) $.LoginUid) $.Edit (gt $.LoginUid 0)}}
                                     <!--编辑模式-->
                                         <div title="{{.Title}}" class="thumbnail wenku-thumbnail-collect-edit">
-                                            <img class="img-responsive" onerror="this.src='/static/Common/img/cover.jpg'" src="{{DefPic .Cover}}"/>
+                                            <img class="img-responsive" onerror="this.src='/static/Common/img/cover.jpg'" src="{{DefaultImage .Cover}}"/>
                                             <div class="wenku-title">
                                                 <div class="btn-group">
                                                     <a href="javascript:void(0);" class="btn btn-primary btn-xs ModalFolderEditBtn" data-id="{{.Id}}"><i class="fa fa-edit"></i> 编辑</a>
@@ -43,7 +43,7 @@
                                         </div>
                                     {{else}}
                                         <a href="/user/{{$.User.Id}}/doc/cid/{{.Id}}" title="{{.Title}}" class="thumbnail">
-                                            <img class="img-responsive" onerror="this.src='/static/Common/img/cover.jpg'" src="{{DefPic .Cover}}"/>
+                                            <img class="img-responsive" onerror="this.src='/static/Common/img/cover.jpg'" src="{{DefaultImage .Cover}}"/>
                                             <div class="wenku-title">
                                                 <div>{{.Title}}</div>
                                                 <div class="help-block text-indent color-dark-white">{{.Description}}</div>

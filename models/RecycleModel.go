@@ -3,14 +3,11 @@ package models
 import (
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/TruthHun/DocHub/helper"
 
-	"strconv"
-	"strings"
-
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -210,7 +207,7 @@ func (this *DocumentRecycle) DeepDel(ids ...interface{}) (err error) {
 
 	go func() {
 		for _, item := range store {
-			this.DelFile(item.Md5, item.Ext, item.PreviewExt)
+			this.DelFile(item.Md5, item.Ext, item.PreviewExt, item.PreviewPage)
 		}
 	}()
 
@@ -260,54 +257,51 @@ func (this *DocumentRecycle) DelRows(ids ...interface{}) (err error) {
 	return
 }
 
-//根据md5，删除文档封面等
+//根据md5，删除文档、封面、预览文件等
 //@param                md5             文档md5
-//@param                ext             源文档(为转成pdf之前的文档)的扩展名
-//@param                prevExt         预览文件的扩展名，一般是svg
-func (this *DocumentRecycle) DelFile(md5 string, ext string, prevExt string) {
+func (this *DocumentRecycle) DelFile(md5, oriExt, prevExt string, previewPagesCount int) (err error) {
+
 	var (
-		bucketPrivate *oss.Bucket
-		bucketPublic  *oss.Bucket
-		err           error
-
-		cover     = md5 + ".jpg" //封面文件
-		prevFiles []string
-
-		folder       = md5
-		originalFile = md5 + "." + strings.TrimLeft(ext, ".")
-		pdfFile      = md5 + ".pdf"
+		cover         = md5 + ".jpg" //封面文件
+		pdfFile       = md5 + helper.ExtPDF
+		oriFile       = md5 + oriExt
+		svgFormat     = md5 + "/%v." + strings.TrimLeft(prevExt, ".")
+		clientPublic  *CloudStore
+		clientPrivate *CloudStore
 	)
 
-	fmt.Println("=====删除文件====", md5)
-
-	if !strings.HasPrefix(prevExt, ".") {
-		prevExt = "." + prevExt
+	if previewPagesCount <= 0 {
+		previewPagesCount = 1000 // default
 	}
 
-	if bucketPrivate, err = NewOss().NewBucket(false); err != nil {
+	clientPublic, err = NewCloudStore(false)
+	if err != nil {
 		helper.Logger.Error(err.Error())
 		return
 	}
 
-	if bucketPublic, err = NewOss().NewBucket(true); err != nil {
+	clientPrivate, err = NewCloudStore(true)
+	if err != nil {
 		helper.Logger.Error(err.Error())
 		return
 	}
 
-	if err = bucketPublic.DeleteObject(cover); err != nil {
+	if err = clientPrivate.Delete(oriFile, pdfFile); err != nil {
 		helper.Logger.Error(err.Error())
 	}
 
-	if _, err = bucketPrivate.DeleteObjects([]string{originalFile, pdfFile}); err != nil {
+	if err = clientPublic.Delete(cover); err != nil {
 		helper.Logger.Error(err.Error())
 	}
 
-	//OSS SDK没发现有可以直接删除文件夹的，所以这样去删除文件
-	for i := 1; i <= 1000; i++ {
-		prevFiles = append(prevFiles, folder+"/"+strconv.Itoa(i)+prevExt)
+	var svgs []string
+	for i := 0; i < previewPagesCount; i++ {
+		svgs = append(svgs, fmt.Sprintf(svgFormat, i+1))
 	}
-	if _, err = bucketPublic.DeleteObjects(prevFiles); err != nil {
+
+	if err = clientPublic.Delete(svgs...); err != nil {
 		helper.Logger.Error(err.Error())
 	}
 
+	return
 }

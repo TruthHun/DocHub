@@ -18,7 +18,7 @@
 				{{with .User}}
 					<div class="text-center row">
 						<div class="col-xs-5">
-							<a href="/user/{{.Id}}" title="{{.Username}}" class="thumbnail wenku-avatar"><img onerror="this.src='/static/Common/img/avatar.png'" alt="{{.Username}}" src="{{DefPic .Avatar}}"/></a>
+							<a href="/user/{{.Id}}" title="{{.Username}}" class="thumbnail wenku-avatar"><img onerror="this.src='/static/Common/img/avatar.png'" alt="{{.Username}}" src="{{DefaultImage .Avatar}}"/></a>
 						</div>
 						<div class="col-xs-7 text-left wenku-mgt-15px">
 							<div class="wenku-username"><a href="/user/{{.Id}}" target="_blank" title="{{.Username}}">{{.Username}}</a></div>
@@ -92,7 +92,7 @@
                 <div class="carousel-inner">
 				{{range $index,$banner:=.Banners}}
                     <a href="{{.Link}}" target="_blank" title="{{.Title}}" class="item {{if eq $index 0}}active{{end}}">
-                        <img src="{{DefPic .Picture}}" alt="{{.Title}}">
+                        <img src="{{DefaultImage .Picture}}" alt="{{.Title}}">
                         <div class="carousel-caption">{{.Title}}</div>
                     </a>
 				{{end}}

@@ -44,7 +44,7 @@
                             {{range .Lists}}
                             <div class="col-xs-3">
                                 <a href="/view/{{.Id}}" target="_blank" title="{{.Title}}" class="thumbnail">
-                                    <img class="img-responsive" alt="{{.Title}} 封面" onerror="this.src='/static/Common/img/cover.jpg'" src="{{DefPic .Md5}}"/>
+                                    <img class="img-responsive" alt="{{.Title}} 封面" onerror="this.src='/static/Common/img/cover.jpg'" src="{{DefaultImage .Md5}}"/>
                                     <img class="wenku-icon" alt="{{.ExtCate}}文档" src="/static/Home/default/img/{{.ExtCate}}_24.png"/>
                                     <div class="wenku-title">
                                         {{.Title}}

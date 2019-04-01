@@ -31,7 +31,10 @@ func init() {
 	helper.InitLogs()
 
 	//初始化分词器
-	go helper.Segmenter.LoadDictionary("./dictionary/dictionary.txt")
+	go func() {
+		helper.Segmenter.LoadDictionary("./dictionary/dictionary.txt")
+		beego.Info("==程序启动完毕==")
+	}()
 
 	beego.AddFuncMap("TimestampFormat", helper.TimestampFormat)
 	beego.AddFuncMap("Interface2Int", helper.Interface2Int)
@@ -46,15 +49,14 @@ func init() {
 	beego.AddFuncMap("DoesCollect", models.DoesCollect)                 //判断用户是否已收藏了该文档
 	beego.AddFuncMap("DoesSign", models.NewSign().DoesSign)             //用户今日是否已签到
 	beego.AddFuncMap("Friends", models.NewFriend().Friends)             //友情链接
-	beego.AddFuncMap("DefPic", models.NewOss().DefaultPicture)          //获取默认图片
 	beego.AddFuncMap("CategoryName", models.NewCategory().GetTitleById) //根据分类id获取分类名称
 	beego.AddFuncMap("IsIllegal", models.NewDocument().IsIllegal)       //根据md5判断文档是否是非法文档
 	beego.AddFuncMap("IsRemark", models.NewDocumentRemark().IsRemark)   //根据文档是否存在备注
-	beego.AddFuncMap("Xmd5", helper.Xmd5)                               //xmd5，MD5扩展加密
 	beego.AddFuncMap("BuildURL", helper.BuildURL)                       //创建URL
 	beego.AddFuncMap("HeightLight", helper.HeightLight)                 //高亮
 	beego.AddFuncMap("ReportReason", models.NewSys().GetReportReason)   //举报原因
 	beego.AddFuncMap("GetDescByMd5", models.NewDocText().GetDescByMd5)
 	beego.AddFuncMap("GetDescByDsId", models.NewDocText().GetDescByDsId)
 	beego.AddFuncMap("GetDescByDid", models.NewDocText().GetDescByDid)
+	beego.AddFuncMap("DefaultImage", models.GetImageFromCloudStore) //获取默认图片
 }

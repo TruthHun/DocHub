@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 
+	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -78,18 +79,45 @@ func (this *Collect) DelFolder(id, uid int) (err error) {
 		cf = CollectFolder{Id: id}
 		o  = orm.NewOrm()
 	)
-	if err = o.Read(&cf); err == nil && cf.Uid == uid {
-		if cf.Cnt > 0 {
-			err = errors.New("收藏夹删除失败：您要删除的收藏夹不为空")
-		} else {
-			if _, err = o.Delete(&cf, "Id"); err == nil {
-				if len(cf.Cover) > 0 {
-					go NewOss().DelFromOss(true, cf.Cover)
-				}
-				err = Regulate(GetTableUserInfo(), "Collect", -1, "Id=?", uid)
+	err = o.Read(&cf)
+	if err != nil {
+		return
+	}
+
+	if cf.Uid != uid {
+		return
+	}
+
+	if cf.Cnt > 0 {
+		err = errors.New("收藏夹删除失败：您要删除的收藏夹不为空")
+		return
+	}
+
+	o.Begin()
+	defer func() {
+		if err != nil {
+			o.Rollback()
+		}
+
+		o.Commit()
+
+		if len(cf.Cover) > 0 {
+			if cs, errCS := NewCloudStore(false); errCS != nil {
+				helper.Logger.Error(errCS.Error())
+			} else {
+				go cs.Delete(cf.Cover)
 			}
 		}
+
+	}()
+
+	if _, err = o.Delete(&cf, "Id"); err != nil {
+		return
 	}
+
+	sql := "update `%v` set `Collect`=`Collect`-1 where `Collect`>0 AND Id = ?"
+	_, err = o.Raw(sql, GetTableUserInfo(), uid).Exec()
+
 	return
 }
 

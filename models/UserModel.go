@@ -174,3 +174,151 @@ func (this *User) GetById(id interface{}) (params orm.Params, rows int64, err er
 	}
 	return
 }
+
+var (
+	errFailedToDown = errors.New("文档下载失败")
+	errParams       = errors.New("参数错误")
+	errNotFound     = errors.New("文档不存在")
+	errCannotDown   = errors.New("该文档不允许下载")
+	errNotExistUser = errors.New("用户不存在")
+	errLessCoin     = errors.New("金币不足")
+)
+
+// 判断用户是否可以下载指定文档
+// err 为 nil 表示可以下载
+func (this *User) CanDownloadFile(uid, docId int) (urlStr string, err error) {
+	// 1. 判断用户和文档是否存在
+	// 2. 判断用户是否可以免费下载，如果用户不可以免费下载，则再扣费之后，允许用户免费下载
+	// 3. 文档被下载次数增加，用户(文档下载人和文档分享人)积分变更，并增加两个用户的积分记录
+	// 4. 获取文档下载URL链接
+	if uid <= 0 || docId <= 0 {
+		err = errParams
+		return
+	}
+
+	o := orm.NewOrm()
+	o.Begin()
+	defer func() {
+		if err == nil {
+			o.Commit()
+		} else {
+			o.Rollback()
+		}
+	}()
+
+	now := int(time.Now().Unix())
+
+	u := &UserInfo{Id: uid}
+	err = o.Read(u)
+	if err != nil {
+		return
+	}
+
+	var docInfo = DocumentInfo{Id: docId}
+	if err = o.Read(&docInfo); err != nil {
+		helper.Logger.Error(err.Error())
+		err = errNotFound
+		return
+	}
+
+	if docInfo.Price < 0 {
+		err = errCannotDown
+		return
+	}
+
+	doc := &Document{Id: docId}
+	if err = o.Read(doc); err != nil {
+		helper.Logger.Error(err.Error())
+		err = errNotFound
+		return
+	}
+
+	store := &DocumentStore{Id: docInfo.DsId}
+	if err = o.Read(store); err != nil {
+		helper.Logger.Error(err.Error())
+		err = errNotFound
+		return
+	}
+
+	price := docInfo.Price
+
+	if u.Id == 0 {
+		err = errNotExistUser
+		return
+	}
+
+	isFree := NewFreeDown().IsFreeDown(uid, docId)
+	if isFree {
+		price = 0
+	}
+
+	if u.Coin < price {
+		err = errLessCoin
+		return
+	}
+
+	logDown := CoinLog{
+		Uid:        uid,
+		TimeCreate: now,
+	}
+	logShare := CoinLog{
+		Uid:        docInfo.Uid,
+		TimeCreate: now,
+	}
+
+	if price > 0 {
+		// 文档下载人，扣除积分
+		u.Coin = u.Coin - price
+		if _, err = o.Update(u); err != nil {
+			return
+		}
+		// 文档分享人，增加积分
+		sqlShareUser := fmt.Sprintf("update `%v` set `Coin`=`Coin`+? where Id = ?", GetTableUserInfo())
+		if _, err = o.Raw(sqlShareUser, price, docInfo.Uid).Exec(); err != nil {
+			return
+		}
+
+		// 增加免费下载记录
+		free := &FreeDown{Uid: uid, Did: docId, TimeCreate: now}
+		if _, err = o.Insert(free); err != nil {
+			return
+		}
+
+		logDown.Coin = -price
+		logDown.Log = fmt.Sprintf("下载文档(%v)，花费 %v 金币", doc.Title, price)
+
+		logShare.Coin = price
+		logShare.Log = fmt.Sprintf("您分享的文档(%v)被其他用户下载，获得 %v 金币", doc.Title, price)
+		if _, err = o.Insert(&logShare); err != nil {
+			helper.Logger.Error(err.Error())
+			err = errFailedToDown
+			return
+		}
+	} else {
+		logDown.Log = fmt.Sprintf("在免费期限内，下载同一篇文档(%v)免费", doc.Title)
+	}
+
+	if _, err = o.Insert(&logDown); err != nil {
+		helper.Logger.Error(err.Error())
+		err = errFailedToDown
+		return
+	}
+
+	docInfo.Dcnt += 1
+	if _, err = o.Update(&docInfo); err != nil {
+		return
+	}
+
+	var cs *CloudStore
+	cs, err = NewCloudStore(true)
+	if err != nil {
+		helper.Logger.Error(err.Error())
+		err = errFailedToDown
+		return
+	}
+
+	object := store.Md5 + "." + strings.TrimLeft(store.Ext, ".")
+	urlStr = cs.GetSignURL(object)
+
+	return
+}

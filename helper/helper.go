@@ -70,12 +70,6 @@ func Equal(itf1, itf2 interface{}) bool {
 	return fmt.Sprintf("%v", itf1) == fmt.Sprintf("%v", itf2)
 }
 
-//xmd5加密，扩展加密
-//@param            md5str          MD5字符串
-func Xmd5(md5str interface{}) string {
-	return fmt.Sprintf("%v", md5str)
-}
-
 //语言国际化，目前默认为中文
 func I18n(tag string, lang ...string) string {
 	if len(lang) == 0 {

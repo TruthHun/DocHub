@@ -1,6 +1,7 @@
 package AdminControllers
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/TruthHun/DocHub/models"
@@ -20,23 +21,32 @@ func (this *SingleController) Get() {
 
 //单页编辑，只编辑文本内容
 func (this *SingleController) Edit() {
-	var page models.Pages
+	var (
+		page models.Pages
+		cs   *models.CloudStore
+		err  error
+	)
+
+	cs, err = models.NewCloudStore(false)
+	if err != nil {
+		this.CustomAbort(http.StatusInternalServerError, err.Error())
+	}
+
 	this.Data["IsSingle"] = true
 	alias := this.GetString(":alias")
+
 	if this.Ctx.Request.Method == "POST" {
 		this.ParseForm(&page)
 		page.TimeCreate = int(time.Now().Unix())
-		page.Content = models.NewOss().HandleContent(page.Content, false)
-		if rows, err := orm.NewOrm().Update(&page); err == nil && rows > 0 {
-			this.ResponseJson(true, "更新成功")
-		} else if err != nil {
+		page.Content = cs.ImageWithoutDomain(page.Content)
+		_, err := orm.NewOrm().Update(&page)
+		if err != nil {
 			this.ResponseJson(false, err.Error())
-		} else {
-			this.ResponseJson(false, "更新失败，可能您未对内容做更改")
 		}
+		this.ResponseJson(true, "更新成功")
 	} else {
 		page, _ = models.NewPages().One(alias)
-		page.Content = models.NewOss().HandleContent(page.Content, true)
+		page.Content = cs.ImageWithDomain(page.Content)
 		this.Data["Data"] = page
 		this.TplName = "edit.html"
 	}
@@ -46,14 +56,16 @@ func (this *SingleController) Edit() {
 func (this *SingleController) Del() {
 	id, _ := this.GetInt("id")
 	var page = models.Pages{Id: id}
-	if err := orm.NewOrm().Read(&page); err != nil {
+	err := orm.NewOrm().Read(&page)
+	if err != nil {
 		this.ResponseJson(false, err.Error())
-	} else {
-		if _, err = orm.NewOrm().QueryTable(models.GetTablePages()).Filter("Id", page.Id).Delete(); err != nil {
-			this.ResponseJson(false, err.Error())
-		} else {
-			go models.NewOss().DelByHtmlPics(page.Content)
-			this.ResponseJson(true, "删除成功")
-		}
 	}
+	if _, err = orm.NewOrm().QueryTable(models.GetTablePages()).Filter("Id", page.Id).Delete(); err != nil {
+		this.ResponseJson(false, err.Error())
+	}
+
+	cs, _ := models.NewCloudStore(false)
+	go cs.DeleteImageFromHtml(page.Content)
+
+	this.ResponseJson(true, "删除成功")
 }

@@ -5,6 +5,9 @@ import (
 	"net/url"
 	"reflect"
 	"strconv"
+	"time"
+
+	"github.com/astaxie/beego"
 
 	"github.com/TruthHun/DocHub/helper"
 
@@ -258,17 +261,19 @@ func (this *Config) UpdateCloudStore(storeType helper.ConfigCate, cfg interface{
 			return
 		}
 	}
+	go this.UpdateGlobalConfig()
 	return
 }
 
 //更新全局config配置
 func (this *Config) UpdateGlobalConfig() {
-	if cfgs := this.All(); len(cfgs) > 0 {
-		for _, cfg := range cfgs {
-			helper.ConfigMap.Store(fmt.Sprintf("%v.%v", cfg.Category, cfg.Key), cfg.Value)
-		}
-	} else {
+	cfgs := this.All()
+	if len(cfgs) == 0 {
 		helper.Logger.Error("查询全局配置失败，config表中全局配置信息为空")
+	}
+	beego.Info(time.Now(), "更新全局配置")
+	for _, cfg := range cfgs {
+		helper.ConfigMap.Store(fmt.Sprintf("%v.%v", cfg.Category, cfg.Key), cfg.Value)
 	}
 }
 

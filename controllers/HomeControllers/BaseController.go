@@ -38,7 +38,6 @@ func (this *BaseController) Prepare() {
 	this.Layout = "Home/" + this.TplTheme + "/layout.html"
 
 	//防止跨站攻击
-	//this.Xsrf()//在有post表单的页面添加，避免每次都生成
 	//检测用户是否已经在cookie存在登录
 	this.checkCookieLogin()
 
@@ -54,21 +53,19 @@ func (this *BaseController) Prepare() {
 	this.Sys, _ = models.NewSys().Get()
 	this.Data["Version"] = version
 	this.Data["Sys"] = this.Sys
-	this.Data["PreviewDomain"] = strings.TrimRight(helper.GetConfig("oss", "preview_url"), "/")
 	this.Data["Chanels"] = models.NewCategory().GetByPid(0)
 	this.Data["Pages"], _, _ = models.NewPages().List(beego.AppConfig.DefaultInt("pageslimit", 6), 1)
 	this.Data["AdminId"] = helper.Interface2Int(this.GetSession("AdminId"))
 	this.Data["CopyrightDate"] = time.Now().Format("2006")
-}
 
-//自定义的文档错误
-func (this *BaseController) ErrorDiy(status, redirect, msg interface{}, timewait int) {
-	this.TplPrefix = ""
-	this.Data["status"] = status
-	this.Data["redirect"] = redirect
-	this.Data["msg"] = msg
-	this.Data["timewait"] = timewait
-	this.TplName = "Base/error_diy.html"
+	this.Data["PreviewDomain"] = "/"
+
+	if cs, err := models.NewCloudStore(false); err == nil {
+		this.Data["PreviewDomain"] = cs.GetPublicDomain()
+	} else {
+		helper.Logger.Error(err.Error())
+	}
+
 }
 
 //是否已经登录，如果已登录，则返回用户的id
@@ -93,16 +90,17 @@ func (this *BaseController) Xsrf() {
 func (this *BaseController) checkCookieLogin() {
 	secret := beego.AppConfig.DefaultString("CookieSecret", helper.DEFAULT_COOKIE_SECRET)
 	timestamp, ok := this.GetSecureCookie(secret, "uid")
-	if ok {
-		uid, ok := this.Ctx.GetSecureCookie(secret+timestamp, "token")
-		if ok && len(uid) > 0 {
-			if this.IsLogin = helper.Interface2Int(uid); this.IsLogin > 0 {
-				if info := models.NewUser().UserInfo(this.IsLogin); info.Status == false {
-					//被封禁的账号，重置cookie
-					this.ResetCookie()
-				}
-			}
-		} else {
+	if !ok {
+		return
+	}
+	uid, ok := this.Ctx.GetSecureCookie(secret+timestamp, "token")
+	if !ok || len(uid) == 0 {
+		this.ResetCookie()
+	}
+
+	if this.IsLogin = helper.Interface2Int(uid); this.IsLogin > 0 {
+		if info := models.NewUser().UserInfo(this.IsLogin); info.Status == false {
+			//被封禁的账号，重置cookie
 			this.ResetCookie()
 		}
 	}
@@ -128,9 +126,8 @@ func (this *BaseController) SetCookieLogin(uid interface{}) {
 func (this *BaseController) DocExist() {
 	if models.NewDocument().IsExistByMd5(this.GetString("md5")) > 0 {
 		this.ResponseJson(true, "文档存在")
-	} else {
-		this.ResponseJson(false, "文档不存在")
 	}
+	this.ResponseJson(false, "文档不存在")
 }
 
 //响应json
@@ -162,7 +159,8 @@ func (this *BaseController) Pages() {
 	this.Data["Seo"] = models.NewSeo().GetByPage("PC-Pages", page.Title, page.Keywords, page.Description, this.Sys.Site)
 	page.Vcnt += 1
 	orm.NewOrm().Update(&page, "Vcnt")
-	page.Content = models.NewOss().HandleContent(page.Content, true)
+	cs, _ := models.NewCloudStore(false)
+	page.Content = cs.ImageWithDomain(page.Content)
 
 	this.Data["Page"] = page
 	this.Data["Lists"], _, _ = models.NewPages().List(20, 1)

@@ -99,81 +99,26 @@ func (this *ViewController) Get() {
 //文档下载
 func (this *ViewController) Download() {
 	id, _ := this.GetInt(":id")
-	if id > 0 {
-		if this.IsLogin > 0 {
-			info, rows, err := models.NewDocument().GetById(id)
-			if err != nil {
-				helper.Logger.Error(err.Error())
-			}
-			if rows > 0 {
-				if helper.Interface2Int(info["Status"]) != -1 { //文档未被删除
-					//下载需要的金币[注意：price的值是负值，表示扣除金币]
-					price := -helper.Interface2Int(info["Price"])
-					free := models.NewFreeDown().IsFreeDown(this.IsLogin, id)
-					if free.Id > 0 {
-						if free.TimeCreate > int(time.Now().Unix())-this.Sys.FreeDay*24*3600 { //免费下载期限内
-							price = 0
-						}
-					}
-					if userinfo := models.NewUser().UserInfo(this.IsLogin); userinfo.Coin >= price {
-						//扣除金币
-						models.Regulate(models.GetTableUserInfo(), "Coin", price, fmt.Sprintf("Id=%v", info["Uid"]))
-						logs := models.CoinLog{
-							Uid:  this.IsLogin,
-							Coin: price,
-							Log:  fmt.Sprintf("下载文档(%v)，消耗 %v 个金币", info["Title"], price),
-						}
-						models.NewCoinLog().LogRecord(logs)
-						if price < 0 { //分享文档的用户金币增加
-							models.Regulate(models.GetTableUserInfo(), "Coin", -price, fmt.Sprintf("Id=%v", info["Uid"]))
-							logs = models.CoinLog{
-								Uid:  helper.Interface2Int(info["Uid"]),
-								Coin: -price,
-								Log:  fmt.Sprintf("文档(%v)被下载，获得 %v 个金币", info["Title"], -price),
-							}
-							models.NewCoinLog().LogRecord(logs)
-						}
-
-						file := fmt.Sprintf("%v.%v", info["Md5"], info["Ext"])
-						//设置附件名
-						models.NewOss().SetObjectMeta(file, fmt.Sprintf("%v.%v", info["Title"], info["Ext"]))
-						//链接签名
-						url := models.NewOss().BuildSign(file)
-						//文档下载次数+1
-						models.Regulate(models.GetTableDocumentInfo(), "Dcnt", 1, fmt.Sprintf("Id=%v", info["Id"]))
-						if price < 0 { //扣除了金币，则下载可以免费下载
-							if free.Id > 0 { //上次已经下载过该文档，但是过了免费期限了
-								models.UpdateByIds(models.GetTableFreeDown(), "TimeCreate", time.Now().Unix(), free.Id) //更新
-							} else { //插入
-								var freedoc = models.FreeDown{Uid: this.IsLogin, Did: id, TimeCreate: int(time.Now().Unix())}
-								orm.NewOrm().Insert(&freedoc)
-							}
-						}
-
-						this.ResponseJson(true, "下载链接获取成功", map[string]interface{}{"url": url})
-					} else {
-						this.ResponseJson(false, "您的金币余额不足，请通过签到或者分享文档，增加您的金币财富。")
-					}
-				} else {
-					this.ResponseJson(false, "您要下载的文档不存在")
-				}
-			} else {
-				this.ResponseJson(false, "您要下载的文档不存在")
-			}
-
-		} else {
-			this.ResponseJson(false, "请先登录")
-		}
-	} else {
-		this.ResponseJson(false, "参数不正确")
+	if id <= 0 {
+		this.ResponseJson(false, "文档id不正确")
 	}
+
+	if this.IsLogin == 0 {
+		this.ResponseJson(false, "请先登录")
+	}
+
+	link, err := models.NewUser().CanDownloadFile(this.IsLogin, id)
+	if err != nil {
+		this.ResponseJson(false, err.Error())
+	}
+	this.ResponseJson(true, "下载链接获取成功", map[string]interface{}{"url": link})
 }
 
 //是否可以免费下载
 func (this *ViewController) DownFree() {
 	if this.IsLogin > 0 {
 		did, _ := this.GetInt("id")
-		if free := models.NewFreeDown().IsFreeDown(this.IsLogin, did); free.Id > 0 && free.TimeCreate > int(time.Now().Unix())-this.Sys.FreeDay*24*3600 {
+		if free := models.NewFreeDown().IsFreeDown(this.IsLogin, did); free {
 			this.ResponseJson(true, fmt.Sprintf("您上次下载过当前文档，且仍在免费下载有效期(%v天)内，本次下载免费", this.Sys.FreeDay))
 		}
 	}

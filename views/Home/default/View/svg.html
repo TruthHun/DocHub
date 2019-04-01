@@ -43,14 +43,14 @@
                     <div class="wenku-viewer" id="wenku-viewer" data-scale="9">
                         {{range $index,$el:=.PreviewPages}}
                             {{if gt $index 1}}
-                            <img src="/static/Common/img/loading.gif" data-original="{{$.PreviewDomain}}/{{Xmd5 $.Doc.Md5}}/{{CalcInt $index "+" 1}}.{{Default $.Doc.PreviewExt "svg"}}" class="wenku-lazy wenku-viewer-img wenku-page{{CalcInt $index "+" 1}}" data-page="{{CalcInt $index "+" 1}}" alt="{{$.Doc.Title}} 第 {{CalcInt $index "+" 1}} 页">
+                            <img src="/static/Common/img/loading.gif" data-original="{{$.PreviewDomain}}/{{$.Doc.Md5}}/{{CalcInt $index "+" 1}}.{{Default $.Doc.PreviewExt "svg"}}" class="wenku-lazy wenku-viewer-img wenku-page{{CalcInt $index "+" 1}}" data-page="{{CalcInt $index "+" 1}}" alt="{{$.Doc.Title}} 第 {{CalcInt $index "+" 1}} 页">
                             {{else}}
-                            <img src="{{$.PreviewDomain}}/{{Xmd5 $.Doc.Md5}}/{{CalcInt $index "+" 1}}.{{Default $.Doc.PreviewExt "svg"}}" class="wenku-lazy wenku-viewer-img wenku-page{{CalcInt $index "+" 1}}" data-page="{{CalcInt $index "+" 1}}" alt="{{$.Doc.Title}} 第 {{CalcInt $index "+" 1}} 页">
+                            <img src="{{$.PreviewDomain}}/{{$.Doc.Md5}}/{{CalcInt $index "+" 1}}.{{Default $.Doc.PreviewExt "svg"}}" class="wenku-lazy wenku-viewer-img wenku-page{{CalcInt $index "+" 1}}" data-page="{{CalcInt $index "+" 1}}" alt="{{$.Doc.Title}} 第 {{CalcInt $index "+" 1}} 页">
                             {{end}}
                         {{end}}
 
                         {{if gt $.TotalPages $.PageShow}}
-                        <div class="wenku-viewer-more text-center" data-next="{{CalcInt $.PageShow "+" 1}}" data-ext="{{Default $.Doc.PreviewExt "svg"}}" data-svg="{{$.PreviewDomain}}/{{Xmd5 $.Doc.Md5}}/">
+                        <div class="wenku-viewer-more text-center" data-next="{{CalcInt $.PageShow "+" 1}}" data-ext="{{Default $.Doc.PreviewExt "svg"}}" data-svg="{{$.PreviewDomain}}/{{$.Doc.Md5}}/">
 
                             <div>下载文档到电脑，方便使用</div>
                             <div><a href="javascript:void(0);" class="btn btn-primary" data-toggle="modal" data-target="#ModalDownload"><i class="fa fa-cloud-download"></i> 下载文档</a></div>

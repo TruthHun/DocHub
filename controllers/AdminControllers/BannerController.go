@@ -49,6 +49,7 @@ func (this *BannerController) Add() {
 		helper.Logger.Error(err.Error())
 		this.ResponseJson(false, err.Error())
 	}
+	defer os.RemoveAll(filePath)
 
 	if err = helper.CropImage(filePath, helper.BannerWidth, helper.BannerHeight); err != nil {
 		helper.Logger.Error("横幅裁剪失败：%v", err.Error())
@@ -63,8 +64,14 @@ func (this *BannerController) Add() {
 	}
 
 	save := md5str + "." + ext
-	err = models.NewOss().MoveToOss(filePath, save, true, true)
-	if err != nil {
+
+	var cs *models.CloudStore
+	if cs, err = models.NewCloudStore(false); err != nil {
+		helper.Logger.Error(err.Error())
+		this.ResponseJson(false, err.Error())
+	}
+
+	if err = cs.Upload(filePath, save); err != nil {
 		helper.Logger.Error(err.Error())
 		this.ResponseJson(false, err.Error())
 	}

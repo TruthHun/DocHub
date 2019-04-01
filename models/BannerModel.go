@@ -1,6 +1,9 @@
 package models
 
-import "github.com/astaxie/beego/orm"
+import (
+	"github.com/TruthHun/DocHub/helper"
+	"github.com/astaxie/beego/orm"
+)
 
 //横幅
 type Banner struct {
@@ -26,22 +29,37 @@ func GetTableBanner() string {
 //@return           affected        影响的记录数
 //@return           err             错误
 func (this *Banner) Del(id ...interface{}) (affected int64, err error) {
-	var banners []Banner
-	var objs []string
-	if len(id) > 0 {
-		qs := orm.NewOrm().QueryTable(GetTableBanner()).Filter("Id__in", id...)
-		qs.All(&banners)
-		for _, banner := range banners {
-			if len(banner.Picture) > 0 {
-				objs = append(objs, banner.Picture)
-			}
-		}
-		if len(objs) > 0 {
-			go NewOss().DelFromOss(true, objs...)
-		}
-		return qs.Delete()
+
+	if len(id) == 0 {
+		return
 	}
-	return
+
+	var banners []Banner
+	var objects []string
+
+	defer func() {
+		go func() {
+			if len(objects) > 0 {
+				cs, errCS := NewCloudStore(false)
+				if errCS != nil {
+					helper.Logger.Error(errCS.Error())
+					return
+				}
+				if errDelete := cs.Delete(objects...); errDelete != nil {
+					helper.Logger.Error(errDelete.Error())
+				}
+			}
+		}()
+	}()
+
+	qs := orm.NewOrm().QueryTable(GetTableBanner()).Filter("Id__in", id...)
+	qs.All(&banners)
+	for _, banner := range banners {
+		if len(banner.Picture) > 0 {
+			objects = append(objects, banner.Picture)
+		}
+	}
+	return qs.Delete()
 }
 
 //获取横幅列表

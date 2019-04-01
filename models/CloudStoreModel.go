@@ -24,21 +24,19 @@ type CloudStore struct {
 }
 
 // 创建云存储
-func NewCloudStore(private ...bool) (cs *CloudStore, err error) {
+func NewCloudStore(private bool) (cs *CloudStore, err error) {
 	storeType := helper.ConfigCate(GlobalSys.StoreType)
 	modelConfig := NewConfig()
 	config := modelConfig.GetCloudStoreConfig(storeType)
-	return NewCloudStoreWithConfig(config, storeType, private...)
+	return NewCloudStoreWithConfig(config, storeType, private)
 }
 
-func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCate, private ...bool) (cs *CloudStore, err error) {
+func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCate, private bool) (cs *CloudStore, err error) {
 	cs = &CloudStore{
 		StoreType: storeType,
 		config:    storeConfig,
 	}
-	if len(private) > 0 {
-		cs.Private = private[0]
-	}
+	cs.Private = private
 	switch cs.StoreType {
 	case StoreOss:
 		cfg := cs.config.(*ConfigOss)
@@ -214,11 +212,19 @@ func (c *CloudStore) IsExist(object string) (err error) {
 	return
 }
 
+func GetImageFromCloudStore(picture string, ext ...string) (link string) {
+	cs, err := NewCloudStore(false)
+	if err != nil {
+		helper.Logger.Error(err.Error())
+	}
+	return cs.getImageFromCloudStore(picture, ext...)
+}
+
 //设置默认图片
-//@param                picture             图片文件
+//@param                picture             图片文件或者图片文件md5等
 //@param                ext                 图片扩展名，如果图片文件参数(picture)的值为md5时，需要加上后缀扩展名
 //@return               link                图片url链接
-func (c *CloudStore) GetPicture(picture string, ext ...string) (link string) {
+func (c *CloudStore) getImageFromCloudStore(picture string, ext ...string) (link string) {
 	if len(ext) > 0 {
 		picture = picture + "." + ext[0]
 	} else if !strings.Contains(picture, ".") && len(picture) > 0 {
@@ -251,7 +257,7 @@ func (c *CloudStore) GetSignURL(object string) (link string) {
 	return
 }
 
-func (c *CloudStore) HtmlImageWithDomain(htmlOld string) (htmlNew string) {
+func (c *CloudStore) ImageWithDomain(htmlOld string) (htmlNew string) {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlOld))
 	if err != nil {
 		helper.Logger.Error(err.Error())
@@ -270,6 +276,28 @@ func (c *CloudStore) HtmlImageWithDomain(htmlOld string) (htmlNew string) {
 	return
 }
 
+func (c *CloudStore) ImageWithoutDomain(htmlOld string) (htmlNew string) {
+	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlOld))
+	if err != nil {
+		helper.Logger.Error(err.Error())
+		return htmlOld
+	}
+	domain := c.GetPublicDomain()
+
+	doc.Find("img").Each(func(i int, s *goquery.Selection) {
+		// For each item found, get the band and title
+		if src, exist := s.Attr("src"); exist {
+			//不存在http开头的图片链接，则更新为绝对链接
+			if strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://") {
+				src = strings.TrimPrefix(src, domain)
+				s.SetAttr("src", src)
+			}
+		}
+	})
+	htmlNew, _ = doc.Find("body").Html()
+	return
+}
+
 //从HTML中提取图片文件，并删除
 func (c *CloudStore) DeleteImageFromHtml(htmlStr string) {
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlStr))
@@ -279,6 +307,9 @@ func (c *CloudStore) DeleteImageFromHtml(htmlStr string) {
 	}
 
 	var objects []string
+
+	domain := c.GetPublicDomain()
+
 	doc.Find("img").Each(func(i int, s *goquery.Selection) {
 		// For each item found, get the band and title
 		if src, exist := s.Attr("src"); exist {
@@ -286,8 +317,7 @@ func (c *CloudStore) DeleteImageFromHtml(htmlStr string) {
 			if !(strings.HasPrefix(src, "http://") || strings.HasPrefix(src, "https://")) {
 				objects = append(objects, src)
 			} else {
-				src = strings.TrimPrefix(src, c.privateDomain)
-				src = strings.TrimPrefix(src, c.publicDomain)
+				src = strings.TrimPrefix(src, domain)
 				objects = append(objects, src)
 			}
 		}
@@ -327,4 +357,10 @@ func (c *CloudStore) PingTest() (err error) {
 	}
 
 	return
+}
+
+func (c *CloudStore) GetPublicDomain() (domain string) {
+	object := "test.dochub.test"
+	link := c.GetSignURL(object)
+	return strings.Split(link, object)[0]
 }

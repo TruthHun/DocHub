@@ -2,6 +2,7 @@ package HomeControllers
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"strings"
 
@@ -477,12 +478,12 @@ func (this *UserController) CreateCollectFolder() {
 		file := helper.MD5Crypt(fmt.Sprintf("%v-%v-%v", timestamp, this.IsLogin, fh.Filename)) + "." + ext
 
 		tmpFile := dir + file
-
 		err = this.SaveToFile("Cover", tmpFile)
 		if err != nil {
 			helper.Logger.Error(err.Error())
 			this.ResponseJson(false, "封面保存失败")
 		}
+		defer os.RemoveAll(tmpFile)
 
 		if err = helper.CropImage(tmpFile, helper.CoverWidth, helper.CoverHeight); err != nil {
 			helper.Logger.Error(err.Error())
@@ -490,12 +491,16 @@ func (this *UserController) CreateCollectFolder() {
 		}
 
 		//将图片移动到OSS
-		err = models.NewOss().MoveToOss(tmpFile, file, true, true)
-		helper.Logger.Debug(tmpFile)
-		if err != nil {
+		var cs *models.CloudStore
+		if cs, err = models.NewCloudStore(false); err != nil {
 			helper.Logger.Error(err.Error())
+			this.ResponseJson(false, "连接云存储失败")
 		}
-		cover = file
+		if err = cs.Upload(tmpFile, file); err != nil {
+			helper.Logger.Error(err.Error())
+		} else {
+			cover = file
+		}
 	}
 
 	// 收藏夹
@@ -741,12 +746,11 @@ func (this *UserController) Avatar() {
 	}
 	defer f.Close()
 
-	slice := strings.Split(fh.Filename, ".")
-	ext := strings.ToLower(slice[len(slice)-1])
-
+	ext := strings.ToLower(strings.TrimLeft(filepath.Ext(fh.Filename), "."))
 	if !(ext == "jpg" || ext == "jpeg" || ext == "png" || ext == "gif") {
 		this.ResponseJson(false, "头像图片格式只支持jpg、jpeg、png和gif")
 	}
+
 	tmpFile := dir + "/" + helper.MD5Crypt(fmt.Sprintf("%v-%v-%v", fh.Filename, this.IsLogin, time.Now().Unix())) + "." + ext
 	saveFile := helper.MD5Crypt(tmpFile) + "." + ext
 	err = this.SaveToFile("Avatar", tmpFile)
@@ -760,22 +764,28 @@ func (this *UserController) Avatar() {
 		helper.Logger.Error("图片裁剪失败：%v", err.Error())
 	}
 
-	err = models.NewOss().MoveToOss(tmpFile, saveFile, true, true)
+	var cs *models.CloudStore
+	if cs, err = models.NewCloudStore(false); err != nil {
+		helper.Logger.Error(err.Error())
+		this.ResponseJson(false, "内部服务错误：云存储连接失败")
+	}
+
+	err = cs.Upload(tmpFile, saveFile)
 	if err != nil {
 		helper.Logger.Error(err.Error())
 		this.ResponseJson(false, "头像文件保存失败")
 	}
+	os.RemoveAll(tmpFile)
+
 	//查询数据库用户数据
 	var user = models.User{Id: this.IsLogin}
 	orm.NewOrm().Read(&user)
-	if len(user.Avatar) > 0 {
-		//删除原头像图片
-		go models.NewOss().DelFromOss(true, user.Avatar)
-	}
+	oldAvatar := user.Avatar
 	user.Avatar = saveFile
 	rows, err := orm.NewOrm().Update(&user, "Avatar")
 	if rows > 0 && err == nil {
 		this.ResponseJson(true, "头像更新成功")
+		go cs.Delete(oldAvatar)
 	}
 	if err != nil {
 		helper.Logger.Error(err.Error())

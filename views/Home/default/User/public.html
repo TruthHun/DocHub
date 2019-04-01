@@ -16,7 +16,7 @@
                 <div class="col-xs-12">
                    {{if eq $.LoginUid (.User.Id|Interface2Int)}}
                     <a href="javascript:void(0);" title="点击选择图片更换头像" data-placement="bottom" class="thumbnail wenku-circle-avatar wenku-tooltip wenku-update-avatar">
-                        <img onerror="this.src='/static/Common/img/avatar.png'" class="img-responsive" alt="{{.User.Username}}" src="{{DefPic .User.Avatar}}"/>
+                        <img onerror="this.src='/static/Common/img/avatar.png'" class="img-responsive" alt="{{.User.Username}}" src="{{DefaultImage .User.Avatar}}"/>
                     </a>
                     <!--更新头像-->
                     <form action="/user/avatar" method="post" enctype="multipart/form-data" style="display: none;" target="notarget">
@@ -26,7 +26,7 @@
                     <iframe frameborder="0" style="display: none;" id="notarget" name="notarget"></iframe>
                     {{else}}
                     <a href="/user/{{.User.Id}}" title="{{.User.Username}}" class="thumbnail wenku-circle-avatar wenku-tooltip wenku-update-avatar">
-                        <img class="img-responsive" alt="{{.User.Username}}" onerror="this.src='/static/Common/img/avatar.png'" src="{{DefPic .User.Avatar}}"/>
+                        <img class="img-responsive" alt="{{.User.Username}}" onerror="this.src='/static/Common/img/avatar.png'" src="{{DefaultImage .User.Avatar}}"/>
                     </a>
                     {{end}}
                 </div>
@@ -78,7 +78,7 @@
                     <li class="clearfix">
                         <div class="col-xs-3 wenku-nopadding">
                             <a href="/user/{{.Id}}" title="{{.Username}}" target="_blank" class="thumbnail">
-                                <img class="img-responsive" onerror="this.src='/static/Common/img/avatar.png'" alt="{{.Username}}" src="{{DefPic .Avatar}}"/>
+                                <img class="img-responsive" onerror="this.src='/static/Common/img/avatar.png'" alt="{{.Username}}" src="{{DefaultImage .Avatar}}"/>
                             </a>
                         </div>
                         <div class="col-xs-9">

@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"fmt"
-
 	"io/ioutil"
 	"time"
 
@@ -15,7 +13,6 @@ import (
 
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -168,35 +165,6 @@ func (this *SysController) TestForSendingEmail() {
 		this.Response(map[string]interface{}{"status": 0, "msg": "邮件发送失败：" + err.Error()})
 	}
 	this.Response(map[string]interface{}{"status": 1, "msg": "邮件发送成功"})
-}
-
-//测试OSS是否连通成功
-func (this *SysController) TestOSS() {
-	var (
-		testFile        = "dochub-test.txt"
-		content         = strings.NewReader("this is test content")
-		public, private *oss.Bucket
-		err             error
-	)
-
-	if public, err = models.NewOss().NewBucket(true); err == nil {
-		err = public.PutObject(testFile, content)
-	}
-	if err != nil {
-		this.Response(map[string]interface{}{"status": 0, "msg": fmt.Sprintf("Bucket(%v)连通失败：%v", public.BucketName, err.Error())})
-	}
-	public.DeleteObject(testFile)
-
-	if private, err = models.NewOss().NewBucket(false); err == nil {
-		err = private.PutObject(testFile, content)
-	}
-	if err != nil {
-		this.Response(map[string]interface{}{"status": 0, "msg": fmt.Sprintf("Bucket(%v)连通失败：%v", private.BucketName, err.Error())})
-	}
-
-	private.DeleteObject(testFile)
-
-	this.Response(map[string]interface{}{"status": 1, "msg": "OSS连通成功"})
 }
 
 // 云存储配置
