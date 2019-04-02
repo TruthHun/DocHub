@@ -194,7 +194,7 @@
                     <div class="navbar-text"><i class="fa fa-database"></i>&nbsp;&nbsp;{{.Doc.Price}}&nbsp;&nbsp;个金币 </div>
                     <li class="active" data-toggle="modal" data-target="#ModalDownload"><a href="javascript:void(0);"><i class="fa fa-cloud-download em14"></i> 下载文档({{FormatByte .Doc.Size}})</a></li>
                     {{else}}
-                        <div class="navbar-text"><i class="fa fa-database"></i>&nbsp;&nbsp;禁止下载 &nbsp; </div>
+                        <div class="navbar-text"><span class="text-danger">不允许下载&nbsp;</span>&nbsp;</div>
                         <li class="active active-forbidden"><a href="javascript:void(0);"><i class="fa fa-cloud-download em14"></i> 下载文档({{FormatByte .Doc.Size}})</a></li>
                     {{end}}
                 </ul>

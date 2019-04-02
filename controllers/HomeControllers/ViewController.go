@@ -76,7 +76,7 @@ func (this *ViewController) Get() {
 	this.Data["Doc"] = doc
 
 	doc.Ext = strings.TrimLeft(doc.Ext, ".")
-	if doc.Page == 0 && (doc.Ext == "chm" || doc.Ext == "umd") { //不能预览的文档
+	if doc.Page == 0 { //不能预览的文档
 		this.Data["OnlyCover"] = true
 		this.TplName = "disabled.html"
 	} else {
