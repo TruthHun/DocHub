@@ -15,9 +15,9 @@
                     </h1>
                     <div class="help-block wenku-doc-info">
 							<span>
-								<a href="/list/{{.CrumbChanel.Alias}}" title="{{.CrumbChanel.Title}}">{{.CrumbChanel.Title}}</a> >
-								<a href="/list/{{.CrumbChanel.Alias}}/pid/{{.CrumbParent.Id}}" title="{{.CrumbParent.Title}}">{{.CrumbParent.Title}}</a> >
-								<a href="/list/{{.CrumbChanel.Alias}}/pid/{{.CrumbParent.Id}}/cid/{{.CrumbChildren.Id}}" title="{{.CrumbChildren.Title}}">{{.CrumbChildren.Title}}</a> >
+								<a href="/list/{{.Breadcrumb.Chanel.Alias}}" title="{{.Breadcrumb.Chanel.Title}}">{{.Breadcrumb.Chanel.Title}}</a> >
+								<a href="/list/{{.Breadcrumb.Chanel.Alias}}/pid/{{.Breadcrumb.Parent.Id}}" title="{{.Breadcrumb.Parent.Title}}">{{.Breadcrumb.Parent.Title}}</a> >
+								<a href="/list/{{.Breadcrumb.Chanel.Alias}}/pid/{{.Breadcrumb.Parent.Id}}/cid/{{.Breadcrumb.Parent.Id}}" title="{{.Breadcrumb.Child.Title}}">{{.Breadcrumb.Child.Title}}</a> >
 								<span class="text-muted">文档预览</span>
 							</span>
                         <div class="pull-right text-muted">
@@ -26,12 +26,12 @@
                             <span title="浏览"><i class="fa fa-eye"></i> {{.Doc.Vcnt}} 浏览</span>
                             <span title="评论"><i class="fa fa-comments-o"></i> {{.Doc.ScorePeople}} 评论</span>
                             <span title="收藏"><i class="fa fa-heart-o"></i> {{.Doc.Ccnt}} 收藏</span>
-                            <span title="评分"><i class="wenku-star star-{{StarVal (Interface2Int .Doc.Score) false}}"></i> {{StarVal (Interface2Int .Doc.Score) true}}分</span>
+                            <span title="评分"><i class="wenku-star star-{{StarVal .Doc.Score false}}"></i> {{StarVal .Doc.Score true}}分</span>
                         </div>
                     </div>
 
                     <!--<div class="help-block wenku-preview-tips">温馨提示：如果当前文档出现乱码或未能正常浏览，请先下载原文档进行浏览。</div>-->
-                    {{if gt (.Doc.PreviewPage | Interface2Int) 0}}
+                    {{if gt .Doc.PreviewPage 0}}
                     <div class="help-block wenku-preview-tips">
                         温馨提示：当前文档最多只能预览 <span class="strong text-primary">{{.Doc.PreviewPage}}</span> 页，若文档总页数超出了 <span class="strong text-primary">{{.Doc.PreviewPage}}</span> 页，请下载原文档以浏览全部内容。
                     </div>
@@ -49,25 +49,27 @@
                             {{end}}
                         {{end}}
 
-                        {{if gt $.TotalPages $.PageShow}}
+                        {{if gt $.Doc.Page $.PageShow}}
                         <div class="wenku-viewer-more text-center" data-next="{{CalcInt $.PageShow "+" 1}}" data-ext="{{Default $.Doc.PreviewExt "svg"}}" data-svg="{{$.PreviewDomain}}/{{$.Doc.Md5}}/">
 
+                        {{if gt .Doc.Price -1}}
                             <div>下载文档到电脑，方便使用</div>
                             <div><a href="javascript:void(0);" class="btn btn-primary" data-toggle="modal" data-target="#ModalDownload"><i class="fa fa-cloud-download"></i> 下载文档</a></div>
+                        {{end}}
 
-                        {{if and (gt (.Doc.PreviewPage | Interface2Int) 0) (gt $.TotalPages (.Doc.PreviewPage | Interface2Int))}}
+                        {{if and (gt .Doc.PreviewPage 0) (gt $.Doc.Page .Doc.PreviewPage)}}
                             <a href="javascript:void(0);" class="wenku-viewer-more-btn">
                                 <div class="help-block">
-                                {{if gt (.Doc.PreviewPage | Interface2Int) 0}}
+                                {{if gt .Doc.PreviewPage 0}}
                                     当前文档最多只能预览 {{.Doc.PreviewPage}} 页 <br>
                                 {{end}}
-                                还有 <span class="wenku-unread-pages">{{CalcInt (.Doc.PreviewPage | Interface2Int) "-" $.PageShow}}</span> 页可预览，<span class="text-primary">继续阅读</span>
+                                还有 <span class="wenku-unread-pages">{{CalcInt .Doc.PreviewPage "-" $.PageShow}}</span> 页可预览，<span class="text-primary">继续阅读</span>
                                 </div>
                             </a>
                         {{else}}
                             <a href="javascript:void(0);" class="wenku-viewer-more-btn">
                                 <div class="help-block">
-                                {{if gt (.Doc.PreviewPage | Interface2Int) 0}}
+                                {{if gt .Doc.PreviewPage 0}}
                                     当前文档最多只能预览 {{.Doc.PreviewPage}} 页 <br>
                                 {{end}}
                                     还有 <span class="wenku-unread-pages">{{CalcInt $.TotalPages "-" $.PageShow}}</span> 页可预览，<span class="text-primary">继续阅读</span>
@@ -85,17 +87,21 @@
 
 
                     <div class="help-block">
-                        <span>本文档由 <a href="/user/{{.Doc.Uid}}" target="_blank"title="{{.Doc.Username}}">{{.Doc.Username}}</a> 于 <span class="text-muted">{{TimestampFormat (Interface2Int .Doc.TimeCreate)}}</span>上传分享</span>
+                        <span>本文档由 <a href="/user/{{.Doc.Uid}}" target="_blank"title="{{.Doc.Username}}">{{.Doc.Username}}</a> 于 <span class="text-muted">{{TimestampFormat .Doc.TimeCreate}}</span>上传分享</span>
                     </div>
                     <div class="help-block wenku-action">
                         <div class="pull-left">
                             <a href="javascript:void(0);" data-toggle="modal" data-target="#ModalReport" class="btn btn-primary btn-sm"><i class="fa fa-warning"></i> 举报</a>
                         </div>
                         <div class="pull-right wenku-mgl-15px">
-                            <a href="javascript:void(0);" rel="nofollow" data-toggle="modal" data-target="#ModalDownload" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-cloud-download"></i> 下载<span class="hidden-xs">原文档</span>({{FormatByte (Interface2Int .Doc.Size)}})</a>
+                            {{if gt .Doc.Price -1}}
+                            <a href="javascript:void(0);" rel="nofollow" data-toggle="modal" data-target="#ModalDownload" target="_blank" class="btn btn-primary btn-sm"><i class="fa fa-cloud-download"></i> 下载<span class="hidden-xs">原文档</span>({{FormatByte .Doc.Size}})</a>
+                                    {{else}}
+                            <a href="javascript:void(0);" rel="nofollow" class="btn btn-primary btn-sm disabled"><i class="fa fa-cloud-download"></i> 下载<span class="hidden-xs">原文档</span>({{FormatByte .Doc.Size}})</a>
+                                    {{end}}
                         </div>
                         <div class="pull-right">
-                            {{if DoesCollect (Interface2Int .Doc.Id) .LoginUid}}
+                            {{if DoesCollect .Doc.Id .LoginUid}}
                             <a href="javascript:void(0);" rel="nofollow" class="btn btn-primary btn-sm wenku-collect disabled"><i class="fa fa-heart-o"></i> <span>已收藏</span></a>
                             {{else}}
                             <a href="javascript:void(0);" rel="nofollow" class="btn btn-primary btn-sm wenku-collect"><i class="fa fa-heart-o"></i>  <span>收藏</span></a>
@@ -138,7 +144,7 @@
                 <div class="panel-body">
 
                     <ul class="wenku-tabs-list">
-                        {{range .News}}
+                        {{range .Latest}}
                         <li><img alt="{{.Ext}}文档" src="/static/Home/default/img/{{.ExtCate}}_24.png"/><a href="/view/{{.Id}}" target="_blank" title="{{.Title}}">{{.Title}}</a></li>
                         {{end}}
                     </ul>
@@ -156,7 +162,7 @@
         <div class="row">
             <div class="col-xs-9">
                 <ul class="nav navbar-nav">
-                    <li><a href="javascript:void(0);" class="wenku-expend"><i class="fa fa-arrows-alt em14"></i>&nbsp;</a></a></li>
+                    <li><a href="javascript:void(0);" class="wenku-expend"><i class="fa fa-arrows-alt em14"></i>&nbsp;</a></li>
 
 
                     <li><a href="javascript:void(0);" data-toggle="modal" data-target="#ModalShare"><i class="fa fa-share-alt em14"></i>&nbsp;</a></li>
@@ -168,7 +174,7 @@
 
                     <li class="wenku-mgl-15px"><a href="javascript:void(0);" class="wenku-page-prev"><i class="fa fa-chevron-up em14"></i></a></li>
                     <p class="navbar-text"> <span class="wenku-current-page">1</span> /
-                        {{if gt (.Doc.PreviewPage | Interface2Int) 0}}
+                        {{if gt .Doc.PreviewPage 0}}
                             <span class="wenku-total-page hide">{{.Doc.PreviewPage}}</span>
                             <!--仍然显示全部页数，但是用于计算的是当前允许预览的最大页数-->
                             <span class="">{{HandlePageNum .Doc.Page}}</span>
@@ -184,8 +190,13 @@
 
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <p class="navbar-text"><i class="fa fa-database"></i>&nbsp;&nbsp;{{.Doc.Price}}&nbsp;&nbsp;个金币 </p>
-                    <li class="active" data-toggle="modal" data-target="#ModalDownload"><a href="javascript:void(0);"><i class="fa fa-cloud-download em14"></i> 下载文档({{FormatByte (Interface2Int .Doc.Size)}})</a></li>
+                    {{if gt .Doc.Price -1}}
+                    <div class="navbar-text"><i class="fa fa-database"></i>&nbsp;&nbsp;{{.Doc.Price}}&nbsp;&nbsp;个金币 </div>
+                    <li class="active" data-toggle="modal" data-target="#ModalDownload"><a href="javascript:void(0);"><i class="fa fa-cloud-download em14"></i> 下载文档({{FormatByte .Doc.Size}})</a></li>
+                    {{else}}
+                        <div class="navbar-text"><i class="fa fa-database"></i>&nbsp;&nbsp;禁止下载 &nbsp; </div>
+                        <li class="active active-forbidden"><a href="javascript:void(0);"><i class="fa fa-cloud-download em14"></i> 下载文档({{FormatByte .Doc.Size}})</a></li>
+                    {{end}}
                 </ul>
             </div>
             <div class="col-xs-3">

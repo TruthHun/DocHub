@@ -89,6 +89,41 @@ func GetTableDocumentStore() string {
 	return getTable("document_store")
 }
 
+// 完整的文档内容
+type fullDocument struct {
+	Id          int    `orm:"column(Id)"`
+	Title       string `orm:"column(Title)"`              //文档名称【用户自定义的文档标题】
+	Filename    string `orm:"column(Filename)"`           //文件名[文件的原文件名]
+	Keywords    string `orm:"column(Keywords)"`           //文档标签、关键字
+	Description string `orm:"column(Description)"`        //文档摘要
+	Md5         string `orm:"column(Md5)"`                //文档md5
+	Ext         string `orm:"column(Ext)"`                //文档扩展名，如pdf、xls等
+	ExtCate     string `orm:"column(ExtCate)"`            //文档扩展名分类：word、ppt、text、pdf、xsl，code(这些分类配合图标一起使用，如word_24.png)
+	ExtNum      int    `orm:"column(ExtNum)"`             //文档后缀的对应数字，主要是在coreseek搭建站内搜索时用到
+	Page        int    `orm:"column(Page)"`               //文档页数
+	PreviewPage int    `orm:"column(PreviewPage)"`        //当前文档可预览页数
+	Size        int    `orm:"column(Size)"`               //文档大小
+	ModTime     int    `orm:"column(ModTime)"`            //文档修改编辑时间
+	PreviewExt  string `orm:"column(PreviewExt);size(4)"` //文档预览的图片格式后缀，如jpg、png、svg等，默认svg
+	Width       int    `orm:"column(Width)"`              //svg的原始宽度
+	Height      int    `orm:"column(Height)"`             //svg的原始高度
+	DsId        int    `orm:"column(DsId)"`               //文档存档表Id,DocumentStore Id
+	Uid         int    `orm:"column(Uid)"`                //文档上传用户的id
+	Username    string `orm:"column(Username)"`           //文档上传用户的id
+	ChanelId    int    `orm:"column(ChanelId)"`           //文档所属频道
+	Pid         int    `orm:"column(Pid)"`                //文档一级分类
+	Cid         int    `orm:"column(Cid)"`                //频道下的最底层的分类id（二级分类），如幼儿教育下的幼儿读物等
+	TimeCreate  int    `orm:"column(TimeCreate)"`         //文档上传时间
+	TimeUpdate  int    `orm:"column(TimeUpdate)"`         //文档更新时间
+	Dcnt        int    `orm:"column(Dcnt)"`               //下载次数
+	Vcnt        int    `orm:"column(Vcnt)"`               //浏览次数
+	Ccnt        int    `orm:"column(Ccnt)"`               //收藏次数
+	Score       int    `orm:"column(Score)"`              //默认30000，即表示3.0分。这是为了更准确统计评分的需要
+	ScorePeople int    `orm:"column(ScorePeople)"`        //评分总人数
+	Price       int    `orm:"column(Price)"`              //文档下载价格，0表示免费
+	Status      int8   `orm:"column(Status)"`             //文档资源状态，1正常，0文档未转换成功，-1删除，同时把id录入文档回收站i
+}
+
 //非法文档(侵权或不良信息文档)MD5记录表
 type DocumentIllegal struct {
 	Id  int    `orm:"column(Id)"`                            //文档id
@@ -148,8 +183,8 @@ func (this *Document) IsIllegalById(id interface{}) bool {
 //@return               params          文档信息
 //@return               rows            记录数
 //@return               err             错误
-func (this *Document) GetById(id interface{}) (params orm.Params, rows int64, err error) {
-	var data []orm.Params
+func (this *Document) GetById(id interface{}) (doc fullDocument, err error) {
+	var sql string
 	tables := []string{GetTableDocumentInfo() + " info", GetTableDocument() + " doc", GetTableDocumentStore() + " ds", GetTableUser() + " u"}
 	fields := map[string][]string{
 		"ds":   helper.DeleteSlice(GetFields(NewDocumentStore()), "Id"),
@@ -162,14 +197,15 @@ func (this *Document) GetById(id interface{}) (params orm.Params, rows int64, er
 		{"doc.Id": "info.Id"},
 		{"u.Id": "info.Uid"},
 	}
-	if helper.Debug {
-		helper.Logger.Debug("查询字段：%+v", fields)
+	helper.Logger.Debug("查询字段：%+v", fields)
+
+	sql, err = LeftJoinSqlBuild(tables, on, fields, 1, 1, nil, nil, "info.Id=?")
+	if err != nil {
+		helper.Logger.Error(err.Error())
+		err = errors.New("内部错误：数据查询失败")
+		return
 	}
-	if sql, err := LeftJoinSqlBuild(tables, on, fields, 1, 1, nil, nil, "info.Id=?"); err == nil {
-		if rows, err = orm.NewOrm().Raw(sql, id).Values(&data); len(data) > 0 {
-			params = data[0]
-		}
-	}
+	err = orm.NewOrm().Raw(sql, id).QueryRow(&doc)
 	return
 }
 

@@ -50,7 +50,7 @@
 - [ ] 更换[KindEditor](https://www.oschina.net/news/104631/kindeditor-upload-vulnerability)
 - [ ] 解决文件路径问题（调用 cmd 的时候，用文件的绝对路径）
 - [ ] 文档浏览方式，实现对 svg、jpg和png 的支持 
-- [ ] 文档评分人数统计问题
+- [ ] 文档评分人数统计问题(评分出现-1的情况)
 - [ ] 文档上传间隔频率控制
 
 ---------------

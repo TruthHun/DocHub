@@ -442,7 +442,7 @@ func (this *UserController) Sign() {
 		log := models.CoinLog{
 			Uid:  this.IsLogin,
 			Coin: this.Sys.Sign,
-			Log:  fmt.Sprintf("于%v签到成功，增加 %v 个金币", time.Now().Format("2006-01-02 15:04:05"), this.Sys.Sign),
+			Log:  fmt.Sprintf("签到成功，获得 %v 个金币", this.Sys.Sign),
 		}
 		models.NewCoinLog().LogRecord(log)
 	}

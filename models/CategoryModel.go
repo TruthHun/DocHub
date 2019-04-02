@@ -85,3 +85,16 @@ func (this *Category) GetAll(status ...bool) (count int64, categories []Category
 	count, _ = q.OrderBy("sort").All(&categories)
 	return
 }
+
+func (this *Category) GetCategoriesById(id ...interface{}) (cates []Category, err error) {
+	if len(id) == 0 {
+		return
+	}
+
+	_, err = orm.NewOrm().QueryTable(this).Filter("Id__in", id...).All(&cates)
+	if err != nil {
+		helper.Logger.Error(err.Error())
+	}
+
+	return
+}

@@ -3,14 +3,13 @@ package HomeControllers
 import (
 	"fmt"
 
-	"github.com/astaxie/beego"
-
 	"strings"
 
 	"time"
 
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/models"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -25,70 +24,60 @@ func (this *ViewController) Get() {
 		return
 	}
 
-	doc, rows, err := models.NewDocument().GetById(id)
-	if err != nil || rows != 1 {
-		this.Abort("404")
-	}
-	//文档已被删除
-	if fmt.Sprintf("%v", doc["Status"]) == "-1" {
+	doc, err := models.NewDocument().GetById(id)
+
+	// 文档不存在、查询错误、被删除，报 404
+	if err != nil || doc.Id <= 0 || doc.Status < models.DocStatusConverting {
 		this.Abort("404")
 	}
 
-	var chanelTitle, parentTitle, childrenTitle interface{}
-
-	breadcrumb, _, _ := models.GetList(models.GetTableCategory(), 1, 3, orm.NewCondition().And("Id__in", doc["Cid"], doc["ChanelId"], doc["Pid"]))
-	for _, v := range breadcrumb {
-		switch fmt.Sprintf("%v", v["Id"]) {
-		case fmt.Sprintf("%v", doc["ChanelId"]):
-			this.Data["CrumbChanel"] = v
-			chanelTitle = v["Title"]
-			this.Data["Chanel"] = v["Alias"]
-		case fmt.Sprintf("%v", doc["Pid"]):
-			this.Data["CrumbParent"] = v
-			parentTitle = v["Title"]
-		case fmt.Sprintf("%v", doc["Cid"]):
-			childrenTitle = v["Title"]
-			//热门文档，根据当前所属分类去获取
+	var cates []models.Category
+	cates, _ = models.NewCategory().GetCategoriesById(doc.Cid, doc.ChanelId, doc.Pid)
+	breadcrumb := make(map[string]models.Category)
+	for _, cate := range cates {
+		switch cate.Id {
+		case doc.ChanelId:
+			breadcrumb["Chanel"] = cate
+		case doc.Pid:
+			breadcrumb["Parent"] = cate
+		case doc.Cid:
 			TimeStart := int(time.Now().Unix()) - this.Sys.TimeExpireHotspot
-			//热门文档
-			this.Data["Hots"], _, _ = models.NewDocument().SimpleList(fmt.Sprintf("di.Cid=%v and di.TimeCreate>%v", doc["Cid"], TimeStart), 10, "Dcnt")
-			//最新文档
-			this.Data["News"], _, _ = models.NewDocument().SimpleList(fmt.Sprintf("di.Cid=%v", doc["Cid"]), 10, "Id")
-			this.Data["CrumbChildren"] = v
+			this.Data["Hots"], _, _ = models.NewDocument().SimpleList(fmt.Sprintf("di.Cid=%v and di.TimeCreate>%v", doc.Cid, TimeStart), 10, "Dcnt")
+			this.Data["Latest"], _, _ = models.NewDocument().SimpleList(fmt.Sprintf("di.Cid=%v", doc.Cid), 10, "Id")
+			breadcrumb["Child"] = cate
 		}
 	}
+	this.Data["Breadcrumb"] = breadcrumb
 
-	this.Data["IsViewer"] = true
 	models.Regulate(models.GetTableDocumentInfo(), "Vcnt", 1, "`Id`=?", id)
-	this.Data["PageId"] = "wenku-content"
-	this.Data["Doc"] = doc
-	pages := helper.Interface2Int(doc["Page"])
-	PageShow := 5
-	if pages > PageShow {
-		this.Data["PreviewPages"] = make([]string, PageShow)
+
+	pageShow := 5
+	if doc.Page > pageShow {
+		this.Data["PreviewPages"] = make([]string, pageShow)
 	} else {
-		this.Data["PreviewPages"] = make([]string, pages)
+		this.Data["PreviewPages"] = make([]string, doc.Page)
 	}
-	this.Data["TotalPages"] = pages
-	this.Data["PageShow"] = PageShow
+	this.Data["PageShow"] = pageShow
+
+	this.Xsrf()
 	if this.Data["Comments"], _, err = models.NewDocumentComment().GetCommentList(id, 1, 10); err != nil {
 		helper.Logger.Error(err.Error())
 	}
 
-	content := models.NewDocText().GetDescByMd5(doc["Md5"], 2000)
-	this.Data["Content"] = content
-
-	seoTitle := fmt.Sprintf("[%v·%v·%v] ", chanelTitle, parentTitle, childrenTitle) + doc["Title"].(string)
-	seoKeywords := fmt.Sprintf("%v,%v,%v,", chanelTitle, parentTitle, childrenTitle) + doc["Keywords"].(string)
-	seoDesc := doc["Description"].(string) + content
-	seoDesc = beego.Substr(seoDesc, 0, 255)
+	content := models.NewDocText().GetDescByMd5(doc.Md5, 5000)
+	seoTitle := fmt.Sprintf("%v - %v · %v · %v ", doc.Title, breadcrumb["Chanel"].Title, breadcrumb["Parent"].Title, breadcrumb["Child"].Title)
+	seoKeywords := fmt.Sprintf("%v,%v,%v,", breadcrumb["Chanel"].Title, breadcrumb["Parent"].Title, breadcrumb["Child"].Title) + doc.Keywords
+	seoDesc := beego.Substr(doc.Description+content, 0, 255)
 	this.Data["Seo"] = models.NewSeo().GetByPage("PC-View", seoTitle, seoKeywords, seoDesc, this.Sys.Site)
-	this.Xsrf()
-	ext := fmt.Sprintf("%v", doc["Ext"])
+	this.Data["Content"] = content
 	this.Data["Reasons"] = models.NewSys().GetReportReasons()
-	if pages == 0 && (ext == "txt" || ext == "chm" || ext == "umd" || ext == "epub" || ext == "mobi") {
+	this.Data["IsViewer"] = true
+	this.Data["PageId"] = "wenku-content"
+	this.Data["Doc"] = doc
+
+	doc.Ext = strings.TrimLeft(doc.Ext, ".")
+	if doc.Page == 0 && (doc.Ext == "chm" || doc.Ext == "umd") { //不能预览的文档
 		this.Data["OnlyCover"] = true
-		//不能预览的文档
 		this.TplName = "disabled.html"
 	} else {
 		this.TplName = "svg.html"

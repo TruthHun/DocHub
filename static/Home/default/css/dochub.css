@@ -54,6 +54,8 @@ body{background-color: #f6f6f6;}
 /*以上是禁止响应式的CSS代码*/
 
 
+.carousel-indicators li{width: 12px;height: 12px;margin:0px 2px;}
+
 /*icons [start]*/
 .icon{width:18px;height: 18px;display: inline-block;background: url(../img/all_icon.png) no-repeat;margin-right: 3px;}
 .icon-pdf{background-position: -2px -306px;}
@@ -277,6 +279,7 @@ textarea{resize: none;}
 #wenku-content .wenku-viewer .wenku-viewer-img{border-bottom: 5px solid #F6F6F6;display: block;width: 100%;}
 #wenku-content .wenku-viewer-more{border-bottom: 5px solid #F6F6F6;padding: 30px 0px 20px;}
 #wenku-content .wenku-viewer-more .btn{margin: 10px 0px;}
+#wenku-content .active-forbidden a{cursor: default;background-color: #bdc3c7 !important;border-color:#bdc3c7 !important; }
 
 /*wenku page content [end]*/
 

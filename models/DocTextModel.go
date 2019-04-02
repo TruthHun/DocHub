@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/TruthHun/DocHub/helper"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -30,7 +30,7 @@ func (this *DocText) GetDescByMd5(md5str interface{}, length ...int) (desc strin
 	if len(length) > 0 {
 		l = length[0]
 	}
-	return helper.SubStr(this.Content, 0, l)
+	return beego.Substr(this.Content, 0, l)
 }
 
 //根据存档表的id获取文档摘要，默认获取255个字符长度
