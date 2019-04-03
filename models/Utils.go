@@ -130,6 +130,8 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 			helper.Logger.Error(err.Error())
 			return errRetry
 		}
+	} else {
+		info.Status = DocStatusNormal
 	}
 
 	if _, err = o.Insert(doc); err != nil {
@@ -139,9 +141,7 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 
 	info.DsId = store.Id
 	info.Id = doc.Id
-	if score > 0 {
-		info.Status = DocStatusNormal
-	}
+
 	_, err = o.Insert(info)
 	if err != nil {
 		helper.Logger.Error(err.Error())
@@ -439,12 +439,12 @@ func GetDocList(uid, chanelid, pid, cid, p, listRows int, order string, status .
 		args = append(args, v)
 	}
 
-	if len(status) == 1 {
-		condQues = append(condQues, fmt.Sprintf("di.Status in(%v)", status[0]))
-	}
-
-	if len(status) == 2 {
-		condQues = append(condQues, fmt.Sprintf("di.Status in(%v,%v)", status[0], status[1]))
+	if len(status) > 0 {
+		var statusArr []string
+		for _, item := range status {
+			statusArr = append(statusArr, fmt.Sprint(item))
+		}
+		condQues = append(condQues, fmt.Sprintf("di.Status in(%v)", strings.Join(statusArr, ",")))
 	}
 
 	condStr = "true"

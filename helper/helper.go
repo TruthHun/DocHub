@@ -756,12 +756,16 @@ func HandlePageNum(PageNum interface{}) string {
 //@param            err             压缩错误
 func CompressBySVGO(input, output string) (err error) {
 	svgo := strings.TrimSpace(GetConfig("depend", "svgo", "svgo"))
-	args := []string{input, "-o", output}
+	args := []string{"-i", input, "-o", output}
 	if strings.HasPrefix(svgo, "sudo") {
 		args = append([]string{strings.TrimPrefix(svgo, "sudo")}, args...)
 		svgo = "sudo"
 	}
-	return exec.Command(svgo, args...).Run()
+	err = exec.Command(svgo, args...).Run()
+	if err != nil {
+		err = CompressSVG(input, output)
+	}
+	return
 }
 
 // 使用GZIP压缩文件

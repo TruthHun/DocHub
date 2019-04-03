@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"bytes"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -8,6 +9,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/tdewolff/minify"
+	"github.com/tdewolff/minify/svg"
 
 	"github.com/astaxie/beego"
 )
@@ -155,6 +159,29 @@ func ExtractTextFromPDF(file string, from, to int) (content string) {
 		content = getTextFormTxtFile(textfile)
 	}
 	return
+}
+
+func CompressSVG(input, output string, level ...int) (err error) {
+	// 经测试，level 值为4，压缩质量和清晰度都比较均衡
+	lv := 4
+	if len(level) > 0 {
+		lv = level[0]
+	}
+	media := "image/svg+xml"
+	min := &svg.Minifier{Decimals: lv}
+	m := minify.New()
+	m.AddFunc(media, min.Minify)
+	file, err := os.Open(input)
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	w := &bytes.Buffer{}
+	if err = m.Minify(media, w, file); err != nil {
+		return
+	}
+	return ioutil.WriteFile(output, w.Bytes(), os.ModePerm)
 }
 
 func getTextFormTxtFile(textfile string) (content string) {

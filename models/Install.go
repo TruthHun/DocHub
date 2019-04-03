@@ -751,19 +751,19 @@ func installCfg() {
 		},
 		Config{
 			Title:       "SVGO",
-			Description: "svg内容压缩工具，清除多余字符",
+			Description: "node模块，svg压缩工具，清除svg多余字符",
 			Key:         "svgo",
 			Value:       "svgo",
 			Category:    cateDepend,
 		},
-		Config{
-			Title:       "启用SVGO",
-			Description: "是否启用svgo，默认为false",
-			Key:         "svgo-on",
-			Value:       "false",
-			InputType:   InputBool,
-			Category:    cateDepend,
-		},
+		//Config{
+		//	Title:       "启用SVGO",
+		//	Description: "是否启用svgo，默认为false",
+		//	Key:         "svgo-on",
+		//	Value:       "false",
+		//	InputType:   InputBool,
+		//	Category:    cateDepend,
+		//},
 	}
 
 	//全文搜索
@@ -1298,8 +1298,14 @@ func installCfg() {
 	o := orm.NewOrm()
 	for _, cfg := range configs {
 		// 逐条写入数据库
+		if helper.Debug {
+			beego.Info("==如果因数据已存在而导致数据写入失败，则请忽略==")
+		}
 		o.Insert(&cfg)
+
 	}
+	o.QueryTable(NewConfig()).Filter("Category", "depend").Filter("Key__in", "svgo-on").Delete()
+
 	//全局变量赋值
 	NewConfig().UpdateGlobalConfig() //配置文件全局变量更新
 }

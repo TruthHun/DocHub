@@ -131,7 +131,7 @@ func (this *UserController) Get() {
 		this.Data["Lists"] = data
 		this.Data["Page"] = helper.Paginations(6, helper.Interface2Int(params[0]["Cnt"]), listRows, p, fmt.Sprintf("/user/%v/doc/cid/%v", user["Id"], cid), "sort", sort, "style", style)
 	} else {
-		this.Data["Lists"], _, _ = models.GetDocList(uid, 0, 0, 0, p, listRows, sort, 1)
+		this.Data["Lists"], _, _ = models.GetDocList(uid, 0, 0, 0, p, listRows, sort, 1, 0)
 		this.Data["Page"] = helper.Paginations(6, helper.Interface2Int(user["Document"]), listRows, p, fmt.Sprintf("/user/%v/doc", user["Id"]), "sort", sort, "style", style)
 	}
 
