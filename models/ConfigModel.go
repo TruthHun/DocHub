@@ -1,11 +1,15 @@
 package models
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/url"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
+
+	gomail "gopkg.in/gomail.v2"
 
 	"github.com/astaxie/beego"
 
@@ -29,6 +33,7 @@ const (
 	StoreQiniu helper.ConfigCate = "cs-qiniu" //七牛云储存
 	StoreUpyun helper.ConfigCate = "cs-upyun" //又拍云存储
 )
+
 const (
 	InputText     string = "string"   //对应input的text
 	InputBool     string = "bool"     //对应input的radio，两个选项
@@ -126,6 +131,15 @@ type ConfigUpYun struct {
 	Expire              int64  `dochub:"expire"`
 }
 
+type ConfigEmail struct {
+	Port          int    `dochub:"port"`
+	Host          string `dochub:"host"`
+	Username      string `dochub:"username"`
+	Password      string `dochub:"password"`
+	ReplyTo       string `dochub:"replyto"`
+	TestUserEmail string `dochub:"test"`
+}
+
 func NewConfig() *Config {
 	return &Config{}
 }
@@ -149,8 +163,8 @@ func (this *Config) All() (configs []Config) {
 }
 
 // 获取云存储配置
-func (this *Config) GetCloudStoreConfig(storeType helper.ConfigCate) (cfg interface{}) {
-	switch storeType {
+func (this *Config) GetGlobalConfigWithStruct(configCate helper.ConfigCate) (cfg interface{}) {
+	switch configCate {
 	case StoreCos:
 		cfg = &ConfigCos{}
 	case StoreBos:
@@ -165,6 +179,8 @@ func (this *Config) GetCloudStoreConfig(storeType helper.ConfigCate) (cfg interf
 		cfg = &ConfigQiniu{}
 	case StoreObs:
 		cfg = &ConfigObs{}
+	case ConfigCateEmail:
+		cfg = &ConfigEmail{}
 	}
 	t := reflect.TypeOf(cfg)
 	v := reflect.ValueOf(cfg)
@@ -174,21 +190,25 @@ func (this *Config) GetCloudStoreConfig(storeType helper.ConfigCate) (cfg interf
 			key := t.Elem().Field(i).Tag.Get("dochub")
 			switch t.Elem().Field(i).Type.Kind() {
 			case reflect.String:
-				v.Elem().Field(i).Set(reflect.ValueOf(helper.GetConfig(storeType, key)))
+				v.Elem().Field(i).Set(reflect.ValueOf(helper.GetConfig(configCate, key)))
 			case reflect.Int64:
-				v.Elem().Field(i).Set(reflect.ValueOf(helper.GetConfigInt64(storeType, key)))
+				v.Elem().Field(i).Set(reflect.ValueOf(helper.GetConfigInt64(configCate, key)))
+			case reflect.Int:
+				v.Elem().Field(i).Set(reflect.ValueOf(int(helper.GetConfigInt64(configCate, key))))
 			case reflect.Float64:
-				v.Elem().Field(i).Set(reflect.ValueOf(helper.GetConfigFloat64(storeType, key)))
+				v.Elem().Field(i).Set(reflect.ValueOf(helper.GetConfigFloat64(configCate, key)))
+			case reflect.Float32:
+				v.Elem().Field(i).Set(reflect.ValueOf(float32(helper.GetConfigFloat64(configCate, key))))
 			case reflect.Bool:
-				v.Elem().Field(i).Set(reflect.ValueOf(helper.GetConfigBool(storeType, key)))
+				v.Elem().Field(i).Set(reflect.ValueOf(helper.GetConfigBool(configCate, key)))
 			}
 		}
 	}
 	return
 }
 
-func (this *Config) ParseForm(storeType helper.ConfigCate, form url.Values) (cfg interface{}, err error) {
-	switch storeType {
+func (this *Config) ParseForm(configCate helper.ConfigCate, form url.Values) (cfg interface{}, err error) {
+	switch configCate {
 	case StoreCos:
 		cfg = &ConfigCos{}
 	case StoreBos:
@@ -203,13 +223,19 @@ func (this *Config) ParseForm(storeType helper.ConfigCate, form url.Values) (cfg
 		cfg = &ConfigQiniu{}
 	case StoreObs:
 		cfg = &ConfigObs{}
+	case ConfigCateEmail:
+		cfg = &ConfigEmail{}
+	case ConfigCateElasticSearch:
+		cfg = &ElasticSearchClient{}
+	default:
+		return
 	}
 	t := reflect.TypeOf(cfg)
 	v := reflect.ValueOf(cfg)
 	numFields := t.Elem().NumField()
 	for i := 0; i < numFields; i++ {
-		if v.Elem().Field(i).CanSet() {
-			key := t.Elem().Field(i).Tag.Get("dochub")
+		key := t.Elem().Field(i).Tag.Get("dochub")
+		if v.Elem().Field(i).CanSet() && key != "" {
 			val := form.Get(key)
 			switch t.Elem().Field(i).Type.Kind() {
 			case reflect.String:
@@ -220,16 +246,28 @@ func (this *Config) ParseForm(storeType helper.ConfigCate, form url.Values) (cfg
 					return nil, err
 				}
 				v.Elem().Field(i).Set(reflect.ValueOf(intVal))
+			case reflect.Int:
+				intVal, err := strconv.Atoi(val)
+				if err != nil {
+					return nil, err
+				}
+				v.Elem().Field(i).Set(reflect.ValueOf(intVal))
 			case reflect.Float64:
 				floatVal, err := strconv.ParseFloat(val, 10)
 				if err != nil {
 					return nil, err
 				}
 				v.Elem().Field(i).Set(reflect.ValueOf(floatVal))
-			case reflect.Bool:
-				boolVal, err := strconv.ParseBool(val)
+			case reflect.Float32:
+				floatVal, err := strconv.ParseFloat(val, 10)
 				if err != nil {
 					return nil, err
+				}
+				v.Elem().Field(i).Set(reflect.ValueOf(float32(floatVal)))
+			case reflect.Bool:
+				boolVal := false
+				if val == "true" || val == "1" {
+					boolVal = true
 				}
 				v.Elem().Field(i).Set(reflect.ValueOf(boolVal))
 			}
@@ -291,5 +329,40 @@ func (this *Config) UpdateByKey(cate helper.ConfigCate, key, val string) (err er
 	_, err = orm.NewOrm().QueryTable(GetTableConfig()).Filter("Category", cate).Filter("Key", key).Update(orm.Params{
 		"Value": val,
 	})
+	return
+}
+
+func NewEmail(config ...ConfigEmail) *ConfigEmail {
+	if len(config) > 0 {
+		return &config[0]
+	}
+	cfg := NewConfig().GetGlobalConfigWithStruct(ConfigCateEmail)
+	if cfg != nil {
+		return cfg.(*ConfigEmail)
+	}
+	return &ConfigEmail{}
+}
+
+//发送邮件
+//@param            to          string          收件人
+//@param            subject     string          邮件主题
+//@param            content     string          邮件内容
+//@return           error                       发送错误
+func (e *ConfigEmail) SendMail(to, subject, content string) (err error) {
+	m := gomail.NewMessage()
+	m.SetHeader("From", e.Username)
+	m.SetHeader("To", to)
+	if strings.TrimSpace(e.ReplyTo) != "" {
+		m.SetHeader("Reply-To", e.ReplyTo)
+	}
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/html", content)
+
+	d := gomail.NewDialer(e.Host, e.Port, e.Username, e.Password)
+	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+
+	// Send the email to Bob, Cora and Dan.
+	err = d.DialAndSend(m)
+
 	return
 }

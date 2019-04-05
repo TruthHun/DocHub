@@ -394,7 +394,7 @@ func (this *UserController) SendMail() {
 		}
 
 		code := helper.RandStr(6, 0)
-		err := models.SendMail(email, fmt.Sprintf("%v会员注册验证码", this.Sys.Site), strings.Replace(this.Sys.TplEmailReg, "{code}", code, -1))
+		err := models.NewEmail().SendMail(email, fmt.Sprintf("%v会员注册验证码", this.Sys.Site), strings.Replace(this.Sys.TplEmailReg, "{code}", code, -1))
 		if err != nil {
 			helper.Logger.Error("邮件发送失败：%v", err.Error())
 			this.ResponseJson(false, "邮件发送失败，请联系管理员检查邮箱配置是否正确")
@@ -411,7 +411,7 @@ func (this *UserController) SendMail() {
 	}
 
 	code := helper.RandStr(6, 0)
-	err := models.SendMail(email, fmt.Sprintf("%v找回密码验证码", this.Sys.Site), strings.Replace(this.Sys.TplEmailFindPwd, "{code}", code, -1))
+	err := models.NewEmail().SendMail(email, fmt.Sprintf("%v找回密码验证码", this.Sys.Site), strings.Replace(this.Sys.TplEmailFindPwd, "{code}", code, -1))
 	if err != nil {
 		helper.Logger.Error("邮件发送失败：%v", err.Error())
 		this.ResponseJson(false, "邮件发送失败，请联系管理员检查邮箱配置是否正确")

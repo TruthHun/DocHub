@@ -22,10 +22,10 @@ import (
 
 //全文搜索客户端
 type ElasticSearchClient struct {
-	Host    string        //host
-	Index   string        //索引
-	Type    string        //type
-	On      bool          //是否启用全文搜索
+	On      bool          `dochub:"on"`    //是否启用全文搜索
+	Host    string        `dochub:"host"`  //host
+	Index   string        `dochub:"index"` //索引
+	Type    string        `dochub:"type"`  //type
 	Timeout time.Duration //超时时间
 }
 
@@ -103,14 +103,17 @@ type ElasticSearchResult struct {
 }
 
 //创建全文搜索客户端
-func NewElasticSearchClient() (client *ElasticSearchClient) {
+func NewElasticSearchClient(configElasticSearch ...ElasticSearchClient) (client *ElasticSearchClient) {
+	if len(configElasticSearch) > 0 {
+		client = &configElasticSearch[0]
+	}
 	//并未设置超时配置项
 	timeout := helper.GetConfigInt64(ConfigCateElasticSearch, "timeout")
 	if timeout <= 0 { //默认超时时间为10秒
 		timeout = 10
 	}
 	client = &ElasticSearchClient{
-		Host:    helper.GetConfig(ConfigCateElasticSearch, "host", "http://localhost:920/"),
+		Host:    helper.GetConfig(ConfigCateElasticSearch, "host", "http://localhost:9200/"),
 		Index:   helper.GetConfig(ConfigCateElasticSearch, "index", "dochub"),
 		Type:    "fulltext",
 		On:      helper.GetConfigBool(ConfigCateElasticSearch, "on"),
@@ -433,15 +436,15 @@ func (this *ElasticSearchClient) DeleteIndex(id int) (err error) {
 
 //检验es服务能否连通
 func (this *ElasticSearchClient) ping() error {
-	if resp, err := this.get(this.Host).Response(); err != nil {
+	resp, err := this.get(this.Host).Response()
+	if err != nil {
 		return err
-	} else {
-		if resp.StatusCode >= 300 || resp.StatusCode < 200 {
-			body, _ := ioutil.ReadAll(resp.Body)
-			err = errors.New(resp.Status + "；" + string(body))
-		}
 	}
-	return nil
+	if resp.StatusCode >= 300 || resp.StatusCode < 200 {
+		body, _ := ioutil.ReadAll(resp.Body)
+		err = errors.New(resp.Status + "；" + string(body))
+	}
+	return err
 }
 
 //查询索引是否存在

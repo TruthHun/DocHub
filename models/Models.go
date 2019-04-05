@@ -4,8 +4,6 @@ package models
 import (
 	"fmt"
 
-	"gopkg.in/gomail.v2"
-
 	"github.com/TruthHun/DocHub/helper"
 
 	"reflect"
@@ -22,8 +20,6 @@ import (
 	"strconv"
 
 	"time"
-
-	"crypto/tls"
 
 	"database/sql"
 
@@ -506,35 +502,6 @@ func ReplaceInto(table string, params map[string]interface{}) (err error) {
 //@return           cnt             统计的记录数
 func Count(table string, cond *orm.Condition) (cnt int64) {
 	cnt, _ = orm.NewOrm().QueryTable(getTable(table)).SetCond(cond).Count()
-	return
-}
-
-//发送邮件
-//@param            to          string          收件人
-//@param            subject     string          邮件主题
-//@param            content     string          邮件内容
-//@return           error                       发送错误
-func SendMail(to, subject, content string) (err error) {
-	port := int(helper.GetConfigInt64("email", "port"))
-	host := helper.GetConfig("email", "host")
-	username := helper.GetConfig("email", "username")
-	password := helper.GetConfig("email", "password")
-	replyto := helper.GetConfig("email", "replyto")
-	m := gomail.NewMessage()
-	m.SetHeader("From", username)
-	m.SetHeader("To", to)
-	if strings.TrimSpace(replyto) != "" {
-		m.SetHeader("Reply-To", replyto)
-	}
-	m.SetHeader("Subject", subject)
-	m.SetBody("text/html", content)
-
-	d := gomail.NewDialer(host, port, username, password)
-	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
-
-	// Send the email to Bob, Cora and Dan.
-	err = d.DialAndSend(m)
-
 	return
 }
 

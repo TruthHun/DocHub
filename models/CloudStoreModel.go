@@ -27,7 +27,7 @@ type CloudStore struct {
 func NewCloudStore(private bool) (cs *CloudStore, err error) {
 	storeType := helper.ConfigCate(GlobalSys.StoreType)
 	modelConfig := NewConfig()
-	config := modelConfig.GetCloudStoreConfig(storeType)
+	config := modelConfig.GetGlobalConfigWithStruct(storeType)
 	return NewCloudStoreWithConfig(config, storeType, private)
 }
 

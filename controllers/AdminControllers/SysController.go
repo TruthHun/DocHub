@@ -29,38 +29,69 @@ type logFile struct {
 //系统配置管理
 func (this *SysController) Get() {
 	tab := helper.ConfigCate(strings.ToLower(this.GetString("tab")))
+	var err error
 	switch tab {
 	case models.ConfigCateEmail, models.ConfigCateDepend, models.ConfigCateElasticSearch, models.ConfigCateLog:
-	case models.StoreOss, models.StoreMinio, models.StoreBos, models.StoreCos, models.StoreQiniu:
 	default:
 		tab = "default"
 	}
 	if this.Ctx.Request.Method == http.MethodPost {
+		defer func() {
+			models.NewSys().UpdateGlobalConfig()
+			models.NewConfig().UpdateGlobalConfig()
+		}()
 		if tab == "default" {
 			var sys models.Sys
 			this.ParseForm(&sys)
-			if i, err := orm.NewOrm().Update(&sys); i > 0 && err == nil {
-				models.NewSys().UpdateGlobalConfig() //更新全局变量
-			} else {
-				if err != nil {
-					helper.Logger.Error(err.Error())
-				}
-				this.ResponseJson(false, "更新失败，可能您未对内容做更改")
+			_, err := orm.NewOrm().Update(&sys)
+			if err != nil {
+				helper.Logger.Error(err.Error())
+				this.ResponseJson(false, err.Error())
 			}
-		} else {
-			modelCfg := models.NewConfig()
-			for k, v := range this.Ctx.Request.Form {
-				modelCfg.UpdateByKey(helper.ConfigCate(tab), k, v[0])
-			}
-			//最后更新全局配置
-			modelCfg.UpdateGlobalConfig()
-			if tab == models.ConfigCateElasticSearch {
-				if err := models.NewElasticSearchClient().Init(); err != nil {
-					this.ResponseJson(false, "ElasticSearch初始化失败："+err.Error())
-				}
-			}
-
+			this.ResponseJson(true, "更新成功")
 		}
+
+		var cfg interface{}
+		cfg, err = models.NewConfig().ParseForm(tab, this.Ctx.Request.Form)
+		if cfg != nil {
+			switch tab {
+			case models.ConfigCateEmail:
+				if err != nil {
+					this.ResponseJson(false, err.Error())
+				}
+				modelEmail := cfg.(*models.ConfigEmail)
+				err = modelEmail.SendMail(modelEmail.TestUserEmail, "测试邮件", "这是一封测试邮件，用于检测是否能正常发送邮件")
+			case models.ConfigCateElasticSearch:
+				modelES := cfg.(*models.ElasticSearchClient)
+				if modelES.On {
+					modelES.Host = strings.TrimRight(modelES.Host, "/") + "/"
+					modelES.Type = "fulltext"
+					modelES.Timeout = 5 * time.Second
+					err = modelES.Init()
+				}
+			}
+		}
+		if err != nil {
+			this.ResponseJson(false, err.Error(), cfg)
+		}
+
+		o := orm.NewOrm()
+		o.Begin()
+		defer func() {
+			if err != nil {
+				o.Rollback()
+			} else {
+				o.Commit()
+			}
+		}()
+
+		for k, v := range this.Ctx.Request.Form {
+			if _, err = o.QueryTable(models.GetTableConfig()).Filter("Category", tab).Filter("Key", k).Update(orm.Params{"Value": v[0]}); err != nil {
+				helper.Logger.Error(err.Error())
+				this.ResponseJson(false, "ElasticSearch初始化失败："+err.Error())
+			}
+		}
+
 		this.ResponseJson(true, "更新成功")
 	}
 
@@ -159,9 +190,8 @@ func (this *SysController) RebuildAllIndex() {
 
 //测试邮箱是否能发件成功
 func (this *SysController) TestForSendingEmail() {
-	//邮件接收人
 	to := helper.GetConfig(models.ConfigCateEmail, "test")
-	if err := models.SendMail(to, "测试邮件", "这是一封测试邮件，用于检测是否能正常发送邮件"); err != nil {
+	if err := models.NewEmail().SendMail(to, "测试邮件", "这是一封测试邮件，用于检测是否能正常发送邮件"); err != nil {
 		this.Response(map[string]interface{}{"status": 0, "msg": "邮件发送失败：" + err.Error()})
 	}
 	this.Response(map[string]interface{}{"status": 1, "msg": "邮件发送成功"})
