@@ -199,7 +199,7 @@ func (this *SysController) TestForSendingEmail() {
 
 // 云存储配置
 func (this *SysController) CloudStore() {
-	tab := this.GetString("tab", "cs-oss")
+	tab := this.GetString("tab", models.GlobalSys.StoreType)
 	modelConfig := models.NewConfig()
 	this.Data["Config"] = modelConfig.GetByCate(helper.ConfigCate(tab))
 	this.Data["Tab"] = tab

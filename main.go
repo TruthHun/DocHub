@@ -10,12 +10,6 @@ import (
 	"github.com/astaxie/beego"
 )
 
-func main() {
-	//定义错误和异常处理控制器
-	beego.ErrorController(&HomeControllers.ErrorsController{})
-	beego.Run()
-}
-
 //初始化函数
 func init() {
 
@@ -59,4 +53,10 @@ func init() {
 	beego.AddFuncMap("GetDescByDsId", models.NewDocText().GetDescByDsId)
 	beego.AddFuncMap("GetDescByDid", models.NewDocText().GetDescByDid)
 	beego.AddFuncMap("DefaultImage", models.GetImageFromCloudStore) //获取默认图片
+}
+
+func main() {
+	//定义错误和异常处理控制器
+	beego.ErrorController(&HomeControllers.ErrorsController{})
+	beego.Run()
 }

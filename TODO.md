@@ -1,7 +1,5 @@
 ## 待开发功能
 
-- [ ] 扩展云存储，支持腾讯云、七牛云、百度云、又拍云、华为云等
-    - 批量删除；删除文件夹；图片处理；文档存储；header操作，添加gzip
 - [ ] 增加权限管理功能
 - [ ] 增加用户等级划分
 - [ ] 增加第三方登录的支持：QQ登录、微信登录、微博登录、GitHub登录、Gitee登录
@@ -19,6 +17,14 @@
 - [ ] 程序以微服务形式做成模块化，拆分成：web模块、爬虫模块、文档转换模块、全文搜索模块、用户模块、云存储模块
 - [ ] 管理后台，管控是否开放注册控制
 - [ ] url路由链接调整？
+- [ ] 凌晨自动更新站点地图
+- [ ] 文库频道，可在管理后台更新频道图片封面
+- [ ] 文档分类数据统计修正(管理后台处理)
+- [ ] 频道图片上传和更换功能
+- [ ] 管理后台增加一个上传文档必须达到的最低积分要求，避免一些新用户上传垃圾文档刷积分
+- [ ] 更换[KindEditor](https://www.oschina.net/news/104631/kindeditor-upload-vulnerability)
+- [ ] 文档上传间隔频率控制
+
 
 
 ## DocHub v2.2
@@ -42,18 +48,18 @@
 - [x] 把引入的外部js、css公共资源库替换成本地资源库，以方便内网部署
 - [x] 增加虚拟根目录，路径为`./virtualroot`，并把`.well-known`加入到默认静态目录中，以便申请`let's encrypt`证书
 - [x] 在管理后台增加注册邮箱验证开关，用户在注册的时候可以不验证邮箱
-- [ ] 移除管理后台系统设置的频道管理，直接根据频道排序，在首页展示，避免造成困扰
-- [ ] 文档分类数据统计修正(管理后台处理)
-- [ ] 频道图片上传和更换功能
-- [ ] 优化文档上传流程，正在转码的文档直接在前端展示的时候提示文档正在转码
-- [ ] 管理后台增加一个上传文档必须达到的最低积分要求，避免一些新用户上传垃圾文档
-- [ ] 更换[KindEditor](https://www.oschina.net/news/104631/kindeditor-upload-vulnerability)
-- [ ] 解决文件路径问题（调用 cmd 的时候，用文件的绝对路径）
-- [ ] 文档浏览方式，实现对 svg、jpg和png 的支持 
+- [x] 移除管理后台系统设置的频道管理，直接根据频道排序，在首页展示，避免造成困扰
+- [x] 优化文档上传流程
+- [x] 解决文件路径问题（调用 cmd 的时候，用文件的绝对路径）
 - [x] 文档评分人数统计问题(评分出现-1的情况)
 - [x] 文档分享人可把文档设置为不可下载状态
-- [ ] 文档上传间隔频率控制
-- [ ] 邮箱配置更改的时候进行验证
+- [x] 邮箱配置更改的时候进行验证
+
+
+
+```
+DROP TABLE `hc_ad`, `hc_admin`, `hc_ad_position`, `hc_banner`, `hc_category`, `hc_coin_log`, `hc_collect`, `hc_collect_folder`, `hc_document`, `hc_document_comment`, `hc_document_illegal`, `hc_document_info`, `hc_document_recycle`, `hc_document_remark`, `hc_document_store`, `hc_doc_text`, `hc_free_down`, `hc_friend`, `hc_pages`, `hc_relate`, `hc_report`, `hc_search_log`, `hc_seo`, `hc_sign`, `hc_suggest`, `hc_sys`, `hc_word`;
+```
 
 ---------------
 

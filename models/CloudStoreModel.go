@@ -362,5 +362,5 @@ func (c *CloudStore) PingTest() (err error) {
 func (c *CloudStore) GetPublicDomain() (domain string) {
 	object := "test.dochub.test"
 	link := c.GetSignURL(object)
-	return strings.Split(link, object)[0]
+	return strings.TrimRight(strings.Split(link, object)[0], "/")
 }

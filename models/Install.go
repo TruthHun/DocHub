@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/TruthHun/DocHub/helper"
@@ -9,7 +10,6 @@ import (
 )
 
 func install() {
-	//数据初始化，如果数据已经存在，则不会继续写入(因为数据已存在，继续写入会报错，所以没影响)
 	installAdmin()
 	installCategory()
 	installFriendlinks()
@@ -18,7 +18,8 @@ func install() {
 	installSys()
 	installCfg()
 
-	NewSys().UpdateGlobalConfig() //更新系统配置的全局变量
+	NewSys().UpdateGlobalConfig()
+	NewConfig().UpdateGlobalConfig()
 }
 
 //安装管理员初始数据
@@ -293,6 +294,18 @@ func installCategory() {
 	//存在分类了，则表明已经初始化过数据
 	var cate = new(Category)
 	o := orm.NewOrm()
+
+	defer func() {
+		var cates []Category
+		o.QueryTable(GetTableCategory()).Filter("Id__in", 1, 2, 3, 4, 5).All(&cates)
+		for _, cate := range cates {
+			if cate.Cover == "" {
+				cate.Cover = fmt.Sprintf("/static/Home/default/img/cover-%v.png", cate.Alias)
+				o.Update(&cate)
+			}
+		}
+	}()
+
 	if o.QueryTable(cate).Filter("id__gt", 0).One(cate); cate.Id > 0 {
 		return
 	}
@@ -630,6 +643,7 @@ func installCategory() {
 		(334, 10, '高考', 0, 0, '', 1);
 `
 	o.Raw(sql).Exec()
+
 }
 
 //初始化配置项
@@ -1305,7 +1319,4 @@ func installCfg() {
 
 	}
 	o.QueryTable(NewConfig()).Filter("Category", "depend").Filter("Key__in", "svgo-on").Delete()
-
-	//全局变量赋值
-	NewConfig().UpdateGlobalConfig() //配置文件全局变量更新
 }

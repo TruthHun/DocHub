@@ -53,12 +53,12 @@ func (this *BaseController) Prepare() {
 	this.Sys, _ = models.NewSys().Get()
 	this.Data["Version"] = version
 	this.Data["Sys"] = this.Sys
-	this.Data["Chanels"] = models.NewCategory().GetByPid(0)
+	this.Data["Chanels"] = models.NewCategory().GetByPid(0, true)
 	this.Data["Pages"], _, _ = models.NewPages().List(beego.AppConfig.DefaultInt("pageslimit", 6), 1)
 	this.Data["AdminId"] = helper.Interface2Int(this.GetSession("AdminId"))
 	this.Data["CopyrightDate"] = time.Now().Format("2006")
 
-	this.Data["PreviewDomain"] = "/"
+	this.Data["PreviewDomain"] = ""
 
 	if cs, err := models.NewCloudStore(false); err == nil {
 		this.Data["PreviewDomain"] = cs.GetPublicDomain()

@@ -20,6 +20,7 @@
                             <tr>
                                 <th>名称</th>
                                 <th>别名</th>
+                                <th>封面</th>
                                 <th>排序</th>
                                 <th>统计</th>
                                 <th>状态</th>
@@ -34,6 +35,9 @@
                                 </td>
                                 <td>
                                     <input type="text" class="form-control wenku-change-update" data-url="/admin/update?table=category&id={{.Id}}" name="alias" value="{{.Alias}}" />
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control wenku-change-update" data-url="/admin/update?table=category&id={{.Id}}" name="cover" value="{{.Cover}}" />
                                 </td>
                                 <td>
                                     <input type="number" class="form-control wenku-change-update" data-url="/admin/update?table=category&id={{.Id}}" name="sort" value="{{.Sort}}" />
@@ -53,7 +57,6 @@
                                     {{else}}
                                         <a href="/admin/update?id={{.Id}}&field=status&value=1&table=category" class="wenku-ajax-get wenku-conform">启用</a>
                                     {{end}}
-
                                 </td>
                             </tr>
                             {{end}}

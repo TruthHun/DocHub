@@ -241,7 +241,7 @@ func DocumentConvert(tmpFile string, fileMD5 string, page ...int) (err error) {
 		return
 	}
 
-	if err = clientPrivate.Upload(tmpFile, fileMD5+ext, helper.HeaderDisposition(filepath.Base(tmpFile))); err != nil {
+	if err = clientPrivate.Upload(tmpFile, fileMD5+ext); err != nil {
 		helper.Logger.Error(err.Error())
 		return
 	}

@@ -287,8 +287,8 @@
                                         <label >{{.Title}}</label>
                                         {{if eq .InputType "bool"}}
                                         <div>
-                                            <label style="font-weight: normal;margin-right: 20px;"><input type="radio" name="{{.Key}}" value="true" {{if eq .Value "1"}}checked{{end}}> 是 </label>
-                                            <label style="font-weight: normal"><input type="radio" name="{{.Key}}" value="false" {{if eq .Value "1"}}{{else}}checked{{end}}> 否</label>
+                                            <label style="font-weight: normal;margin-right: 20px;"><input type="radio" name="{{.Key}}" value="1" {{if eq .Value "1"}}checked{{end}}> 是 </label>
+                                            <label style="font-weight: normal"><input type="radio" name="{{.Key}}" value="0" {{if eq .Value "1"}}{{else}}checked{{end}}> 否</label>
                                         </div>
                                         {{else if eq .InputType "number"}}
                                             <input type="number" class="form-control" name="{{.Key}}" placeholder="" value="{{.Value}}" />

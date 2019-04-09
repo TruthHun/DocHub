@@ -163,7 +163,7 @@
 				</div>
 				<div class="panel-body">
 					<a href="/list/{{.Alias}}" title="{{.Title}}" target="_blank" class="col-xs-5 wenku-nopadding">
-						<img alt="{{.Title}}" style="width: 195px;height: 154px;" src="/static/Home/default/img/cover-{{.Alias}}.png"/>
+						<img alt="{{.Title}}" style="width: 195px;height: 154px;" src="{{.Cover}}" onerror="this.src='/static/Home/default/img/cover-{{.Alias}}.png'"/>
 					</a>
 					<div class="col-xs-7 wenku-nopadding">
 						<ul>

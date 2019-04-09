@@ -10,12 +10,13 @@ import (
 //文档分类
 type Category struct {
 	Id     int    `orm:"column(Id)"`
-	Pid    int    `orm:"default(0);column(Pid)"`           //父类ID【Pid为0时的id为频道Id(chanel_id)】
-	Title  string `orm:"size(20);column(Title);default()"` //分类名称
-	Cnt    int    `orm:"default(0);column(Cnt)"`           //当前分类下的文档数量统计
-	Sort   int    `orm:"default(0);column(Sort)"`          //分类排序，值越小越靠前
-	Alias  string `orm:"size(30);default();column(Alias)"` //英文别名
-	Status bool   `orm:"default(true);column(Status)"`     //分类或频道状态，0表示关闭，1表示启用
+	Pid    int    `orm:"default(0);column(Pid)"`                                         //父类ID【Pid为0时的id为频道Id(chanel_id)】
+	Title  string `orm:"size(20);column(Title);default()"`                               //分类名称
+	Cover  string `orm:"column(Cover);default(/static/Home/default/img/cover-news.png)"` //封面
+	Cnt    int    `orm:"default(0);column(Cnt)"`                                         //当前分类下的文档数量统计
+	Sort   int    `orm:"default(0);column(Sort)"`                                        //分类排序，值越小越靠前
+	Alias  string `orm:"size(30);default();column(Alias)"`                               //英文别名
+	Status bool   `orm:"default(true);column(Status)"`                                   //分类或频道状态，0表示关闭，1表示启用
 }
 
 func NewCategory() *Category {
@@ -71,8 +72,12 @@ func (this *Category) GetSameLevelCategoryById(id interface{}) (cates []Category
 }
 
 // 根据父级id获取分类
-func (this *Category) GetByPid(pid int) (categories []Category) {
-	orm.NewOrm().QueryTable(this).Filter("Pid", pid).OrderBy("Sort").All(&categories)
+func (this *Category) GetByPid(pid int, status ...bool) (categories []Category) {
+	q := orm.NewOrm().QueryTable(this).Filter("Pid", pid).OrderBy("Sort")
+	if len(status) > 0 {
+		q = q.Filter("Status", status[0])
+	}
+	q.All(&categories)
 	return
 }
 

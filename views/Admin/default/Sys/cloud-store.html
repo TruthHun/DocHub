@@ -14,7 +14,8 @@
                         <li {{if eq .Tab "cs-upyun"}}class="active"{{end}}><a href="/admin/cloud-store?tab=cs-upyun">UpYun(又拍云)</a></li>
                     </ul>
                     <form action="" class="wenku-ajax-form" data-redirect="" method="post">
-                        {{range .Config}}
+                        <input type="hidden" name="tab" value="{{$.Tab}}">
+                    {{range .Config}}
                             {{if eq $.Tab .Category}}
                                 <div class="form-group">
                                     <label >{{.Title}}</label>
