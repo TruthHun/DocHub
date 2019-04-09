@@ -300,7 +300,7 @@ func installCategory() {
 		for _, cate := range cates {
 			if cate.Cover == "" {
 				cate.Cover = fmt.Sprintf("/static/Home/default/img/cover-%v.png", cate.Alias)
-				o.Update(&cate)
+				o.Update(&cate, "Id")
 			}
 		}
 	}()
