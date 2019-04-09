@@ -33,7 +33,7 @@ func NewCloudStore(private bool) (cs *CloudStore, err error) {
 	return NewCloudStoreWithConfig(config, storeType, private)
 }
 
-var errWithoutConfig = errors.New("尚未配置云存储配置项？")
+var errWithoutConfig = errors.New("云存储配置不正确")
 
 func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCate, private bool) (cs *CloudStore, err error) {
 	cs = &CloudStore{
