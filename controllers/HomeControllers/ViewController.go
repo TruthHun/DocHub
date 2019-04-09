@@ -80,6 +80,7 @@ func (this *ViewController) Get() {
 		this.Data["OnlyCover"] = true
 		this.TplName = "disabled.html"
 	} else {
+		this.Data["ViewAll"] = doc.PreviewPage == 0 || doc.PreviewPage >= doc.Page
 		this.TplName = "svg.html"
 	}
 

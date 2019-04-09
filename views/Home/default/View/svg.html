@@ -31,12 +31,12 @@
                     </div>
 
                     <!--<div class="help-block wenku-preview-tips">温馨提示：如果当前文档出现乱码或未能正常浏览，请先下载原文档进行浏览。</div>-->
-                    {{if gt .Doc.PreviewPage 0}}
-                    <div class="help-block wenku-preview-tips">
-                        温馨提示：当前文档最多只能预览 <span class="strong text-primary">{{.Doc.PreviewPage}}</span> 页，若文档总页数超出了 <span class="strong text-primary">{{.Doc.PreviewPage}}</span> 页，请下载原文档以浏览全部内容。
-                    </div>
-                    {{else}}
+                    {{if $.ViewAll}}
                         <div class="help-block wenku-preview-tips">温馨提示：如果当前文档出现乱码或未能正常浏览，请先下载原文档进行浏览。</div>
+                    {{else}}
+                        <div class="help-block wenku-preview-tips">
+                            温馨提示：当前文档最多只能预览 <span class="strong text-primary">{{.Doc.PreviewPage}}</span> 页，若文档总页数超出了 <span class="strong text-primary">{{.Doc.PreviewPage}}</span> 页，请下载原文档以浏览全部内容。
+                        </div>
                     {{end}}
 
 
@@ -57,22 +57,17 @@
                             <div><a href="javascript:void(0);" class="btn btn-primary" data-toggle="modal" data-target="#ModalDownload"><i class="fa fa-cloud-download"></i> 下载文档</a></div>
                         {{end}}
 
-                        {{if and (gt .Doc.PreviewPage 0) (gt $.Doc.Page .Doc.PreviewPage)}}
+                        {{if $.ViewAll}}
                             <a href="javascript:void(0);" class="wenku-viewer-more-btn">
                                 <div class="help-block">
-                                {{if gt .Doc.PreviewPage 0}}
-                                    当前文档最多只能预览 {{.Doc.PreviewPage}} 页 <br>
-                                {{end}}
-                                还有 <span class="wenku-unread-pages">{{CalcInt .Doc.PreviewPage "-" $.PageShow}}</span> 页可预览，<span class="text-primary">继续阅读</span>
+                                还有 <span class="wenku-unread-pages">{{CalcInt $.Doc.Page "-" $.PageShow}}</span> 页可预览，<span class="text-primary">继续阅读</span>
                                 </div>
                             </a>
                         {{else}}
                             <a href="javascript:void(0);" class="wenku-viewer-more-btn">
                                 <div class="help-block">
-                                {{if gt .Doc.PreviewPage 0}}
                                     当前文档最多只能预览 {{.Doc.PreviewPage}} 页 <br>
-                                {{end}}
-                                    还有 <span class="wenku-unread-pages">{{CalcInt $.TotalPages "-" $.PageShow}}</span> 页可预览，<span class="text-primary">继续阅读</span>
+                                    还有 <span class="wenku-unread-pages">{{CalcInt $.Doc.PreviewPage "-" $.PageShow}}</span> 页可预览，<span class="text-primary">继续阅读</span>
                                 </div>
                             </a>
                         {{end}}

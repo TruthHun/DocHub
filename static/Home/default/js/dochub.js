@@ -327,12 +327,12 @@ $(function(){
 
 
         WenkuLazyLoad();//document ready也调用一次
-        var timeout;
+        var scrolling=false;
         $(window).on("scroll",function () {
-            clearTimeout(timeout);//避免短时间内重复计算
-            timeout=setTimeout(function () {
-                WenkuLazyLoad();
-            },100);
+            if (scrolling) return;
+            scrolling=true;
+            WenkuLazyLoad();
+            scrolling=false;
         });
         $(window).on("resize",function () {
             WenkuLazyLoad();
