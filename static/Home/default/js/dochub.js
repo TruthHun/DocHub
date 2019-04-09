@@ -327,13 +327,14 @@ $(function(){
 
 
         WenkuLazyLoad();//document ready也调用一次
-        var scrolling=false;
+        var timeout;
         $(window).on("scroll",function () {
-            if (scrolling) return;
-            scrolling=true;
-            WenkuLazyLoad();
-            scrolling=false;
+            clearTimeout(timeout);//避免短时间内重复计算
+            timeout=setTimeout(function () {
+                WenkuLazyLoad();
+            },30);
         });
+
         $(window).on("resize",function () {
             WenkuLazyLoad();
         });
