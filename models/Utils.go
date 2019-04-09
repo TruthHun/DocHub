@@ -330,68 +330,62 @@ func DocumentConvert(tmpFile string, fileMD5 string, page ...int) (err error) {
 	}()
 
 	// PDF 转 SVG
-	var (
-		svgPages = make(map[int]string)
-		pages    []int // svg 页面队列，使图片上传按照页面顺序进行
-	)
 	for i := 0; i < maxPreview; i++ {
 		pageNO := i + 1
 		svg := filepath.Join(tmpDir, strconv.Itoa(pageNO)+".svg")
-		if err = helper.ConvertPDF2SVG(pdfFile, svg, pageNO); err == nil {
-			svgPages[pageNO] = svg
-			if i == 0 {
-				if coverJPG, err = helper.ConvertToJPEG(svg); err == nil {
-					err = helper.CropImage(coverJPG, helper.CoverWidth, helper.CoverHeight)
-				}
-				if err != nil {
-					helper.Logger.Error(err.Error())
-				}
-				store.Width, store.Height = helper.ParseSvgWidthAndHeight(svg)
-				ch <- true
+		if err = helper.ConvertPDF2SVG(pdfFile, svg, pageNO); err != nil {
+			helper.Logger.Error(err.Error())
+			continue
+		}
+
+		if i == 0 {
+			store.Width, store.Height = helper.ParseSvgWidthAndHeight(svg)
+			ch <- true
+
+			if coverJPG, err = helper.ConvertToJPEG(svg); err == nil {
+				err = helper.CropImage(coverJPG, helper.CoverWidth, helper.CoverHeight)
 			}
-			pages = append(pages, pageNO)
-		} else {
+			if err != nil {
+				helper.Logger.Error(err.Error())
+			}
+
+			// 上传封面到云存储
+			err = clientPublic.Upload(coverJPG, fileMD5+".jpg", helper.HeaderJPEG)
+			if err != nil {
+				helper.Logger.Error(err.Error())
+			}
+		}
+
+		// 上传 svg 预览页到云存储
+		var headers []map[string]string
+		headers = append(headers, helper.HeaderSVG)
+		save := fmt.Sprintf("%v/%v.svg", fileMD5, pageNO)
+		if helper.Debug {
+			beego.Debug("存储svg文件", svg, "==>", save)
+		}
+
+		errCompress := helper.CompressBySVGO(svg, svg)
+		if errCompress != nil {
+			helper.Logger.Error("SVGO压缩SVG失败：%v", errCompress.Error())
+		}
+		if clientPublic.CanGZIP {
+			if errCompress = helper.CompressByGzip(svg); err != nil {
+				helper.Logger.Error("GZIP压缩SVG失败：%v", errCompress.Error())
+			} else {
+				headers = append(headers, helper.HeaderGzip)
+			}
+		}
+		if err = clientPublic.Upload(svg, save, headers...); err != nil {
 			helper.Logger.Error(err.Error())
 		}
+
 	}
 
-	// 重置 err
+	// 重置 err 为 nil
 	if err != nil {
 		err = nil
 	}
 
-	// 上传 svg、jpg到云存储
-	errUpload := clientPublic.Upload(coverJPG, fileMD5+".jpg", helper.HeaderJPEG)
-	if errUpload != nil {
-		helper.Logger.Error(errUpload.Error())
-	}
-
-	var headers []map[string]string
-	headers = append(headers, helper.HeaderSVG)
-
-	for _, pageNO := range pages {
-		if svg, ok := svgPages[pageNO]; ok {
-			save := fmt.Sprintf("%v/%v.svg", fileMD5, pageNO)
-			if helper.Debug {
-				beego.Debug("存储svg文件", svg, "==>", save)
-			}
-
-			errCompress := helper.CompressBySVGO(svg, svg)
-			if errCompress != nil {
-				helper.Logger.Error("SVGO压缩SVG失败：%v", errCompress.Error())
-			}
-			if clientPublic.CanGZIP {
-				if errCompress = helper.CompressByGzip(svg); err != nil {
-					helper.Logger.Error("GZIP压缩SVG失败：%v", errCompress.Error())
-				} else {
-					headers = append(headers, helper.HeaderGzip)
-				}
-			}
-			if errUpload = clientPublic.Upload(svg, save, headers...); errUpload != nil {
-				helper.Logger.Error(errUpload.Error())
-			}
-		}
-	}
 	return
 }
 
