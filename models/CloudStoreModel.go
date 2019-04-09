@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/pkg/errors"
+
 	"github.com/PuerkitoBio/goquery"
 
 	CloudStore2 "github.com/TruthHun/CloudStore"
@@ -31,6 +33,8 @@ func NewCloudStore(private bool) (cs *CloudStore, err error) {
 	return NewCloudStoreWithConfig(config, storeType, private)
 }
 
+var errWithoutConfig = errors.New("尚未配置云存储配置项？")
+
 func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCate, private bool) (cs *CloudStore, err error) {
 	cs = &CloudStore{
 		StoreType: storeType,
@@ -52,6 +56,10 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 		}
 		cs.privateDomain = cfg.PrivateBucketDomain
 		cs.publicDomain = cfg.PublicBucketDomain
+		if cfg.AccessKey == "" || cfg.SecretKey == "" || cfg.Endpoint == "" || bucket == "" {
+			err = errWithoutConfig
+			return
+		}
 		cs.client, err = CloudStore2.NewOSS(cfg.AccessKey, cfg.SecretKey, cfg.Endpoint, bucket, domain)
 		cs.CanGZIP = true
 	case StoreObs:
@@ -68,6 +76,10 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 		}
 		cs.privateDomain = cfg.PrivateBucketDomain
 		cs.publicDomain = cfg.PublicBucketDomain
+		if cfg.AccessKey == "" || cfg.SecretKey == "" || cfg.Endpoint == "" || bucket == "" {
+			err = errWithoutConfig
+			return
+		}
 		cs.client, err = CloudStore2.NewOBS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
 	case StoreQiniu:
 		cfg := cs.config.(*ConfigQiniu)
@@ -83,6 +95,10 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 		}
 		cs.privateDomain = cfg.PrivateBucketDomain
 		cs.publicDomain = cfg.PublicBucketDomain
+		if cfg.AccessKey == "" || cfg.SecretKey == "" || bucket == "" {
+			err = errWithoutConfig
+			return
+		}
 		cs.client, err = CloudStore2.NewQINIU(cfg.AccessKey, cfg.SecretKey, bucket, domain)
 	case StoreUpyun:
 		cfg := cs.config.(*ConfigUpYun)
@@ -98,6 +114,10 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 		}
 		cs.privateDomain = cfg.PrivateBucketDomain
 		cs.publicDomain = cfg.PublicBucketDomain
+		if cfg.Operator == "" || cfg.Password == "" || bucket == "" {
+			err = errWithoutConfig
+			return
+		}
 		cs.client = CloudStore2.NewUpYun(bucket, cfg.Operator, cfg.Password, domain, cfg.Secret)
 	case StoreMinio:
 		cfg := cs.config.(*ConfigMinio)
@@ -113,6 +133,10 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 		}
 		cs.privateDomain = cfg.PrivateBucketDomain
 		cs.publicDomain = cfg.PublicBucketDomain
+		if cfg.AccessKey == "" || cfg.SecretKey == "" || cfg.Endpoint == "" || bucket == "" {
+			err = errWithoutConfig
+			return
+		}
 		cs.client, err = CloudStore2.NewMinIO(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
 		cs.CanGZIP = true
 	case StoreBos:
@@ -129,6 +153,10 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 		}
 		cs.privateDomain = cfg.PrivateBucketDomain
 		cs.publicDomain = cfg.PublicBucketDomain
+		if cfg.AccessKey == "" || cfg.SecretKey == "" || cfg.Endpoint == "" || bucket == "" {
+			err = errWithoutConfig
+			return
+		}
 		cs.client, err = CloudStore2.NewBOS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
 		cs.CanGZIP = true
 	case StoreCos:
@@ -145,6 +173,10 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 		}
 		cs.privateDomain = cfg.PrivateBucketDomain
 		cs.publicDomain = cfg.PublicBucketDomain
+		if cfg.AccessKey == "" || cfg.SecretKey == "" || cfg.AppId == "" || bucket == "" || cfg.Region == "" {
+			err = errWithoutConfig
+			return
+		}
 		cs.client, err = CloudStore2.NewCOS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.AppId, cfg.Region, domain)
 		cs.CanGZIP = true
 	}
@@ -230,6 +262,10 @@ func (c *CloudStore) getImageFromCloudStore(picture string, ext ...string) (link
 	} else if !strings.Contains(picture, ".") && len(picture) > 0 {
 		picture = picture + ".jpg"
 	}
+	if c == nil || c.client == nil {
+		return
+	}
+
 	return c.GetSignURL(picture)
 }
 

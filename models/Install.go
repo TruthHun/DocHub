@@ -17,7 +17,6 @@ func install() {
 	installSeo()
 	installSys()
 	installCfg()
-
 	NewSys().UpdateGlobalConfig()
 	NewConfig().UpdateGlobalConfig()
 }

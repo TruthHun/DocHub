@@ -186,8 +186,8 @@ func (this *Config) GetGlobalConfigWithStruct(configCate helper.ConfigCate) (cfg
 	v := reflect.ValueOf(cfg)
 	numFields := t.Elem().NumField()
 	for i := 0; i < numFields; i++ {
-		if v.Elem().Field(i).CanSet() {
-			key := t.Elem().Field(i).Tag.Get("dochub")
+		key := t.Elem().Field(i).Tag.Get("dochub")
+		if v.Elem().Field(i).CanSet() && key != "" {
 			switch t.Elem().Field(i).Type.Kind() {
 			case reflect.String:
 				v.Elem().Field(i).Set(reflect.ValueOf(helper.GetConfig(configCate, key)))
