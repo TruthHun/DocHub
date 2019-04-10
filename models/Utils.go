@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -296,7 +297,13 @@ func DocumentConvert(tmpFile string, fileMD5 string, page ...int) (err error) {
 		maxPreview = store.PreviewPage
 	}
 
-	text.Content = helper.ExtractTextFromPDF(pdfFile, 1, 20)
+	if extLower == helper.ExtTXT { // 直接从txt文本中获取
+		b, _ := ioutil.ReadFile(tmpFile)
+		text.Content = string(b)
+	} else {
+		text.Content = helper.ExtractTextFromPDF(pdfFile, 1, 20)
+	}
+
 	text.Content = beego.Substr(text.Content, 0, 4500)
 
 	ch := make(chan bool, 1)

@@ -3,6 +3,7 @@ package models
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/TruthHun/DocHub/helper"
 
@@ -119,7 +120,11 @@ func RegisterDB() {
 	if envport := os.Getenv("MYSQL_PORT"); envport != "" {
 		dbPort = envport
 	}
-	dblink := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=%v", dbUser, dbPassword, dbHost, dbPort, dbDatabase, dbCharset, "Asia%2FShanghai")
+	loc := "Local"
+	if timezone := beego.AppConfig.String("db::timezone"); timezone != "" {
+		loc = url.QueryEscape(timezone)
+	}
+	dblink := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=%v", dbUser, dbPassword, dbHost, dbPort, dbDatabase, dbCharset, loc)
 	//下面两个参数后面要放到app.conf提供用户配置使用
 	// (可选)设置最大空闲连接
 	maxIdle := beego.AppConfig.DefaultInt("db::maxIdle", 50)

@@ -77,6 +77,7 @@ func ConvertByCalibre(file string, ext ...string) (resFile string, err error) {
 	file, _ = filepath.Abs(file)
 	calibre := strings.TrimSpace(GetConfig("depend", "calibre", "ebook-convert"))
 	resFile = filepath.Dir(file) + "/" + strings.TrimSuffix(filepath.Base(file), filepath.Ext(file)) + e
+	resFile, _ = filepath.Abs(resFile)
 	args := []string{
 		file,
 		resFile,
@@ -93,10 +94,8 @@ func ConvertByCalibre(file string, ext ...string) (resFile string, err error) {
 		args = append([]string{calibre}, args...)
 		cmd = exec.Command("sudo", args...)
 	}
-	if Debug {
-		beego.Debug("非Office文档转成PDF：", cmd.Args)
-	}
-	time.AfterFunc(30*time.Second, func() {
+	Logger.Debug("calibre文档转换：%v", args)
+	time.AfterFunc(60*time.Minute, func() {
 		if cmd.Process != nil {
 			cmd.Process.Kill()
 		}
