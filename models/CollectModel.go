@@ -11,7 +11,7 @@ import (
 type CollectFolder struct {
 	Id          int    `orm:"column(Id)"`
 	Cover       string `orm:"column(Cover);size(50);default()"`        //文档收藏夹(专辑封面)
-	Title       string `orm:"column(Title);default(默认收藏夹)"`            //会员收藏文档的存放收藏夹
+	Title       string `orm:"column(Title);size(100);default(默认收藏夹)"`  //会员收藏文档的存放收藏夹
 	Description string `orm:"column(Description);size(512);default()"` //会员创建的收藏夹的描述
 	Uid         int    `orm:"column(Uid);index"`                       //归属于哪个会员的收藏夹
 	TimeCreate  int    `orm:"column(TimeCreate)"`                      //收藏夹创建时间

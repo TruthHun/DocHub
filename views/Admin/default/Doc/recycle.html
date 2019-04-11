@@ -50,10 +50,14 @@
                                     {{end}}
                                 </td>
                                 <td>
-                                    {{if (.Md5|IsIllegal)}}
-                                    <span class="text-danger">非法(禁传)</span>
+                                    {{if .Md5}}
+                                        {{if and .Md5 (.Md5|IsIllegal)}}
+                                        <span class="text-danger">非法(禁传)</span>
+                                        {{else}}
+                                        <span class="text-success">合法</span>
+                                        {{end}}
                                     {{else}}
-                                    <span class="text-success">合法</span>
+                                    --
                                     {{end}}
                                 </td>
                                 <td>

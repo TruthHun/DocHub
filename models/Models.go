@@ -59,15 +59,15 @@ func Init() {
 		orm.RunSyncdb("default", false, false)
 	} else {
 		orm.Debug = true
-		orm.RunSyncdb("default", false, true)
+		orm.RunSyncdb("default", true, true)
 	}
-
 	//安装初始数据
 	install()
 }
 
 //注册数据库
 func RegisterDB() {
+	helper.Logger.Info("RegisterDB Start")
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	models := []interface{}{
 		NewUser(),
@@ -84,8 +84,6 @@ func RegisterDB() {
 		NewRelate(),
 		NewCollectFolder(),
 		NewCollect(),
-		NewAdPosition(),
-		NewAd(),
 		NewFriend(),
 		NewSys(),
 		NewWord(),
@@ -100,7 +98,10 @@ func RegisterDB() {
 		NewSearchLog(),
 		NewDocText(),
 		NewConfig(),
+		//NewAdPosition(),
+		//NewAd(),
 	}
+	beego.Info("tables count::::", len(models))
 	orm.RegisterModelWithPrefix(beego.AppConfig.DefaultString("db::prefix", "hc_"), models...)
 	dbUser := beego.AppConfig.String("db::user")
 	dbPassword := beego.AppConfig.String("db::password")
@@ -124,16 +125,14 @@ func RegisterDB() {
 	if timezone := beego.AppConfig.String("db::timezone"); timezone != "" {
 		loc = url.QueryEscape(timezone)
 	}
-	dblink := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=%v", dbUser, dbPassword, dbHost, dbPort, dbDatabase, dbCharset, loc)
-	//下面两个参数后面要放到app.conf提供用户配置使用
-	// (可选)设置最大空闲连接
+	dbLink := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=%v", dbUser, dbPassword, dbHost, dbPort, dbDatabase, dbCharset, loc)
+	helper.Logger.Debug(dbLink)
 	maxIdle := beego.AppConfig.DefaultInt("db::maxIdle", 50)
-	// (可选) 设置最大数据库连接 (go >= 1.2)
 	maxConn := beego.AppConfig.DefaultInt("db::maxConn", 300)
-	if err := orm.RegisterDataBase("default", "mysql", dblink, maxIdle, maxConn); err != nil {
+	if err := orm.RegisterDataBase("default", "mysql", dbLink, maxIdle, maxConn); err != nil {
 		panic(err)
 	}
-
+	helper.Logger.Info("RegisterDB End")
 }
 
 //获取带表前缀的数据表

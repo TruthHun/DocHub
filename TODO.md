@@ -26,6 +26,12 @@
 - [ ] 文档上传间隔频率控制
 
 
+## DocHub v2.2
+- [ ] 文档管理文档删除的错误
+- [x] 移除对zoneinfo.zip的依赖
+- [ ] calibre 文档转换优化
+- [ ] 解决程序不支持utf8mb4数据库字符编码问题（ERROR 1071 (42000): Specified key was too long; max key length is 767 bytes），索引字段太长导致
+
 
 ## DocHub v2.2
 - [x] 多样化存储实现
