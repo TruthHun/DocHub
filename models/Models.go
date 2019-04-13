@@ -31,9 +31,7 @@ import (
 
 //以下是数据库全局数据变量
 var (
-	GlobalSys               Sys          //全局系统设置
-	GlobalGitbookPublishing bool = false //是否正在发布gitbook书籍，如果是，则不能再点击发布
-	GlobalGitbookNextAbled  bool = true  //是否可以继续采集和发布下一本数据，如果true，则表示可以继续下载和发布下一本电子书，否则执行等待操作
+	GlobalSys Sys //全局系统设置
 )
 
 //以下是表字段查询
@@ -59,7 +57,7 @@ func Init() {
 		orm.RunSyncdb("default", false, false)
 	} else {
 		orm.Debug = true
-		orm.RunSyncdb("default", true, true)
+		orm.RunSyncdb("default", false, true)
 	}
 	//安装初始数据
 	install()
@@ -101,7 +99,6 @@ func RegisterDB() {
 		//NewAdPosition(),
 		//NewAd(),
 	}
-	beego.Info("tables count::::", len(models))
 	orm.RegisterModelWithPrefix(beego.AppConfig.DefaultString("db::prefix", "hc_"), models...)
 	dbUser := beego.AppConfig.String("db::user")
 	dbPassword := beego.AppConfig.String("db::password")
@@ -126,13 +123,11 @@ func RegisterDB() {
 		loc = url.QueryEscape(timezone)
 	}
 	dbLink := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=%v", dbUser, dbPassword, dbHost, dbPort, dbDatabase, dbCharset, loc)
-	helper.Logger.Debug(dbLink)
 	maxIdle := beego.AppConfig.DefaultInt("db::maxIdle", 50)
 	maxConn := beego.AppConfig.DefaultInt("db::maxConn", 300)
 	if err := orm.RegisterDataBase("default", "mysql", dbLink, maxIdle, maxConn); err != nil {
 		panic(err)
 	}
-	helper.Logger.Info("RegisterDB End")
 }
 
 //获取带表前缀的数据表

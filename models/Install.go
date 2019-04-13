@@ -293,14 +293,13 @@ func installCategory() {
 	//存在分类了，则表明已经初始化过数据
 	var cate = new(Category)
 	o := orm.NewOrm()
-
 	defer func() {
 		var cates []Category
-		o.QueryTable(GetTableCategory()).Filter("Id__in", 1, 2, 3, 4, 5).All(&cates)
-		for _, cate := range cates {
-			if cate.Cover == "" {
-				cate.Cover = fmt.Sprintf("/static/Home/default/img/cover-%v.png", cate.Alias)
-				o.Update(&cate, "Id")
+		o.QueryTable(GetTableCategory()).Filter("Pid__in", 0).All(&cates)
+		for _, item := range cates {
+			if item.Cover == "" {
+				item.Cover = fmt.Sprintf("/static/Home/default/img/cover-%v.png", item.Alias)
+				o.Update(&item)
 			}
 		}
 	}()

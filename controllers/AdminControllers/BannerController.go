@@ -39,7 +39,7 @@ func (this *BannerController) Add() {
 	}
 	defer f.Close()
 
-	dir := "uploads/" + time.Now().Format("2006-01-02")
+	dir := "uploads/" + time.Now().Format("2006/01/02")
 	os.MkdirAll(dir, 0777)
 	ext := helper.GetSuffix(h.Filename, ".")
 	filePath := dir + "/" + helper.MD5Crypt(fmt.Sprintf("%v-%v", h.Filename, time.Now().Unix())) + "." + ext
