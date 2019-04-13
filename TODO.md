@@ -27,11 +27,21 @@
 
 
 ## DocHub v2.2
-- [ ] 文档管理文档删除的错误
+- [ ] `文档管理`文档删除的错误
 - [x] 移除对zoneinfo.zip的依赖
-- [ ] calibre 文档转换优化
-- [ ] 解决程序不支持utf8mb4数据库字符编码问题（ERROR 1071 (42000): Specified key was too long; max key length is 767 bytes），索引字段太长导致
-
+- [x] calibre 文档转换优化
+- [x] 解决程序不支持utf8mb4数据库字符编码问题（ERROR 1071 (42000): Specified key was too long; max key length is 767 bytes），索引字段太长导致
+- [ ] 完成部署文档
+    - [ ] Windows 部署文档
+    - [ ] Linux(Ubuntu) 部署文档
+- [ ] 完成云存储配置部署文档
+    - [ ] 阿里云OSS
+    - [ ] 本地存储minio
+    - [ ] 腾讯云存储cos
+    - [ ] 七牛云存储qiniu
+    - [ ] 百度云存储bos
+    - [ ] 华为云存储obs
+    - [ ] 又拍云upyun
 
 ## DocHub v2.2
 - [x] 多样化存储实现

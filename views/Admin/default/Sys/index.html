@@ -255,8 +255,8 @@
                                                 <td>
                                                     <a href="/admin/sys/handle-logs?action=download&file={{.Path}}" class="wenku-tooltip" title="下载日志"><i class="fa fa-cloud-download"></i></a>
                                                     {{/*logs/dochub.log日志文件禁止删除，否则程序无法写入日志*/}}
-                                                    {{if ne .Path "logs/dochub.log"}}|
-                                                    <a href="/admin/sys/handle-logs?action=del&file={{.Path}}" class="wenku-tooltip wenku-ajax-get wenku-confirm" title="删除日志"><i class="fa fa-recycle"></i></a>
+                                                    {{if ne .Path "logs/dochub.log"}} |
+                                                        <a href="/admin/sys/handle-logs?action=del&file={{.Path}}" class="wenku-tooltip wenku-ajax-get wenku-confirm" title="删除日志"><i class="fa fa-recycle"></i></a>
                                                     {{end}}
                                                 </td>
                                             </tr>
