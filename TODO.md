@@ -26,7 +26,7 @@
 - [ ] 文档上传间隔频率控制
 
 
-## DocHub v2.2
+## DocHub v2.3
 - [ ] `文档管理`文档删除的错误
 - [x] 移除对zoneinfo.zip的依赖
 - [x] calibre 文档转换优化
@@ -42,6 +42,16 @@
     - [ ] 百度云存储bos
     - [ ] 华为云存储obs
     - [ ] 又拍云upyun
+
+
+```
+CREATE DATABASE dochub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+```
+CREATE DATABASE dochub CHARACTER SET utf8 COLLATE utf8_general_ci;
+```
+
 
 ## DocHub v2.2
 - [x] 多样化存储实现

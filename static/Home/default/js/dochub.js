@@ -795,7 +795,6 @@ $(function(){
 
     $(".wenku-ajax-form [type=submit]").click(function(e){
         e.preventDefault();
-        $(this).addClass("disabled");
         var _this=$(this),form=$(this).parents("form"),method=form.attr("method"),action=form.attr("action"),data=form.serialize(),_url=form.attr("data-url");
         var require=form.find("[required=required]"),l=require.length;
         $.each(require, function() {
@@ -810,8 +809,8 @@ $(function(){
             _url=location.href;
         }
         if (l>0) return false;
+        _this.addClass("disabled");
         if (method=="post") {
-
             if (form.attr("enctype")=="multipart/form-data"){
                 form.attr("target","notarget");
                 form.submit();
@@ -821,21 +820,20 @@ $(function(){
                         wenku_alert("success",rt.msg,2000,_url);
                     } else{
                         wenku_alert("error",rt.msg,3000,"");
+                        _this.removeClass("disabled");
                     }
                 });
-                _this.removeClass("disabled");
             }
-
         } else{
             $.get(action,data,function(rt){
                 if (rt.status==1) {
                     wenku_alert("success",rt.msg,2000,_url);
                 } else{
                     wenku_alert("error",rt.msg,3000,"");
+                    _this.removeClass("disabled");
                 }
             });
         }
-        $(this).removeClass("disabled");
     });
 
 

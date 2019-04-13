@@ -67,8 +67,8 @@ $(function(){
                         wenku_alert("success",rt.msg,2000,_url);
                     } else{
                         wenku_alert("error",rt.msg,5000,"");
+                        _this.removeClass("disabled");
                     }
-                    _this.removeClass("disabled");
                 });
 			}
 
@@ -78,8 +78,8 @@ $(function(){
                     wenku_alert("success",rt.msg,2000,_url);
 				} else{
                     wenku_alert("error",rt.msg,5000,"");
-				}
-                _this.removeClass("disabled");
+                    _this.removeClass("disabled");
+                }
             });
 		}
 	});
