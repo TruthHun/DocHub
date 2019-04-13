@@ -209,6 +209,11 @@ func (this *Document) GetById(id interface{}) (doc fullDocument, err error) {
 	return
 }
 
+func (this *Document) GetDocument(id int, fields ...string) (doc Document) {
+	orm.NewOrm().QueryTable(this).Filter("Id", id).One(&doc, fields...)
+	return
+}
+
 //文档简易列表，用于首页或者其它查询简易字段，使用的时候，记得给条件加上表别名前缀。document_info别名前缀di，document_store别名前缀ds，document表名前缀d
 //@param                condition               查询条件
 //@param                limit                   查询记录限制
@@ -321,8 +326,8 @@ func (this *Document) SetIllegal(ids ...interface{}) (err error) {
 				}
 
 				//将文档移入回收站，主要是避免之前文档没有被删除的情况
-				if errs := NewDocumentRecycle().RemoveToRecycle(0, false, did...); len(errs) > 0 {
-					helper.Logger.Error(strings.Join(errs, "; "))
+				if err = NewDocumentRecycle().RemoveToRecycle(0, false, did...); err != nil {
+					helper.Logger.Error(err.Error())
 				}
 
 				//根据dsid查询文档md5，并把md5录入到非法文档表

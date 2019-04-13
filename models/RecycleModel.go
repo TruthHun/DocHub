@@ -1,7 +1,6 @@
 package models
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -32,54 +31,77 @@ func GetTableDocumentRecycle() string {
 //@return           err             返回错误，nil表示恢复成功，否则恢复失败
 func (this *DocumentRecycle) RecoverFromRecycle(ids ...interface{}) (err error) {
 	var (
-		docInfo      []DocumentInfo
-		dsId         []interface{} //document_store id
-		o            = orm.NewOrm()
-		md5Arr       []interface{}
-		affectedRows int64
+		docInfo []DocumentInfo
+		dsId    []interface{} //document_store id
+		o       = orm.NewOrm()
+		md5Arr  []interface{}
 	)
-	if len(ids) > 0 {
-		qs := o.QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).Filter("Status", -1)
-		qs.All(&docInfo)
-		if affectedRows, err = qs.Update(orm.Params{"Status": 1}); affectedRows > 0 {
 
-			//总文档数量增加
-			Regulate(GetTableSys(), "CntDoc", int(affectedRows), "Id=1")
+	if len(ids) == 0 {
+		return
+	}
+	o.Begin()
+	defer func() {
+		if err != nil {
+			o.Rollback()
+		} else {
+			o.Commit()
+		}
+	}()
 
-			if len(docInfo) > 0 {
-				client := NewElasticSearchClient()
-				for _, v := range docInfo {
-					dsId = append(dsId, v.DsId)
+	qs := o.QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).Filter("Status", DocStatusDeleted)
+	qs.All(&docInfo)
+	_, err = qs.Update(orm.Params{"Status": DocStatusNormal})
+	if err != nil {
+		return
+	}
 
-					//该用户的文档数量+1
-					if err := Regulate(GetTableUserInfo(), "Document", 1, "Id=?", v.Uid); err != nil {
-						helper.Logger.Error(err.Error())
-					}
+	//总文档数量增加
+	sqlSys := fmt.Sprintf("update %v set `CntDoc`=`CntDoc`+? where Id = 1", GetTableSys())
+	_, err = o.Raw(sqlSys, len(docInfo)).Exec()
+	if err != nil {
+		return
+	}
+	reward := NewSys().GetByField("Reward").Reward
+	client := NewElasticSearchClient()
+	sqlUser := fmt.Sprintf("update %v set `Document`=`Document`+?,`Coin`=`Coin`+? where Id=?", GetTableUserInfo())
+	sqlCate := fmt.Sprintf("update %v set `Cnt`=`Cnt`+? where `Id` in(?,?,?)", GetTableCategory())
+	now := int(time.Now().Unix())
+	doc := NewDocument()
+	for _, v := range docInfo {
+		dsId = append(dsId, v.DsId)
 
-					//该分类下的文档数量+1
-					Regulate(GetTableCategory(), "Cnt", 1, fmt.Sprintf("`Id` in(%v,%v,%v)", v.ChanelId, v.Cid, v.Pid))
+		_, err = o.Raw(sqlUser, 1, reward, v.Uid).Exec()
+		if err != nil {
+			return
+		}
 
-					//新增索引
-					client.BuildIndexById(v.Id)
-				}
-			}
+		// 积分变更
+		log := &CoinLog{Uid: v.Uid, Coin: reward, TimeCreate: now}
+		log.Log = fmt.Sprintf("系统恢复《%v》文档，获得 %v 个金币奖励", doc.GetDocument(v.Id, "Title").Title, reward)
+		_, err = o.Insert(log)
+		if err != nil {
+			return
+		}
 
-			//从回收站中删除记录
-			o.QueryTable(GetTableDocumentRecycle()).Filter("Id__in", ids...).Delete()
+		_, err = o.Raw(sqlCate, 1, v.ChanelId, v.Cid, v.Pid).Exec()
+		if err != nil {
+			return
+		}
 
-			if store, _, _ := NewDocument().GetDocStoreByDsId(dsId...); len(store) > 0 {
-				for _, item := range store {
-					md5Arr = append(md5Arr, item.Md5)
-				}
-			}
-			//从非法文档中将文档记录移除（需要根据md5来进行移除）
-			o.QueryTable(GetTableDocumentIllegal()).Filter("Md5__in", md5Arr...).Delete()
-			return nil
-		} else if err != nil {
-			return err
+		client.BuildIndexById(v.Id) //新增索引
+	}
+
+	//从回收站中删除记录
+	_, err = o.QueryTable(GetTableDocumentRecycle()).Filter("Id__in", ids...).Delete()
+
+	if store, _, _ := NewDocument().GetDocStoreByDsId(dsId...); len(store) > 0 {
+		for _, item := range store {
+			md5Arr = append(md5Arr, item.Md5)
 		}
 	}
-	return errors.New("恢复的文档id不能为空")
+	_, err = o.QueryTable(GetTableDocumentIllegal()).Filter("Md5__in", md5Arr...).Delete()
+	return
 }
 
 //回收站文档列表
@@ -109,7 +131,7 @@ func (this *DocumentRecycle) RecycleList(p, listRows int) (params []orm.Params, 
 //@param            self        是否是用户自己操作
 //@param            ids         文档id，即需要删除的文档id
 //@return           errs        错误
-func (this *DocumentRecycle) RemoveToRecycle(uid interface{}, self bool, ids ...interface{}) (errs []string) {
+func (this *DocumentRecycle) RemoveToRecycle(uid interface{}, self bool, ids ...interface{}) (err error) {
 	//软删除
 	//1、将文档状态标记为-1
 	//2、将文档id录入到回收站
@@ -122,78 +144,129 @@ func (this *DocumentRecycle) RemoveToRecycle(uid interface{}, self bool, ids ...
 	var docInfo []DocumentInfo
 	sys, _ := NewSys().Get()
 
-	if len(ids) > 0 {
-		orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).All(&docInfo)
-		//总文档记录减少
-		Regulate(GetTableSys(), "CntDoc", -len(docInfo), "Id=1")
-		for _, info := range docInfo {
-			//文档分类统计数量减少
-			if err := Regulate(GetTableCategory(), "Cnt", -1, "Id in(?,?,?)", info.ChanelId, info.Pid, info.Cid); err != nil {
-				helper.Logger.Error(err.Error())
-			}
-			//用户文档统计数量减少
-			if err := Regulate(GetTableUserInfo(), "Document", -1, "Id=?", info.Uid); err != nil {
-				helper.Logger.Error(err.Error())
-			}
-
-			// 上传该文档的用户积分减少
-			if err := Regulate(GetTableUserInfo(), "Coin", -sys.Reward, "Id=?", info.Uid); err == nil {
-				log := CoinLog{
-					Uid:  info.Uid,
-					Coin: -sys.Reward,
-				}
-				log.Log = fmt.Sprintf("于 %v 删除了一个文档，扣除 %v 个金币", time.Now().Format("2006-01-02 15:04:05"), sys.Reward)
-				if err := NewCoinLog().LogRecord(log); err != nil {
-					helper.Logger.Error(err.Error())
-				}
-			}
-		}
-		//变更文档状态
-		if _, err := UpdateByIds(GetTableDocumentInfo(), "Status", -1, ids...); err != nil {
-			helper.Logger.Error(err.Error())
-			errs = append(errs, err.Error())
-		}
-
-		client := NewElasticSearchClient()
-		//移入回收站
-		for _, id := range ids {
-			var rc DocumentRecycle
-			rc.Id = helper.Interface2Int(id)
-			rc.Uid = helper.Interface2Int(uid)
-			rc.Date = int(time.Now().Unix())
-			rc.Self = self
-			if _, err := orm.NewOrm().Insert(&rc); err != nil {
-				helper.Logger.Error(err.Error())
-			}
-			//删除索引
-			client.DeleteIndex(rc.Id)
-		}
-	} else {
-		errs = append(errs, "参数错误:缺少文档id")
+	if len(ids) == 0 {
+		return
 	}
-	return errs
+
+	o := orm.NewOrm()
+
+	o.QueryTable(GetTableDocumentInfo()).Filter("Id__in", ids...).Filter("Status__in", DocStatusNormal, DocStatusConverting).All(&docInfo)
+
+	if len(docInfo) == 0 {
+		return
+	}
+
+	o.Begin()
+	defer func() {
+		if err == nil {
+			o.Commit()
+		} else {
+			o.Rollback()
+		}
+	}()
+
+	sqlSys := fmt.Sprintf("update %v set `CntDoc`=`CntDoc`-? where Id=1", GetTableSys())
+	_, err = o.Raw(sqlSys, len(docInfo)).Exec()
+	if err != nil {
+		return
+	}
+
+	sqlUser := fmt.Sprintf("update %v set `Document`=`Document`-? ,`Coin`=`Coin`-? where Id=?", GetTableUserInfo())
+	sqlCate := fmt.Sprintf("update %v set `Cnt`=`Cnt`-? where `Id` in(?,?,?)", GetTableCategory())
+	doc := NewDocument()
+	now := int(time.Now().Unix())
+	for _, info := range docInfo {
+		_, err = o.Raw(sqlCate, 1, info.ChanelId, info.Pid, info.Cid).Exec()
+		if err != nil {
+			return
+		}
+
+		_, err = o.Raw(sqlUser, 1, sys.Reward, info.Uid).Exec() //用户个人的文档数量和金币减少
+		if err != nil {
+			return
+		}
+
+		log := CoinLog{
+			Uid:        info.Uid,
+			Coin:       -sys.Reward,
+			TimeCreate: now,
+		}
+
+		log.Log = fmt.Sprintf("删除《%v》，扣除 %v 个金币", doc.GetDocument(info.Id, "Title").Title, sys.Reward)
+		if !self {
+			log.Log = "系统" + log.Log
+		}
+		_, err = o.Insert(&log)
+		if err != nil {
+			return
+		}
+	}
+
+	//变更文档状态
+	if _, err := UpdateByIds(GetTableDocumentInfo(), "Status", -1, ids...); err != nil {
+		helper.Logger.Error(err.Error())
+	}
+	marks := strings.Join(make([]string, len(ids)+1), "?")
+	sqlDocStatus := fmt.Sprintf("update %v set `Status`=-1 where Id in(%v)", GetTableDocumentInfo(), marks)
+	_, err = o.Raw(sqlDocStatus, ids...).Exec()
+	if err != nil {
+		return
+	}
+
+	for _, id := range ids {
+		var rc DocumentRecycle
+		rc.Id = helper.Interface2Int(id)
+		rc.Uid = helper.Interface2Int(uid)
+		rc.Date = now
+		rc.Self = self
+		if _, err = o.Insert(&rc); err != nil { // 移入回收站
+			return
+		}
+
+	}
+
+	client := NewElasticSearchClient()
+	for _, id := range ids { //删除索引
+		client.DeleteIndex(helper.Interface2Int(id))
+	}
+
+	return
 }
 
-//彻底删除文档，包括删除文档记录（被收藏的记录、用户的发布记录、扣除用户获得的积分），删除文档文件
+// 彻底删除文档，包括删除文档记录（被收藏的记录、用户的发布记录、扣除用户获得的积分(如果此刻文档的状态不是待删除)），删除文档文件
 func (this *DocumentRecycle) DeepDel(ids ...interface{}) (err error) {
-	//根据md5，找到OSS文件（封面文件、PDF文件、文件夹）
+	// 文档id找到文档的dsId，再根据dsId查找到全部的文档id
+	// 根据文档id，将文档全部移入回收站
+	// 删除文档记录
+	//
 	var (
 		dsId  []interface{}
+		info  []DocumentInfo
 		store []DocumentStore
 		o     = orm.NewOrm()
 	)
 
-	if info, rows, errInfo := NewDocument().GetDocInfoById(ids...); rows > 0 {
-		for _, item := range info {
-			dsId = append(dsId, item.DsId)
-		}
-	} else if errInfo != orm.ErrNoRows && errInfo != nil {
-		return errInfo
-	} else if rows == 0 {
+	info, _, err = NewDocument().GetDocInfoById(ids...)
+	if err != nil && err != orm.ErrNoRows {
 		return
 	}
 
-	if err = this.DelRows(ids...); err != orm.ErrNoRows && err != nil {
+	if len(info) == 0 {
+		return
+	}
+
+	ids = []interface{}{}
+	for _, item := range info {
+		ids = append(ids, item.Id)
+		dsId = append(dsId, item.DsId)
+	}
+
+	err = this.RemoveToRecycle(0, false, ids...)
+	if err != nil {
+		return
+	}
+
+	if err = this.DelRows(ids...); err != nil && err != orm.ErrNoRows {
 		return
 	}
 
@@ -225,13 +298,6 @@ func (this *DocumentRecycle) DelRows(ids ...interface{}) (err error) {
 	var (
 		o = orm.NewOrm()
 	)
-
-	defer func() {
-		if err != nil {
-			fmt.Println("Ids:", ids)
-			helper.Logger.Error(err.Error())
-		}
-	}()
 
 	if err = NewCollect().DelByDocId(ids...); err != orm.ErrNoRows && err != nil {
 		return

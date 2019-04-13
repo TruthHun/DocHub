@@ -618,9 +618,9 @@ func (this *UserController) DocDel() {
 		this.ResponseJson(false, "删除失败，文档不存在")
 	}
 
-	errs := models.NewDocumentRecycle().RemoveToRecycle(this.IsLogin, true, docid)
-	if len(errs) > 0 {
-		helper.Logger.Error("删除失败：%v", strings.Join(errs, "; "))
+	err := models.NewDocumentRecycle().RemoveToRecycle(this.IsLogin, true, docid)
+	if err != nil {
+		helper.Logger.Error("删除失败：%v", err.Error())
 		this.ResponseJson(false, "删除失败，文档不存在")
 	}
 

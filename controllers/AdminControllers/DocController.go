@@ -209,13 +209,14 @@ func (this *DocController) Action() {
 			errs = append(errs, err.Error())
 		}
 	case "remove": //将文档移入回收站【OK】
-		errs = recycle.RemoveToRecycle(this.AdminId, false, ids...)
+		if err := recycle.RemoveToRecycle(this.AdminId, false, ids...); err != nil {
+			errs = append(errs, err.Error())
+		}
 	}
 	if len(errs) > 0 {
 		this.ResponseJson(false, fmt.Sprintf("操作失败：%v", strings.Join(errs, "; ")))
-	} else {
-		this.ResponseJson(true, "操作成功")
 	}
+	this.ResponseJson(true, "操作成功")
 }
 
 //获取文档备注模板

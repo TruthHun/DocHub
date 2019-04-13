@@ -180,7 +180,7 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 	if score > 0 {
 		coinLog.Log = "分享了一篇未被分享过的文档《%v》，获得 %v 个积分"
 	}
-	coinLog.Log = fmt.Sprintf(coinLog.Log, doc.Filename, score)
+	coinLog.Log = fmt.Sprintf(coinLog.Log, doc.Title, score)
 	if _, err = o.Insert(coinLog); err != nil {
 		helper.Logger.Error(err.Error())
 		return errRetry
