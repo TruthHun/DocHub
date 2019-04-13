@@ -41,6 +41,8 @@
                             <tr>
                                 <td>
                                     <a href="/view/{{.Id}}" class="wenku-width-400px wenku-ellipsis" target="_blank"><img src="/static/Home/default/img/{{.ExtCate}}_24.png"> {{.Title}}</a>
+                                    <br>
+                                    <div class="help-block">MD5:  {{if .Md5}}{{.Md5}}{{else}}-{{end}}</div>
                                 </td>
                                 <td>
                                     {{if eq (.Self|Interface2Int) 1}}

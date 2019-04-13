@@ -273,7 +273,7 @@ func (this *Document) SoftDel(uid int, isAdmin bool, ids ...interface{}) (err er
 //根据document_store表中的id查询document_info表中的数据
 func (this *Document) GetDocInfoByDsId(DsId ...interface{}) (info []DocumentInfo, rows int64, err error) {
 	if l := len(DsId); l > 0 {
-		rows, err = orm.NewOrm().QueryTable(GetTableDocumentInfo()).Limit(l).Filter("DsId__in", DsId...).All(&info)
+		rows, err = orm.NewOrm().QueryTable(GetTableDocumentInfo()).Filter("DsId__in", DsId...).All(&info)
 	}
 	return
 }

@@ -255,10 +255,16 @@ func (this *DocumentRecycle) DeepDel(ids ...interface{}) (err error) {
 		return
 	}
 
-	ids = []interface{}{}
 	for _, item := range info {
-		ids = append(ids, item.Id)
 		dsId = append(dsId, item.DsId)
+	}
+
+	info, _, _ = NewDocument().GetDocInfoByDsId(dsId)
+	if len(info) > 0 {
+		ids = []interface{}{}
+		for _, item := range info {
+			ids = append(ids, item.Id)
+		}
 	}
 
 	err = this.RemoveToRecycle(0, false, ids...)
@@ -330,7 +336,7 @@ func (this *DocumentRecycle) DelFile(md5, oriExt, prevExt string, previewPagesCo
 	var (
 		cover         = md5 + ".jpg" //封面文件
 		pdfFile       = md5 + helper.ExtPDF
-		oriFile       = md5 + oriExt
+		oriFile       = md5 + "." + strings.TrimLeft(oriExt, ".")
 		svgFormat     = md5 + "/%v." + strings.TrimLeft(prevExt, ".")
 		clientPublic  *CloudStore
 		clientPrivate *CloudStore
