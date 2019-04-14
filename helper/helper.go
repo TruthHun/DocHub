@@ -799,7 +799,7 @@ func CropImage(file string, width, height int) (err error) {
 	ext := strings.ToLower(filepath.Ext(file))
 	switch ext {
 	case ".jpeg", ".jpg", ".png", ".gif":
-		img = imaging.Fill(img, width, height, imaging.Center, imaging.NearestNeighbor)
+		img = imaging.Fill(img, width, height, imaging.Center, imaging.CatmullRom)
 	default:
 		err = errors.New("unsupported image format")
 		return
