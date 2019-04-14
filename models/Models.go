@@ -65,7 +65,6 @@ func Init() {
 
 //注册数据库
 func RegisterDB() {
-	helper.Logger.Info("RegisterDB Start")
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	models := []interface{}{
 		NewUser(),
