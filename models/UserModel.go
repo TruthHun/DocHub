@@ -295,7 +295,7 @@ func (this *User) CanDownloadFile(uid, docId int) (urlStr string, err error) {
 			return
 		}
 	} else {
-		logDown.Log = fmt.Sprintf("在免费期限内，下载同一篇文档(%v)免费", doc.Title)
+		logDown.Log = fmt.Sprintf("在免费期限内，下载同一篇文档《%v》免费", doc.Title)
 	}
 
 	if _, err = o.Insert(&logDown); err != nil {

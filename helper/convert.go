@@ -70,7 +70,7 @@ func OfficeToPDF(file string) (err error) {
 //非office文档(.txt,.mobi,.epub)转pdf文档
 func ConvertByCalibre(file string, ext ...string) (resFile string, err error) {
 	//calibre := beego.AppConfig.DefaultString("calibre", "ebook-convert")
-	e := ".pdf"
+	e := ExtPDF
 	if len(ext) > 0 {
 		e = ext[0]
 	}
@@ -81,12 +81,16 @@ func ConvertByCalibre(file string, ext ...string) (resFile string, err error) {
 	args := []string{
 		file,
 		resFile,
-		"--paper-size", "a4",
-		"--pdf-default-font-size", "16",
-		"--pdf-page-margin-bottom", "36",
-		"--pdf-page-margin-left", "36",
-		"--pdf-page-margin-right", "36",
-		"--pdf-page-margin-top", "36",
+	}
+	if e == ExtPDF {
+		args = append(args,
+			"--paper-size", "a4",
+			"--pdf-default-font-size", "16",
+			"--pdf-page-margin-bottom", "36",
+			"--pdf-page-margin-left", "36",
+			"--pdf-page-margin-right", "36",
+			"--pdf-page-margin-top", "36",
+		)
 	}
 	cmd := exec.Command(calibre, args...)
 	if strings.HasPrefix(calibre, "sudo") {
@@ -94,7 +98,7 @@ func ConvertByCalibre(file string, ext ...string) (resFile string, err error) {
 		args = append([]string{calibre}, args...)
 		cmd = exec.Command("sudo", args...)
 	}
-	Logger.Debug("calibre文档转换：%v", args)
+	Logger.Debug("calibre文档转换：%v %v", calibre, strings.Join(args, " "))
 	time.AfterFunc(60*time.Minute, func() {
 		if cmd.Process != nil {
 			cmd.Process.Kill()

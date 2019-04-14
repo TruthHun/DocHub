@@ -371,13 +371,13 @@ func DocumentConvert(tmpFile string, fileMD5 string, page ...int) (err error) {
 			beego.Debug("存储svg文件", svg, "==>", save)
 		}
 
-		errCompress := helper.CompressBySVGO(svg, svg)
-		if errCompress != nil {
-			helper.Logger.Error("SVGO压缩SVG失败：%v", errCompress.Error())
+		err = helper.CompressBySVGO(svg, svg)
+		if err != nil {
+			helper.Logger.Error("SVGO压缩SVG失败：%v", err.Error())
 		}
 		if clientPublic.CanGZIP {
-			if errCompress = helper.CompressByGzip(svg); err != nil {
-				helper.Logger.Error("GZIP压缩SVG失败：%v", errCompress.Error())
+			if err = helper.CompressByGzip(svg); err != nil {
+				helper.Logger.Error("GZIP压缩SVG失败：%v", err.Error())
 			} else {
 				headers = append(headers, helper.HeaderGzip)
 			}

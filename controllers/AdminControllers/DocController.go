@@ -111,7 +111,6 @@ func (this *DocController) Recycle() {
 	p = helper.NumberRange(p, 1, 10000)
 	listRows := this.Sys.ListRows
 	this.Data["Lists"], _, _ = models.NewDocumentRecycle().RecycleList(p, listRows)
-	fmt.Println(this.Data["Lists"])
 	this.Data["Tab"] = "recycle"
 	this.TplName = "recycle.html"
 }

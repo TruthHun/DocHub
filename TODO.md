@@ -27,7 +27,9 @@
 
 
 ## DocHub v2.3
-- [ ] `文档管理`文档删除的错误
+- [ ] 用户注册和登录成功之后的跳转优化
+- [ ] 图片裁剪质量优化
+- [x] `文档管理`文档删除的错误
 - [x] 移除对zoneinfo.zip的依赖
 - [x] calibre 文档转换优化
 - [x] 解决程序不支持utf8mb4数据库字符编码问题（ERROR 1071 (42000): Specified key was too long; max key length is 767 bytes），索引字段太长导致
