@@ -11,7 +11,7 @@ import (
 
 const (
 	//DocHub Version
-	VERSION = "v2.2"
+	VERSION = "v2.3"
 	//Cache Config
 	CACHE_CONF = `{"CachePath":"./cache/runtime","FileSuffix":".cache","DirectoryLevel":2,"EmbedExpiry":120}`
 
