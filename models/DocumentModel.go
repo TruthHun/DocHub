@@ -237,7 +237,7 @@ func (this *Document) SimpleList(condition string, limit int, orderField ...stri
 	sqlFormat := `
 	select %v from %v d left join %v di on di.Id=d.Id
 	left join %v ds on ds.Id=di.DsId
-	where %v group by d.Title order by di.%v desc limit %v
+	where %v order by di.%v desc limit %v
 	`
 	sql := fmt.Sprintf(sqlFormat, fields, GetTableDocument(), GetTableDocumentInfo(), GetTableDocumentStore(), condition, order, limit)
 	if helper.Debug {
