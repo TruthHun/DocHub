@@ -94,7 +94,7 @@ func (this *ListController) Get() {
 	lists, rows, err := models.GetDocList(0, helper.Interface2Int(chanels[0]["Id"]), pid, cid, p, listRows, "Id", 0, 1)
 
 	this.Data["PageId"] = "wenku-list"
-	this.Data["Chanel"] = strings.ToLower(chanel)
+	this.Data["Chanel"] = chanel
 	this.Data["CurChanel"] = chanels[0]
 	this.Data["CurPid"] = pid
 	this.Data["CurCid"] = cid

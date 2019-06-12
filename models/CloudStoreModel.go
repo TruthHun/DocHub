@@ -1,12 +1,11 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
-
-	"github.com/pkg/errors"
 
 	"github.com/PuerkitoBio/goquery"
 
