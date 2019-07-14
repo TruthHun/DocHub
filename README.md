@@ -2,6 +2,13 @@
 
 ------
 
+Thinks for [JetBrains](https://www.jetbrains.com/?from=DocHub)'s `free JetBrains Open Source license(s)`
+ 
+[![LOGO](static/Common/img/jetbrains.png)](https://www.jetbrains.com/?from=DocHub)
+
+
+------
+
 目录：
 - [文库简介](#intro)
     - [程序命名](#name)
