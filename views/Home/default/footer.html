@@ -24,12 +24,13 @@
     			<div class="col-xs-12 text-center help-block">
 					{{.Sys.Site}}&nbsp;&nbsp;&copy;{{.CopyrightDate}}&nbsp;&nbsp;<span class="text-muted">|</span>&nbsp;&nbsp;<a href="/sitemap.xml" title="站点地图" target="_blank">站点地图</a>
     			</div>
+				{{if .Sys.Icp}}
                 <div class="col-xs-12 text-center help-block">
-                    <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">粤ICP备18004373号-2</a>
+                    <a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">{{.Sys.Icp}}</a>
                 </div>
+				{{end}}
     			<div class="col-xs-12 text-center help-block">
-					<small>    				Powered By <a href="https://github.com/TruthHun/DocHub" style="color: #1abc9c;" target="_blank" title="DocHub">DocHub</a> {{.Version}}
-                    </small>
+					<small>Powered By <a href="https://github.com/TruthHun/DocHub" style="color: #1abc9c;" target="_blank" title="DocHub">DocHub</a> {{.Version}}</small>
     			</div>
 
 				<div class="col-xs-12 text-center">{{str2html .Sys.Tongji}}</div>
