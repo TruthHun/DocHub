@@ -61,6 +61,7 @@ func Init() {
 	}
 	//安装初始数据
 	install()
+	AutoSitemap()
 }
 
 //注册数据库

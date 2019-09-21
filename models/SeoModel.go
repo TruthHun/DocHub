@@ -35,6 +35,28 @@ func GetTableSeo() string {
 	return getTable("seo")
 }
 
+// 自动更新站点地图
+func AutoSitemap() {
+	go func() {
+		seo := NewSeo()
+		file := filepath.Join(helper.RootPath, "sitemap.xml")
+		for {
+			now := time.Now()
+			targetTime, _ := time.ParseInLocation("2006-01-02 15:04:05", now.Format("2006-01-02")+" 02:00:00", time.Local)
+			info, err := os.Stat(file)
+			if err != nil {
+				seo.BuildSitemap()
+			} else {
+				// 当前时间大于目标时间，并且文件更新时间小于目标时间
+				if now.Sub(targetTime) > 0 && info.ModTime().Sub(targetTime) < 0 && NewSys().GetByField("AutoSitemap").AutoSitemap {
+					seo.BuildSitemap()
+				}
+			}
+			time.Sleep(1 * time.Minute)
+		}
+	}()
+}
+
 //获取SEO
 //@param                page                页面
 //@param                defaultTitle        默认标题
@@ -101,7 +123,7 @@ func (this *Seo) BuildSitemap() {
 		fileNum = fileNum + 1
 	}
 	//创建文件夹
-	os.MkdirAll("sitemap", os.ModePerm)
+	os.MkdirAll(filepath.Join(helper.RootPath, "sitemap"), os.ModePerm)
 	for i := 0; i < fileNum; i++ {
 		var docs []DocumentInfo
 		o.QueryTable(GetTableDocumentInfo()).Filter("Status__gt", -1).Limit(limit).Offset(i*limit).All(&docs, "Id", "TimeCreate")
@@ -118,7 +140,7 @@ func (this *Seo) BuildSitemap() {
 					Priority:   0.9,
 				})
 			}
-			if err := Sitemap.CreateSitemapContent(su, file); err != nil {
+			if err := Sitemap.CreateSitemapContent(su, filepath.Join(helper.RootPath, file)); err != nil {
 				helper.Logger.Error("sitemap生成失败：" + err.Error())
 			}
 		}
