@@ -25,6 +25,10 @@
 - [ ] 更换[KindEditor](https://www.oschina.net/news/104631/kindeditor-upload-vulnerability)
 - [ ] 文档上传间隔频率控制
 
+## DocHub v2.4
+- [x] 修复 `group by title` 查询文档列表失败的问题：https://stackoverflow.com/questions/34115174/error-related-to-only-full-group-by-when-executing-a-query-in-mysql
+- [x] 导航栏无法高亮的问题
+- [ ] 管理后台上传频道封面
 
 ## DocHub v2.3
 - [ ] 用户注册和登录成功之后的跳转优化

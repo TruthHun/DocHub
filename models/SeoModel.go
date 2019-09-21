@@ -1,6 +1,7 @@
 package models
 
 import (
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -130,7 +131,7 @@ func (this *Seo) BuildSitemap() {
 			})
 		}
 	}
-	if err := Sitemap.CreateSitemapIndex(si, "sitemap.xml"); err != nil {
+	if err := Sitemap.CreateSitemapIndex(si, filepath.Join(helper.RootPath, "sitemap.xml")); err != nil {
 		helper.Logger.Error("sitemap生成失败：" + err.Error())
 	}
 	helper.Logger.Info(fmt.Sprintf("[%v]更新站点地图[end]", time.Now().Format("2006-01-02 15:04:05")))

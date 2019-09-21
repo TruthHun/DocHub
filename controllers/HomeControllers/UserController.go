@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/astaxie/beego"
+
 	"strings"
 
 	"time"
@@ -13,7 +15,6 @@ import (
 	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/DocHub/helper/conv"
 	"github.com/TruthHun/DocHub/models"
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
 )
@@ -365,10 +366,7 @@ func (this *UserController) Reg() {
 
 // 发送邮件
 func (this *UserController) SendMail() {
-	if len(this.Ctx.GetCookie(beego.AppConfig.String("SessionName"))) == 0 {
-		this.Redirect("/", 302)
-		return
-	}
+	beego.Info(this.Ctx.GetCookie("_xsrf"))
 
 	//发送邮件的类型：注册(reg)和找回密码(findpwd)
 	t := this.GetString("type")
