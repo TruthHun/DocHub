@@ -73,7 +73,7 @@ func (this *UploadController) Post() {
 		if _, ok := helper.AllowedUploadDocsExt[ext]; !ok {
 			this.ResponseJson(false, "您上传的文档格式不正确，请上传正确格式的文档")
 		}
-		file := fmt.Sprintf("%v%v", time.Now().Unix(), ext)
+		file := fmt.Sprintf("%v-%v-%v", this.IsLogin, time.Now().UnixNano(), ext)
 		form.TmpFile = filepath.Join(dir, file)
 		form.Ext = ext
 		err = this.SaveToFile("File", form.TmpFile)
