@@ -27,8 +27,12 @@
 
 ## DocHub v2.4
 - [x] 修复 `group by title` 查询文档列表失败的问题：https://stackoverflow.com/questions/34115174/error-related-to-only-full-group-by-when-executing-a-query-in-mysql
-- [x] 导航栏无法高亮的问题
-- [ ] 管理后台上传频道封面
+- [x] 导航栏标识大小写导致选中的时候无法高亮的问题
+- [x] 上一版本导致的sitemap 问题
+- [x] 面包屑导航链接不正确的问题
+- [x] 文档上传过程中临时文件命名出现重名的问题
+- [x] 后台配置了备案号前台无法显示的问题(不知道是什么时候写死在模板里了)
+- [x] 是否允许上传重复文档（管理后台 -> 系统设置 进行设置）
 
 ## DocHub v2.3
 - [ ] 用户注册和登录成功之后的跳转优化

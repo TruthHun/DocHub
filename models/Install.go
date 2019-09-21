@@ -72,9 +72,10 @@ func installSys() {
 4:敏感信息
 5:人身攻击
 6:骚扰他人`, //举报原因
-		Watermark:     "DocHub", //文档水印
-		StoreType:     string(StoreOss),
-		CheckRegEmail: true,
+		Watermark:        "DocHub", //文档水印
+		StoreType:        string(StoreOss),
+		CheckRegEmail:    true,
+		AllowRepeatedDoc: false,
 	}
 	orm.NewOrm().ReadOrCreate(&sys, "Id")
 }

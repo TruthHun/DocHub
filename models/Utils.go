@@ -64,8 +64,9 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 	}()
 
 	var (
-		errForbidden = errors.New("您上传的文档已被管理员禁止上传")
-		errRetry     = errors.New("文档上传失败，请重新上传")
+		errForbidden   = errors.New("您上传的文档已被管理员禁止上传")
+		errRetry       = errors.New("文档上传失败，请重新上传")
+		errRepeatedDoc = errors.New("您要分享的文档已存在，请勿再次分享")
 	)
 
 	var file *os.File
@@ -76,11 +77,21 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 	}
 
 	if len(form.Md5) != 32 {
-		return errRetry
+		err = errRetry
+		return
+	}
+
+	// 校验是否允许上传重复文档
+	if !sys.AllowRepeatedDoc {
+		if id := doc.IsExistByMd5(form.Md5); id > 0 {
+			err = errRepeatedDoc
+			return
+		}
 	}
 
 	if illegal := doc.IsIllegal(form.Md5); illegal {
-		return errForbidden
+		err = errForbidden
+		return
 	}
 
 	now := int(time.Now().Unix())
@@ -111,7 +122,9 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 		var fileInfo os.FileInfo
 		fileInfo, err = os.Stat(form.TmpFile)
 		if err != nil {
-			return errRetry
+			helper.Logger.Error(err.Error())
+			err = errRetry
+			return
 		}
 		store = &DocumentStore{
 			Md5:         form.Md5,
@@ -129,7 +142,8 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 		_, err = o.Insert(store)
 		if err != nil {
 			helper.Logger.Error(err.Error())
-			return errRetry
+			err = errRetry
+			return
 		}
 	} else {
 		info.Status = DocStatusNormal
@@ -137,7 +151,8 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 
 	if _, err = o.Insert(doc); err != nil {
 		helper.Logger.Error(err.Error())
-		return errRetry
+		err = errRetry
+		return
 	}
 
 	info.DsId = store.Id
@@ -146,27 +161,31 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 	_, err = o.Insert(info)
 	if err != nil {
 		helper.Logger.Error(err.Error())
-		return errRetry
+		err = errRetry
+		return
 	}
 
 	// 分类统计数增加
 	sqlCate := fmt.Sprintf("update `%v` set `Cnt`=`Cnt`+1 where `Id` in(?,?,?) limit 3", GetTableCategory())
 	if _, err = o.Raw(sqlCate, form.Cid, form.Chanel, form.Pid).Exec(); err != nil {
 		helper.Logger.Error(err.Error())
-		return errRetry
+		err = errRetry
+		return
 	}
 	// 总文档数增加
 	sqlSys := fmt.Sprintf("update `%v` set `CntDoc`=`CntDoc`+1 where `Id`=1", GetTableSys())
 	if _, err = o.Raw(sqlSys).Exec(); err != nil {
 		helper.Logger.Error(err.Error())
-		return errRetry
+		err = errRetry
+		return
 	}
 
 	// 用户文档数量和积分数量增加
 	sqlUser := fmt.Sprintf("update `%v` set `Document`=`Document`+1,`Coin`=`Coin`+? where `Id`=?", GetTableUserInfo())
 	if _, err = o.Raw(sqlUser, score, uid).Exec(); err != nil {
 		helper.Logger.Error(err.Error())
-		return errRetry
+		err = errRetry
+		return
 	}
 
 	coinLog := &CoinLog{
@@ -183,7 +202,8 @@ func DocumentProcess(uid int, form FormUpload) (err error) {
 	coinLog.Log = fmt.Sprintf(coinLog.Log, doc.Title, score)
 	if _, err = o.Insert(coinLog); err != nil {
 		helper.Logger.Error(err.Error())
-		return errRetry
+		err = errRetry
+		return
 	}
 	return
 }
