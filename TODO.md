@@ -28,7 +28,7 @@
 ## DocHub v2.4
 - [x] 修复 `group by title` 查询文档列表失败的问题：https://stackoverflow.com/questions/34115174/error-related-to-only-full-group-by-when-executing-a-query-in-mysql
 - [x] 导航栏标识大小写导致选中的时候无法高亮的问题
-- [x] 上一版本导致的sitemap 问题
+- [x] 修复上一版本增加虚拟目录导致的 sitemap 找不到的问题
 - [x] 面包屑导航链接不正确的问题
 - [x] 文档上传过程中临时文件命名出现重名的问题
 - [x] 后台配置了备案号前台无法显示的问题(不知道是什么时候写死在模板里了)
