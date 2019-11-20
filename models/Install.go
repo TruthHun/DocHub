@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
 )
 
 func install() {

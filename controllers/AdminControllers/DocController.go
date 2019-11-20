@@ -2,15 +2,14 @@ package AdminControllers
 
 import (
 	"fmt"
-
 	"sort"
-
 	"strings"
 
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/helper/conv"
-	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
+	"DocHub/helper/conv"
+	"DocHub/models"
 )
 
 type DocController struct {

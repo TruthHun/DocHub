@@ -1,16 +1,16 @@
 package HomeControllers
 
 import (
+	"fmt"
 	"html/template"
 	"strings"
-
-	"fmt"
 	"time"
 
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
+	"DocHub/models"
 )
 
 type Output struct {

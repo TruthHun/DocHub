@@ -2,21 +2,18 @@ package HomeControllers
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
-
-	"github.com/astaxie/beego"
-
 	"strings"
-
 	"time"
 
-	"os"
-
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/helper/conv"
-	"github.com/TruthHun/DocHub/models"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
+
+	"DocHub/helper"
+	"DocHub/helper/conv"
+	"DocHub/models"
 )
 
 type UserController struct {

@@ -1,19 +1,17 @@
 package models
 
 import (
+	"fmt"
+	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
-	"os"
-
-	"strconv"
-
-	"fmt"
-
-	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/gotil/sitemap"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
 )
 
 //SEO配置表

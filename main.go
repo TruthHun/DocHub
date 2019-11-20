@@ -3,11 +3,16 @@ package main
 import (
 	"fmt"
 
-	"github.com/TruthHun/DocHub/controllers/HomeControllers"
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/models"
-	_ "github.com/TruthHun/DocHub/routers"
+	_ "DocHub/routers"
+
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
+
+
+	"DocHub/controllers/HomeControllers"
+	"DocHub/helper"
+	"DocHub/models"
+
 )
 
 //初始化函数
@@ -27,7 +32,7 @@ func init() {
 	//初始化分词器
 	go func() {
 		helper.Segmenter.LoadDictionary("./dictionary/dictionary.txt")
-		beego.Info("==程序启动完毕==")
+		logs.Info("==程序启动完毕==")
 	}()
 
 	beego.AddFuncMap("TimestampFormat", helper.TimestampFormat)

@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-
 	"time"
 
-	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
 )
 
 //用户表

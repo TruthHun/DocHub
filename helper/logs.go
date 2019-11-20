@@ -1,9 +1,8 @@
 package helper
 
 import (
-	"os"
-
 	"fmt"
+	"os"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"

@@ -1,19 +1,17 @@
 package AdminControllers
 
 import (
-	"net/http"
-	"strings"
-
 	"io/ioutil"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
-	"path/filepath"
-
-	"os"
-
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
+	"DocHub/models"
 )
 
 type SysController struct {

@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-
 	CloudStore2 "github.com/TruthHun/CloudStore"
-	"github.com/TruthHun/DocHub/helper"
+
+	"DocHub/helper"
 )
 
 type CloudStore struct {
