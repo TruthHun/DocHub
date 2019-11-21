@@ -59,7 +59,7 @@ func Init() {
 
 //注册数据库
 func RegisterDB() {
-	orm.RegisterDriver("mysql", orm.DRMySQL)
+	_ = orm.RegisterDriver("mysql", orm.DRMySQL)
 	models := []interface{}{
 		NewUser(),
 		NewUserInfo(),

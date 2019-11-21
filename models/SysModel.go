@@ -43,6 +43,14 @@ type Sys struct {
 	CheckRegEmail     bool   `orm:"default(true);column(CheckRegEmail);"`                //是否需要验证注册邮箱，如果需要验证注册邮箱，提要求发送注册验证码
 	AllowRepeatedDoc  bool   `orm:"default(false);column(AllowRepeatedDoc)"`             //是否允许上传重复文档
 	AutoSitemap       bool   `orm:"default(true);column(AutoSitemap)"`                   //每天凌晨自动更新站点地图
+
+	// ldap 认证支持
+	IsOpenLdap  bool   `orm:"default(false);column(IsOpenLdap)"` // 是否开启ldap认证
+	LdapBase    string `orm:"size(128);default();column(LdapBase)"`
+	LdapHost    string `orm:"size(128);default();column(LdapHost)"`
+	LdapPort    int    `orm:"default(0);column(LdapPort)"`
+	LdapBindDN  string `orm:"size(128);default();column(LdapBindDN)"`
+	LdapBindPwd string `orm:"size(64);default();column(LdapBindPwd)"`
 }
 
 func NewSys() *Sys {

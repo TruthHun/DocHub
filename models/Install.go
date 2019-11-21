@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 
 	"DocHub/helper"
@@ -31,7 +32,7 @@ func installAdmin() {
 		Email:    "TruthHun@QQ.COM",
 		Code:     "芝麻开门",
 	}
-	beego.Info("初始化管理员数据")
+	logs.Info("初始化管理员数据")
 	if _, _, err := orm.NewOrm().ReadOrCreate(&admin, "Id"); err != nil {
 		helper.Logger.Error("初始化管理员数据失败：" + err.Error())
 	}
