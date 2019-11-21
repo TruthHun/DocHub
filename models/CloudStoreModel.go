@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	CloudStore2 "github.com/TruthHun/CloudStore"
+	CloudStore2 "github.com/internet-dev/CloudStore"
 
 	"DocHub/helper"
 )
