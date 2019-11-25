@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
 )
 
 // ============================ //

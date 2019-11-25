@@ -2,29 +2,22 @@
 package models
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/url"
-
-	"github.com/TruthHun/DocHub/helper"
-
+	"os"
 	"reflect"
-
+	"strconv"
 	"strings"
+	"time"
 
-	"errors"
+	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 
-	"os"
-
-	"strconv"
-
-	"time"
-
-	"database/sql"
-
-	_ "github.com/go-sql-driver/mysql"
+	"DocHub/helper"
 )
 
 //注意一下，varchar最多能存储65535个字符
@@ -66,7 +59,7 @@ func Init() {
 
 //注册数据库
 func RegisterDB() {
-	orm.RegisterDriver("mysql", orm.DRMySQL)
+	_ = orm.RegisterDriver("mysql", orm.DRMySQL)
 	models := []interface{}{
 		NewUser(),
 		NewUserInfo(),

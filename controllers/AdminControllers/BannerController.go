@@ -2,16 +2,14 @@ package AdminControllers
 
 import (
 	"fmt"
-
+	"os"
+	"strings"
 	"time"
 
-	"os"
-
-	"strings"
-
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
+	"DocHub/models"
 )
 
 //IT文库注册会员管理

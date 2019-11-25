@@ -10,10 +10,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/astaxie/beego"
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/svg"
-
-	"github.com/astaxie/beego"
 )
 
 // 将 PDF 转成 SVG

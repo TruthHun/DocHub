@@ -61,10 +61,12 @@
 						</div>
 						{{.xsrfdata}}
 						<button type="submit" class="btn btn-primary btn-block">登录文库</button>
+						{{if not isOpenLdap}}
 						<div class="help-block">
 							<a href="/user/findpwd">忘记密码？</a>
 							<a href="/user/reg" class="pull-right">注册会员</a>
 						</div>
+						{{end}}
 						{{/*<div class="help-block quick-login">*/}}
 							{{/*<span>快捷登录</span>*/}}
 							{{/*<div class="pull-right">*/}}

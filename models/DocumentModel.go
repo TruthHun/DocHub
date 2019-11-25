@@ -1,16 +1,14 @@
 package models
 
 import (
+	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
-	"github.com/TruthHun/DocHub/helper"
-
-	"errors"
-
-	"strconv"
-
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
 )
 
 //文档资源状态，1正常，0文档未转换成功，-1删除，同时把id录入文档回收站id，-2表示删除了文档文件，但是数据库记录还保留。同时后台也看不到该记录

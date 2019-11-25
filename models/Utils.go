@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
-
-	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
 )
 
 // 文档处理

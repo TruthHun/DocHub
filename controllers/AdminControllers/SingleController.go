@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/models"
 )
 
 type SingleController struct {

@@ -3,8 +3,9 @@ package models
 import (
 	"errors"
 
-	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
 )
 
 //文档分类

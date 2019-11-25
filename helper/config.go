@@ -2,13 +2,10 @@ package helper
 
 import (
 	"fmt"
-	"strconv"
-
-	"time"
-
-	"os"
-
 	"io/ioutil"
+	"os"
+	"strconv"
+	"time"
 
 	"github.com/astaxie/beego"
 )
