@@ -336,6 +336,7 @@ func (this *UserController) Login() {
 				return
 			}
 			this.IsLogin = uid
+			_ = models.Regulate(models.GetTableSys(), "CntUser", 1, "Id=1") // 站点用户数量增加
 		} else {
 			user := users[0]
 			this.IsLogin = helper.Interface2Int(user["Id"])
