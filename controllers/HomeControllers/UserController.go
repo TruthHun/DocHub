@@ -8,12 +8,14 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/validation"
 
 	"DocHub/helper"
 	"DocHub/helper/conv"
 	"DocHub/models"
+	"DocHub/pkg/auth"
 )
 
 type UserController struct {
@@ -270,33 +272,113 @@ func (this *UserController) Login() {
 		Email, Password string
 	}
 
-	this.ParseForm(&post)
-	valid := validation.Validation{}
-	res := valid.Email(post.Email, "Email")
-	if !res.Ok {
-		this.ResponseJson(false, "登录失败，邮箱格式不正确")
+	err := this.ParseForm(&post)
+	if err != nil {
+		logs.Error("[UserController->Login] parse form err: %v", err)
 	}
 
-	ModelUser := models.NewUser()
-	users, rows, err := ModelUser.UserList(1, 1, "", "", "u.`email`=? and u.`password`=?", post.Email, helper.MD5Crypt(post.Password))
-	if rows == 0 || err != nil {
+	sysM := models.Sys{}
+	sysConf, err := sysM.Get()
+	if err != nil {
+		logs.Error("[UserController->Login] get sys err: %v", err)
+		this.ResponseJson(false, "系统配置参数有误")
+		return
+	}
+	if sysConf.IsOpenLdap {
+		ldapConf := auth.LdapConfig{
+			Base:    sysConf.LdapBase,
+			Host:    sysConf.LdapHost,
+			Port:    sysConf.LdapPort,
+			BindDN:  sysConf.LdapBindDN,
+			BindPwd: sysConf.LdapBindPwd,
+		}
+
+		// ldap 逻辑下, Email 其实是用户名,真正的email地址通知认证后可以拿到
+		ok, ldapUser, _ := auth.IsAuthorized(post.Email, post.Password, ldapConf)
+		if !ok {
+			this.ResponseJson(false, "LDAP 认证失败,请确认")
+			return
+		}
+
+		logs.Debug("[UserController->Login] ldapUser: %#v", ldapUser)
+		var email string
+		if v, ok := ldapUser["mail"]; ok {
+			email = v
+
+		}
+		if email == "" {
+			logs.Error("[UserController->Login] ldap user info has wrong, data: %#v", ldapUser)
+			this.ResponseJson(false, "登录失败，LDAP 邮箱配置有误")
+			return
+		}
+
+		// ldap 用户登陆或自动注册
+		ModelUser := models.NewUser()
+		users, rows, err := ModelUser.UserList(1, 1, "", "", "u.`email` = ? AND u.`password` = ?", email, helper.MD5Crypt(post.Password))
 		if err != nil {
 			helper.Logger.Error(err.Error())
+			this.ResponseJson(false, "登录失败，数据库记录不存在")
+			return
 		}
-		this.ResponseJson(false, "登录失败，邮箱或密码不正确")
+
+		// 需要新增
+		if rows == 0 {
+			// 注册
+			err, uid := models.NewUser().Reg(
+				email,
+				post.Email,
+				post.Password,
+				post.Password,
+				"暂无...",
+			)
+			if err != nil {
+				this.ResponseJson(false, err.Error())
+				return
+			}
+			this.IsLogin = uid
+		} else {
+			user := users[0]
+			this.IsLogin = helper.Interface2Int(user["Id"])
+		}
+
+		if this.IsLogin > 0 {
+			//查询用户有没有被封禁
+			if info := ModelUser.UserInfo(this.IsLogin); info.Status == false { //被封禁了
+				this.ResponseJson(false, "登录失败，您的账号已被管理员禁用")
+			}
+			this.BaseController.SetCookieLogin(this.IsLogin)
+			this.ResponseJson(true, "登录成功")
+		}
+	} else {
+
+		valid := validation.Validation{}
+		res := valid.Email(post.Email, "Email")
+		if !res.Ok {
+			this.ResponseJson(false, "登录失败，邮箱格式不正确")
+		}
+
+		ModelUser := models.NewUser()
+		users, rows, err := ModelUser.UserList(1, 1, "", "", "u.`email`=? and u.`password`=?", post.Email, helper.MD5Crypt(post.Password))
+		if rows == 0 || err != nil {
+			if err != nil {
+				helper.Logger.Error(err.Error())
+			}
+			this.ResponseJson(false, "登录失败，邮箱或密码不正确")
+		}
+
+		user := users[0]
+		this.IsLogin = helper.Interface2Int(user["Id"])
+
+		if this.IsLogin > 0 {
+			//查询用户有没有被封禁
+			if info := ModelUser.UserInfo(this.IsLogin); info.Status == false { //被封禁了
+				this.ResponseJson(false, "登录失败，您的账号已被管理员禁用")
+			}
+			this.BaseController.SetCookieLogin(this.IsLogin)
+			this.ResponseJson(true, "登录成功")
+		}
 	}
 
-	user := users[0]
-	this.IsLogin = helper.Interface2Int(user["Id"])
-
-	if this.IsLogin > 0 {
-		//查询用户有没有被封禁
-		if info := ModelUser.UserInfo(this.IsLogin); info.Status == false { //被封禁了
-			this.ResponseJson(false, "登录失败，您的账号已被管理员禁用")
-		}
-		this.BaseController.SetCookieLogin(this.IsLogin)
-		this.ResponseJson(true, "登录成功")
-	}
 	this.ResponseJson(false, "登录失败，未知错误！")
 }
 

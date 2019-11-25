@@ -3,16 +3,15 @@ package main
 import (
 	"fmt"
 
-	_ "DocHub/routers"
-
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 
+	_ "DocHub/pkg/tplfunc"
+	_ "DocHub/routers"
 
 	"DocHub/controllers/HomeControllers"
 	"DocHub/helper"
 	"DocHub/models"
-
 )
 
 //初始化函数

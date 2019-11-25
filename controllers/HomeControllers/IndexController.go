@@ -15,7 +15,6 @@ type IndexController struct {
 }
 
 func (this *IndexController) Get() {
-
 	//获取横幅
 	this.Data["Banners"], _, _ = models.GetList(models.GetTableBanner(), 1, 100, orm.NewCondition().And("status", 1), "Sort")
 

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/astaxie/beego/logs"
+
 	"github.com/astaxie/beego/orm"
 )
 
@@ -61,6 +63,16 @@ func GetTableSys() string {
 	return getTable("sys")
 }
 
+func IsOpenLdap() bool {
+	sysM := Sys{}
+	sys, err := sysM.Get()
+	if err != nil {
+		logs.Error("[IsOpenLdap] get sys err: %v", err)
+		return false
+	}
+	return sys.IsOpenLdap
+}
+
 //获取系统配置信息。注意：系统配置信息的记录只有一条，而且id主键为1
 //@return           sys         返回的系统信息
 //@return           err         错误
@@ -81,7 +93,7 @@ func (this *Sys) UpdateGlobalConfig() {
 //@param			field			需要查询的字段
 //@return			sys				系统配置信息
 func (this *Sys) GetByField(field string) (sys Sys) {
-	orm.NewOrm().QueryTable(GetTableSys()).Filter("Id", 1).One(&sys, field)
+	_ = orm.NewOrm().QueryTable(GetTableSys()).Filter("Id", 1).One(&sys, field)
 	return
 }
 
