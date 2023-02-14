@@ -1,11 +1,17 @@
+**DocHub文库重构版本来了！！！新文库系统叫`moredoc`，即`魔豆文库`**
+
+![](static/Home/default/img/moredoc.png)
+
+**开源地址**
+
+-   Github - [https://github.com/mnt-ltd/moredoc](https://github.com/mnt-ltd/moredoc)
+-   Gitee - [https://gitee.com/mnt-ltd/moredoc](https://gitee.com/mnt-ltd/moredoc)
+-   MNT.Ltd - [https://git.mnt.ltd/mnt-ltd/moredoc](https://git.mnt.ltd/mnt-ltd/moredoc)
+
+
+-------------------------
+
 ![LOGO](static/Home/default/img/logo.png)
-
-------
-
-Thanks for [JetBrains](https://www.jetbrains.com/?from=DocHub)'s `free JetBrains Open Source license(s)`
- 
-[![LOGO](static/Common/img/jetbrains.png)](https://www.jetbrains.com/?from=DocHub)
-
 
 ------
 
