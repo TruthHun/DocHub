@@ -3,46 +3,34 @@ package helper
 import (
 	"bytes"
 	"compress/gzip"
+	"crypto/md5"
+	"crypto/sha1"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"html/template"
 	"image"
+	"io"
+	"io/ioutil"
 	"math/rand"
-
-	"crypto/md5"
-
+	"net/http"
+	"net/url"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
-	"strconv"
-
-	"os"
-
-	"io"
-	"strings"
-
-	"crypto/sha1"
-
-	"net/url"
-
-	"os/exec"
-
-	"io/ioutil"
-
-	"regexp"
-
-	"errors"
-
-	"net/http"
-
-	"path/filepath"
-
 	"github.com/PuerkitoBio/goquery"
-	"github.com/TruthHun/DocHub/helper/crawl"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
 	"github.com/disintegration/imaging"
 	"github.com/huichen/sego"
 	"rsc.io/pdf"
+
+	"DocHub/helper/crawl"
 )
 
 func init() {

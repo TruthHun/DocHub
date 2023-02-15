@@ -2,15 +2,14 @@ package HomeControllers
 
 import (
 	"fmt"
-
 	"strings"
-
 	"time"
 
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
+	"DocHub/models"
 )
 
 type ViewController struct {

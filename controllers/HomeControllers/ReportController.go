@@ -3,9 +3,10 @@ package HomeControllers
 import (
 	"time"
 
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
+	"DocHub/models"
 )
 
 type ReportController struct {

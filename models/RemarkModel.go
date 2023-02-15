@@ -3,11 +3,11 @@ package models
 import (
 	"fmt"
 	"io/ioutil"
-
 	"time"
 
-	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
 )
 
 //文档备注，用于侵权文档等的部分内容的预览展示，并在文档预览页面挂上跳转购买正版的导购链接；同时对于一些开源书籍，也可以一面提供站内文档的下载，一面引导用户购买正版。

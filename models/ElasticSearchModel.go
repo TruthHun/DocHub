@@ -1,23 +1,21 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
+	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
-	"net/http"
-
-	"encoding/json"
-	"strconv"
-
-	"fmt"
-
-	"github.com/TruthHun/DocHub/helper"
 	"github.com/TruthHun/gotil/util"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
 )
 
 //全文搜索客户端

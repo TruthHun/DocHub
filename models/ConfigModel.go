@@ -12,10 +12,9 @@ import (
 	gomail "gopkg.in/gomail.v2"
 
 	"github.com/astaxie/beego"
-
-	"github.com/TruthHun/DocHub/helper"
-
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
 )
 
 const (

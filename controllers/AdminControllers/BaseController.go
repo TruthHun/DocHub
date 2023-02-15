@@ -1,16 +1,14 @@
 package AdminControllers
 
 import (
+	"fmt"
 	"strings"
-
-	"github.com/TruthHun/DocHub/models"
-
 	"time"
 
-	"fmt"
-
-	"github.com/TruthHun/DocHub/helper"
 	"github.com/astaxie/beego"
+
+	"DocHub/helper"
+	"DocHub/models"
 )
 
 type BaseController struct {

@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	cs2 "github.com/internet-dev/CloudStore"
 
-	CloudStore2 "github.com/TruthHun/CloudStore"
-	"github.com/TruthHun/DocHub/helper"
+	"DocHub/helper"
 )
 
 type CloudStore struct {
@@ -59,7 +59,7 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 			err = errWithoutConfig
 			return
 		}
-		cs.client, err = CloudStore2.NewOSS(cfg.AccessKey, cfg.SecretKey, cfg.Endpoint, bucket, domain)
+		cs.client, err = cs2.NewOSS(cfg.AccessKey, cfg.SecretKey, cfg.Endpoint, bucket, domain)
 		cs.CanGZIP = true
 	case StoreObs:
 		cfg := cs.config.(*ConfigObs)
@@ -79,7 +79,7 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 			err = errWithoutConfig
 			return
 		}
-		cs.client, err = CloudStore2.NewOBS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
+		cs.client, err = cs2.NewOBS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
 	case StoreQiniu:
 		cfg := cs.config.(*ConfigQiniu)
 		bucket := cfg.PublicBucket
@@ -98,7 +98,7 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 			err = errWithoutConfig
 			return
 		}
-		cs.client, err = CloudStore2.NewQINIU(cfg.AccessKey, cfg.SecretKey, bucket, domain)
+		cs.client, err = cs2.NewQINIU(cfg.AccessKey, cfg.SecretKey, bucket, domain)
 	case StoreUpyun:
 		cfg := cs.config.(*ConfigUpYun)
 		bucket := cfg.PublicBucket
@@ -117,7 +117,7 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 			err = errWithoutConfig
 			return
 		}
-		cs.client = CloudStore2.NewUpYun(bucket, cfg.Operator, cfg.Password, domain, cfg.Secret)
+		cs.client = cs2.NewUpYun(bucket, cfg.Operator, cfg.Password, domain, cfg.Secret)
 	case StoreMinio:
 		cfg := cs.config.(*ConfigMinio)
 		bucket := cfg.PublicBucket
@@ -136,7 +136,7 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 			err = errWithoutConfig
 			return
 		}
-		cs.client, err = CloudStore2.NewMinIO(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
+		cs.client, err = cs2.NewMinIO(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
 		cs.CanGZIP = true
 	case StoreBos:
 		cfg := cs.config.(*ConfigBos)
@@ -156,7 +156,7 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 			err = errWithoutConfig
 			return
 		}
-		cs.client, err = CloudStore2.NewBOS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
+		cs.client, err = cs2.NewBOS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.Endpoint, domain)
 		cs.CanGZIP = true
 	case StoreCos:
 		cfg := cs.config.(*ConfigCos)
@@ -176,7 +176,7 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 			err = errWithoutConfig
 			return
 		}
-		cs.client, err = CloudStore2.NewCOS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.AppId, cfg.Region, domain)
+		cs.client, err = cs2.NewCOS(cfg.AccessKey, cfg.SecretKey, bucket, cfg.AppId, cfg.Region, domain)
 		cs.CanGZIP = true
 	}
 	return
@@ -185,19 +185,19 @@ func NewCloudStoreWithConfig(storeConfig interface{}, storeType helper.ConfigCat
 func (c *CloudStore) Upload(tmpFile, saveFile string, headers ...map[string]string) (err error) {
 	switch c.StoreType {
 	case StoreCos:
-		err = c.client.(*CloudStore2.COS).Upload(tmpFile, saveFile, headers...)
+		err = c.client.(*cs2.COS).Upload(tmpFile, saveFile, headers...)
 	case StoreOss:
-		err = c.client.(*CloudStore2.OSS).Upload(tmpFile, saveFile, headers...)
+		err = c.client.(*cs2.OSS).Upload(tmpFile, saveFile, headers...)
 	case StoreBos:
-		err = c.client.(*CloudStore2.BOS).Upload(tmpFile, saveFile, headers...)
+		err = c.client.(*cs2.BOS).Upload(tmpFile, saveFile, headers...)
 	case StoreObs:
-		err = c.client.(*CloudStore2.OBS).Upload(tmpFile, saveFile, headers...)
+		err = c.client.(*cs2.OBS).Upload(tmpFile, saveFile, headers...)
 	case StoreUpyun:
-		err = c.client.(*CloudStore2.UpYun).Upload(tmpFile, saveFile, headers...)
+		err = c.client.(*cs2.UpYun).Upload(tmpFile, saveFile, headers...)
 	case StoreMinio:
-		err = c.client.(*CloudStore2.MinIO).Upload(tmpFile, saveFile, headers...)
+		err = c.client.(*cs2.MinIO).Upload(tmpFile, saveFile, headers...)
 	case StoreQiniu:
-		err = c.client.(*CloudStore2.QINIU).Upload(tmpFile, saveFile, headers...)
+		err = c.client.(*cs2.QINIU).Upload(tmpFile, saveFile, headers...)
 	}
 	return
 }
@@ -205,19 +205,19 @@ func (c *CloudStore) Upload(tmpFile, saveFile string, headers ...map[string]stri
 func (c *CloudStore) Delete(objects ...string) (err error) {
 	switch c.StoreType {
 	case StoreCos:
-		err = c.client.(*CloudStore2.COS).Delete(objects...)
+		err = c.client.(*cs2.COS).Delete(objects...)
 	case StoreOss:
-		err = c.client.(*CloudStore2.OSS).Delete(objects...)
+		err = c.client.(*cs2.OSS).Delete(objects...)
 	case StoreBos:
-		err = c.client.(*CloudStore2.BOS).Delete(objects...)
+		err = c.client.(*cs2.BOS).Delete(objects...)
 	case StoreObs:
-		err = c.client.(*CloudStore2.OBS).Delete(objects...)
+		err = c.client.(*cs2.OBS).Delete(objects...)
 	case StoreUpyun:
-		err = c.client.(*CloudStore2.UpYun).Delete(objects...)
+		err = c.client.(*cs2.UpYun).Delete(objects...)
 	case StoreMinio:
-		err = c.client.(*CloudStore2.MinIO).Delete(objects...)
+		err = c.client.(*cs2.MinIO).Delete(objects...)
 	case StoreQiniu:
-		err = c.client.(*CloudStore2.QINIU).Delete(objects...)
+		err = c.client.(*cs2.QINIU).Delete(objects...)
 	}
 	return
 }
@@ -226,19 +226,19 @@ func (c *CloudStore) Delete(objects ...string) (err error) {
 func (c *CloudStore) IsExist(object string) (err error) {
 	switch c.StoreType {
 	case StoreCos:
-		err = c.client.(*CloudStore2.COS).IsExist(object)
+		err = c.client.(*cs2.COS).IsExist(object)
 	case StoreOss:
-		err = c.client.(*CloudStore2.OSS).IsExist(object)
+		err = c.client.(*cs2.OSS).IsExist(object)
 	case StoreBos:
-		err = c.client.(*CloudStore2.BOS).IsExist(object)
+		err = c.client.(*cs2.BOS).IsExist(object)
 	case StoreObs:
-		err = c.client.(*CloudStore2.OBS).IsExist(object)
+		err = c.client.(*cs2.OBS).IsExist(object)
 	case StoreUpyun:
-		err = c.client.(*CloudStore2.UpYun).IsExist(object)
+		err = c.client.(*cs2.UpYun).IsExist(object)
 	case StoreMinio:
-		err = c.client.(*CloudStore2.MinIO).IsExist(object)
+		err = c.client.(*cs2.MinIO).IsExist(object)
 	case StoreQiniu:
-		err = c.client.(*CloudStore2.QINIU).IsExist(object)
+		err = c.client.(*cs2.QINIU).IsExist(object)
 	}
 	return
 }
@@ -272,19 +272,19 @@ func (c *CloudStore) GetSignURL(object string) (link string) {
 	var err error
 	switch c.StoreType {
 	case StoreCos:
-		link, err = c.client.(*CloudStore2.COS).GetSignURL(object, c.expire)
+		link, err = c.client.(*cs2.COS).GetSignURL(object, c.expire)
 	case StoreOss:
-		link, err = c.client.(*CloudStore2.OSS).GetSignURL(object, c.expire)
+		link, err = c.client.(*cs2.OSS).GetSignURL(object, c.expire)
 	case StoreBos:
-		link, err = c.client.(*CloudStore2.BOS).GetSignURL(object, c.expire)
+		link, err = c.client.(*cs2.BOS).GetSignURL(object, c.expire)
 	case StoreObs:
-		link, err = c.client.(*CloudStore2.OBS).GetSignURL(object, c.expire)
+		link, err = c.client.(*cs2.OBS).GetSignURL(object, c.expire)
 	case StoreUpyun:
-		link, err = c.client.(*CloudStore2.UpYun).GetSignURL(object, c.expire)
+		link, err = c.client.(*cs2.UpYun).GetSignURL(object, c.expire)
 	case StoreMinio:
-		link, err = c.client.(*CloudStore2.MinIO).GetSignURL(object, c.expire)
+		link, err = c.client.(*cs2.MinIO).GetSignURL(object, c.expire)
 	case StoreQiniu:
-		link, err = c.client.(*CloudStore2.QINIU).GetSignURL(object, c.expire)
+		link, err = c.client.(*cs2.QINIU).GetSignURL(object, c.expire)
 	}
 	if err != nil {
 		helper.Logger.Error("GetSignURL:%v", err.Error())

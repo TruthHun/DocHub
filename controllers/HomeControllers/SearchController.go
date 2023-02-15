@@ -2,13 +2,13 @@ package HomeControllers
 
 import (
 	"strings"
-
 	"time"
 
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/helper/conv"
-	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
+	"DocHub/helper/conv"
+	"DocHub/models"
 )
 
 type SearchController struct {

@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/TruthHun/DocHub/helper"
-
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
 )
 
 //文档回收站

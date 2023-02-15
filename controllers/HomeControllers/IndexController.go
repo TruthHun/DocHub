@@ -2,12 +2,12 @@ package HomeControllers
 
 import (
 	"fmt"
-
 	"strings"
 
-	"github.com/TruthHun/DocHub/helper"
-	"github.com/TruthHun/DocHub/models"
 	"github.com/astaxie/beego/orm"
+
+	"DocHub/helper"
+	"DocHub/models"
 )
 
 type IndexController struct {
@@ -15,7 +15,6 @@ type IndexController struct {
 }
 
 func (this *IndexController) Get() {
-
 	//获取横幅
 	this.Data["Banners"], _, _ = models.GetList(models.GetTableBanner(), 1, 100, orm.NewCondition().And("status", 1), "Sort")
 
