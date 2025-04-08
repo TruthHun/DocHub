@@ -223,7 +223,7 @@ func DelSlice(slice []interface{}, index int) []interface{} {
 //@param            str         string          需要加密的字符串
 //@return            string      加密后的字符串
 func MySha1(str string) string {
-	return fmt.Sprintf("%x", sha1.New().Sum([]byte(str)))
+	return fmt.Sprintf("%x", sha1.Sum([]byte(str)))
 }
 
 //设置缓存
