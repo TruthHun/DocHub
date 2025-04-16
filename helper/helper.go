@@ -20,8 +20,6 @@ import (
 	"io"
 	"strings"
 
-	"crypto/sha1"
-
 	"net/url"
 
 	"os/exec"
@@ -65,12 +63,12 @@ func init() {
 	}
 }
 
-//比较两个内容的字符串类型是否相等
+// 比较两个内容的字符串类型是否相等
 func Equal(itf1, itf2 interface{}) bool {
 	return fmt.Sprintf("%v", itf1) == fmt.Sprintf("%v", itf2)
 }
 
-//语言国际化，目前默认为中文
+// 语言国际化，目前默认为中文
 func I18n(tag string, lang ...string) string {
 	if len(lang) == 0 {
 		lang[0] = "zh-CN"
@@ -78,17 +76,17 @@ func I18n(tag string, lang ...string) string {
 	return beego.AppConfig.DefaultString(fmt.Sprintf("%v::%v", lang[0], tag), fmt.Sprintf("{%v}", tag))
 }
 
-//MD5加密函数
-//@str          string          需要进行加密的字符串
+// MD5加密函数
+// @str          string          需要进行加密的字符串
 func MD5Crypt(str string) string {
 	h := md5.New()
 	h.Write([]byte(str))
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-//时间戳格式化
-//@timestamp            int             时间戳
-//@format               string          时间格式，如："2006-01-02 15:04:05"
+// 时间戳格式化
+// @timestamp            int             时间戳
+// @format               string          时间格式，如："2006-01-02 15:04:05"
 func TimestampFormat(timestamp int, format ...string) string {
 	formats := "2006-01-02 15:04:05"
 	if len(format) > 0 {
@@ -97,17 +95,17 @@ func TimestampFormat(timestamp int, format ...string) string {
 	return time.Unix(int64(timestamp), 0).Format(formats)
 }
 
-//将字符串或者其他可转化数字的内容格式化成int数字类型返回
-//@param        a            interface{}         需要转化成数字的内容
+// 将字符串或者其他可转化数字的内容格式化成int数字类型返回
+// @param        a            interface{}         需要转化成数字的内容
 func Interface2Int(a interface{}) int {
 	i, _ := strconv.Atoi(fmt.Sprintf("%v", a))
 	return i
 }
 
-//生成url链接
-//@param            prefix              前缀
-//@param            params              参数
-//@return           urlstr              返回组装后的url
+// 生成url链接
+// @param            prefix              前缀
+// @param            params              参数
+// @return           urlstr              返回组装后的url
 func BuildURL(prefix string, params ...interface{}) (urlstr string) {
 	var (
 		l   int
@@ -133,7 +131,7 @@ func BuildURL(prefix string, params ...interface{}) (urlstr string) {
 	return
 }
 
-//图片文件信息
+// 图片文件信息
 type Info struct {
 	Width, Height int    //图片宽高
 	Size          int64  //图片文件大小
@@ -142,8 +140,8 @@ type Info struct {
 	Ext           string //图片后缀
 }
 
-//判断文件路径判断文件是否是符合要求的图片格式，jpeg,jpg,gif,png,bmp,tif,tiff
-//@path         string          文件路径
+// 判断文件路径判断文件是否是符合要求的图片格式，jpeg,jpg,gif,png,bmp,tif,tiff
+// @path         string          文件路径
 func IsImage(path string) bool {
 	slice := strings.Split(path, ".")
 	ext := strings.ToLower(strings.TrimSpace(slice[len(slice)-1]))
@@ -152,8 +150,8 @@ func IsImage(path string) bool {
 	return ok
 }
 
-//获取文件的MD5
-//@path         string          文件路径
+// 获取文件的MD5
+// @path         string          文件路径
 func FileMd5(path string) (string, error) {
 	var md5str string
 	var err error
@@ -171,9 +169,9 @@ func FileMd5(path string) (string, error) {
 	return md5str, err
 }
 
-//根据字符串后缀，比如根据文件路径获取后缀等
-//@str          string          字符串或者文件路径
-//@seg          string          分隔符
+// 根据字符串后缀，比如根据文件路径获取后缀等
+// @str          string          字符串或者文件路径
+// @seg          string          分隔符
 func GetSuffix(str, seg string) string {
 	slice := strings.Split(str, seg)
 	l := len(slice)
@@ -183,13 +181,13 @@ func GetSuffix(str, seg string) string {
 	return ""
 }
 
-//将interface{}转为字符串，适合bool，数字等
-//@v            interface{}         需要转化为字符串的值
+// 将interface{}转为字符串，适合bool，数字等
+// @v            interface{}         需要转化为字符串的值
 func Interface2String(v interface{}) string {
 	return fmt.Sprintf("%v", v)
 }
 
-//整型计算
+// 整型计算
 func CalcInt(num1 interface{}, oper string, num2 interface{}) int {
 	val := 0
 	n1 := Interface2Int(num1)
@@ -214,19 +212,12 @@ func CalcInt(num1 interface{}, oper string, num2 interface{}) int {
 	return val
 }
 
-//根据切片或数组下表，移除元素
+// 根据切片或数组下表，移除元素
 func DelSlice(slice []interface{}, index int) []interface{} {
 	return append(slice[:index], slice[index+1:]...)
 }
 
-//sha1加密
-//@param            str         string          需要加密的字符串
-//@return            string      加密后的字符串
-func MySha1(str string) string {
-	return fmt.Sprintf("%x", sha1.New().Sum([]byte(str)))
-}
-
-//设置缓存
+// 设置缓存
 func CacheSet(key string, value interface{}, t time.Duration) error {
 	bc, err := cache.NewCache("file", CACHE_CONF)
 	if err == nil {
@@ -235,7 +226,7 @@ func CacheSet(key string, value interface{}, t time.Duration) error {
 	return err
 }
 
-//获取缓存
+// 获取缓存
 func CacheGet(key string) (interface{}, error) {
 	bc, err := cache.NewCache("file", CACHE_CONF)
 	if err == nil && bc.IsExist(key) {
@@ -244,10 +235,10 @@ func CacheGet(key string) (interface{}, error) {
 	return nil, err
 }
 
-//生成默认值
-//@param            val         interface{}         值
-//@param            defVal      interface{}         默认值
-//@param            preventZero ...bool             是否保留0值
+// 生成默认值
+// @param            val         interface{}         值
+// @param            defVal      interface{}         默认值
+// @param            preventZero ...bool             是否保留0值
 func Default(val, defVal interface{}, preventZero ...bool) string {
 	v := fmt.Sprintf("%v", val)
 	dv := fmt.Sprintf("%v", defVal)
@@ -263,10 +254,10 @@ func Default(val, defVal interface{}, preventZero ...bool) string {
 	return v
 }
 
-//获取指定个数的随机字符串
-//@param            size            int         指定的字符串个数
-//@param            kind            int         0，纯数字；1，小写字母；2，大写字母；3，数字+大小写字母
-//@return           string                      返回生成的随机字符串
+// 获取指定个数的随机字符串
+// @param            size            int         指定的字符串个数
+// @param            kind            int         0，纯数字；1，小写字母；2，大写字母；3，数字+大小写字母
+// @return           string                      返回生成的随机字符串
 func RandStr(size int, kind int) string {
 	ikind, kinds, result := kind, [][]int{[]int{10, 48}, []int{26, 97}, []int{26, 65}}, make([]byte, size)
 	isAll := kind > 2 || kind < 0
@@ -281,7 +272,7 @@ func RandStr(size int, kind int) string {
 	return string(result)
 }
 
-//转换字节大小
+// 转换字节大小
 func FormatByte(size int) string {
 	fsize := float64(size)
 	//字节单位
@@ -296,10 +287,10 @@ func FormatByte(size int) string {
 	return string(num) + " " + units[i]
 }
 
-//获取文档扩展名分类以及扩展名分类对应的catenum数字
-//@param            ext         扩展名
-//@return           extCate     文档类型(字符串)
-//@return           extNum      文档类型(整型)
+// 获取文档扩展名分类以及扩展名分类对应的catenum数字
+// @param            ext         扩展名
+// @return           extCate     文档类型(字符串)
+// @return           extNum      文档类型(整型)
 func GetExtCate(ext string) (extCate string, extNum int) {
 	ext = strings.ToLower(strings.TrimLeft(ext, "."))
 	extNum = EXT_NUM_OTHER
@@ -325,10 +316,10 @@ func GetExtCate(ext string) (extCate string, extNum int) {
 	return
 }
 
-//获取文档扩展名分类以及扩展名分类对应的catenum数字
-//@param            ext         扩展名
-//@return           extCate     文档类型(字符串)
-//@return           extNum      文档类型(整型)
+// 获取文档扩展名分类以及扩展名分类对应的catenum数字
+// @param            ext         扩展名
+// @return           extCate     文档类型(字符串)
+// @return           extNum      文档类型(整型)
 func GetExtCateByExtNum(num int) (extCate string) {
 	switch num {
 	case EXT_NUM_WORD:
@@ -347,7 +338,7 @@ func GetExtCateByExtNum(num int) (extCate string) {
 	return
 }
 
-//PdfProcedure专用
+// PdfProcedure专用
 type PdfRet struct {
 	Cover   string //封面路径文件
 	Preview string //
@@ -355,10 +346,10 @@ type PdfRet struct {
 	Err     error
 }
 
-//获取pdf文件的页数
-//@param            file            pdf文件
-//@return           pages           pdf文件页码
-//@return           err             错误
+// 获取pdf文件的页数
+// @param            file            pdf文件
+// @return           pages           pdf文件页码
+// @return           err             错误
 func getPdfPagesNum(file string) (pages int, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -372,8 +363,8 @@ func getPdfPagesNum(file string) (pages int, err error) {
 	return
 }
 
-//解析svg的原始宽高
-//@param            file            svg文件
+// 解析svg的原始宽高
+// @param            file            svg文件
 func ParseSvgWidthAndHeight(file string) (width, height int) {
 	if bs, err := ioutil.ReadFile(file); err == nil {
 		if doc, err := goquery.NewDocumentFromReader(strings.NewReader(string(bs))); err == nil {
@@ -395,12 +386,12 @@ func ParseSvgWidthAndHeight(file string) (width, height int) {
 	return
 }
 
-//解析svg的原始宽高(TODO:水印效果不是很好，待优化)
-//@param            file            svg文件
-//@param			text			水印文字
-//@param			x				x轴线位置
-//@param			y				y轴位置
-//@return			err				错误
+// 解析svg的原始宽高(TODO:水印效果不是很好，待优化)
+// @param            file            svg文件
+// @param			text			水印文字
+// @param			x				x轴线位置
+// @param			y				y轴位置
+// @return			err				错误
 func SvgTextWatermark(file, text string, x, y int) (err error) {
 	if Debug {
 		beego.Debug("svg添加水印", file, text, "位置", x, y)
@@ -418,7 +409,7 @@ func SvgTextWatermark(file, text string, x, y int) (err error) {
 	return
 }
 
-//扫描目录目录中的文件
+// 扫描目录目录中的文件
 func ScanDir(dir string) (files []string) {
 	dir = strings.TrimSuffix(dir, "/")
 	if infos, err := ioutil.ReadDir(dir); err == nil {
@@ -436,10 +427,10 @@ func ScanDir(dir string) (files []string) {
 	return
 }
 
-//统计PDF的页数
-//@param            file                文件路径
-//@return           pagenum             页码，当返回错误时，页码为0
-//@return           err                 错误
+// 统计PDF的页数
+// @param            file                文件路径
+// @return           pagenum             页码，当返回错误时，页码为0
+// @return           err                 错误
 func CountPDFPages(file string) (pageNum int, err error) {
 	// 优先使用这种PDF分页统计的方式，如果PDF版本比支持，则再使用下一种PDF统计方式。所以这里报错了的话，不返回
 	pageNum, err = getPdfPagesNum(file)
@@ -466,9 +457,9 @@ func CountPDFPages(file string) (pageNum int, err error) {
 	return 0, errors.New(fmt.Sprintf(`%v:"/Pages"分割时失败`, file))
 }
 
-//文档评分处理
-//score：文档评分
-//IsScore:是否返回处理后的评分，true：返回评分，如“4.5”，false返回css的星，如"45"
+// 文档评分处理
+// score：文档评分
+// IsScore:是否返回处理后的评分，true：返回评分，如“4.5”，false返回css的星，如"45"
 func StarVal(score int, IsScore bool) string {
 	if IsScore {
 		return fmt.Sprintf("%1.1f", float32(score)/10000.0)
@@ -476,12 +467,12 @@ func StarVal(score int, IsScore bool) string {
 	return fmt.Sprintf("%d", score/1000)
 }
 
-//分页函数
-//rollPage:展示分页的个数
-//totalRows：总记录
-//currentPage:每页显示记录数
-//urlPrefix:url链接前缀
-//urlParams:url键值对参数
+// 分页函数
+// rollPage:展示分页的个数
+// totalRows：总记录
+// currentPage:每页显示记录数
+// urlPrefix:url链接前缀
+// urlParams:url键值对参数
 func Paginations(rollPage, totalRows, listRows, currentPage int, urlPrefix string, urlParams ...interface{}) string {
 	var (
 		htmlPage, path string
@@ -588,7 +579,7 @@ func Paginations(rollPage, totalRows, listRows, currentPage int, urlPrefix strin
 	return htmlPage
 }
 
-//将字符串切片转成interface切片
+// 将字符串切片转成interface切片
 func StringSliceToInterfaceSlice(slice []string) (ret []interface{}) {
 	for _, v := range slice {
 		ret = append(ret, v)
@@ -596,7 +587,7 @@ func StringSliceToInterfaceSlice(slice []string) (ret []interface{}) {
 	return ret
 }
 
-//将字符串切片数组转成map
+// 将字符串切片数组转成map
 func StringSliceToMap(slice []string) (maps map[string]string) {
 	maps = make(map[string]string)
 	for _, v := range slice {
@@ -605,8 +596,8 @@ func StringSliceToMap(slice []string) (maps map[string]string) {
 	return maps
 }
 
-//分词
-//@param            str         需要分词的文字
+// 分词
+// @param            str         需要分词的文字
 func SegWord(str interface{}) (wds string) {
 	//如果已经成功加载字典
 	if Segmenter.Dictionary() != nil {
@@ -626,12 +617,12 @@ func SegWord(str interface{}) (wds string) {
 	return
 }
 
-//url请求处理
+// url请求处理
 func UrlEscape(str string) string {
 	return strings.TrimSpace(url.QueryEscape(strings.Replace(str, "/", " ", -1)))
 }
 
-//高亮，主要用于搜索结果高亮
+// 高亮，主要用于搜索结果高亮
 func HeightLight(title string, words []string) template.HTML {
 	//注意：不能直接高亮，比如title里面有span标签作为关键字的时候就出现问题了
 	for _, wd := range words {
@@ -645,7 +636,7 @@ func HeightLight(title string, words []string) template.HTML {
 	return template.HTML(title)
 }
 
-//字符串截取
+// 字符串截取
 func SubStr(str interface{}, start, length int) string {
 	v := fmt.Sprintf("%v", str)
 	if start < 0 {
@@ -662,14 +653,14 @@ func SubStr(str interface{}, start, length int) string {
 	return strings.Join(slice[start:length], "")
 }
 
-//文件下载，这里只是简单的文档下载，复杂点的，需要根据Content-Type去做处理
-//@param            fileUrl             文件下载URL连接
-//@param            savePath            文件存放文件夹
-//@param            cookies             COOKIE
-//@return           md5str              文档的md5
-//@return           localFile           本地存放文件，err为nil时才需要处理文件，否则不需要处理
-//@return           filename            文件下载时的文件名
-//@return           err                 错误
+// 文件下载，这里只是简单的文档下载，复杂点的，需要根据Content-Type去做处理
+// @param            fileUrl             文件下载URL连接
+// @param            savePath            文件存放文件夹
+// @param            cookies             COOKIE
+// @return           md5str              文档的md5
+// @return           localFile           本地存放文件，err为nil时才需要处理文件，否则不需要处理
+// @return           filename            文件下载时的文件名
+// @return           err                 错误
 func DownFile(fileUrl, savePath string, cookies string) (md5str, localFile, filename string, err error) {
 	var (
 		resp *http.Response //响应内容
@@ -718,11 +709,11 @@ func DownFile(fileUrl, savePath string, cookies string) (md5str, localFile, file
 //	return
 //}
 
-//数字变化范围
-//@param            val             int         需要处理的参数数字
-//@param            min             int         最小值
-//@param            max             int         最大值
-//@return                           int         返回最大值与最小值之间的值
+// 数字变化范围
+// @param            val             int         需要处理的参数数字
+// @param            min             int         最小值
+// @param            max             int         最大值
+// @return                           int         返回最大值与最小值之间的值
 func NumberRange(val, min, max int) int {
 	if val < min {
 		return min
@@ -733,7 +724,7 @@ func NumberRange(val, min, max int) int {
 	return val
 }
 
-//首字母大写
+// 首字母大写
 func UpperFirst(str string) string {
 	if len(str) > 0 {
 		strings.Replace(str, str[0:1], strings.ToUpper(str[0:1]), 1)
@@ -741,7 +732,7 @@ func UpperFirst(str string) string {
 	return str
 }
 
-//页数处理，处理页数为0或者页数为空的时候的显示
+// 页数处理，处理页数为0或者页数为空的时候的显示
 func HandlePageNum(PageNum interface{}) string {
 	pn := strings.TrimSpace(fmt.Sprintf("%v", PageNum))
 	if pn == "0" || pn == "" {
@@ -750,10 +741,10 @@ func HandlePageNum(PageNum interface{}) string {
 	return pn
 }
 
-//使用SVGO压缩svg文件
-//@param            input           需要压缩的原文件
-//@param            output          压缩后的文件路径
-//@param            err             压缩错误
+// 使用SVGO压缩svg文件
+// @param            input           需要压缩的原文件
+// @param            output          压缩后的文件路径
+// @param            err             压缩错误
 func CompressBySVGO(input, output string) (err error) {
 	svgo := strings.TrimSpace(GetConfig("depend", "svgo", "svgo"))
 	args := []string{"-i", input, "-o", output}
@@ -785,11 +776,11 @@ func CompressByGzip(file string) (err error) {
 }
 
 // 图片缩放居中裁剪
-//图片缩放居中裁剪
-//@param        file        图片文件
-//@param        width       图片宽度
-//@param        height      图片高度
-//@return       err         错误
+// 图片缩放居中裁剪
+// @param        file        图片文件
+// @param        width       图片宽度
+// @param        height      图片高度
+// @return       err         错误
 func CropImage(file string, width, height int) (err error) {
 	var img image.Image
 	img, err = imaging.Open(file)
